@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEntry, toggleSecureEntry, handleSignIn, loading, error, navigation }) => {
   return (
     <View style={styles.formContainer}>

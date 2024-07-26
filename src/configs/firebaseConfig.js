@@ -1,0 +1,19 @@
+// src/configs/firebaseConfig.js
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDje74xykIZh6uCMGolDMcfNv4Tc5KuLRk",
+  authDomain: "graduationspj.firebaseapp.com",
+  projectId: "graduationspj",
+  storageBucket: "graduationspj.appspot.com",
+  messagingSenderId: "452497966669",
+  appId: "1:452497966669:web:642f2118703c5050653e04"
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const firestore = firebase.firestore();
+
+export { auth, firestore };

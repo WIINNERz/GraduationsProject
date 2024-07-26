@@ -1,45 +1,36 @@
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import useAuth from './src/hooks/useAuth';
+import 'react-native-gesture-handler';
 
-import Home from './screens/Home';
-import Auth from './screens/Auth';
+import AuthNavigator from './src/navigations/AuthNavigator';
+import AppNavigator from './src/navigations/AppNavigator';
+import './src/configs/firebaseConfig';
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+function App() {
+  const { user, loading } = useAuth();
 
-const App = () => {
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-      <Stack.Screen name="Auth" component={Auth} options={{headerShown:false}} />
-      </Stack.Navigator>
-      {/* <Tab.Navigator>
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Auth" component={Auth} />
-      </Tab.Navigator> */}
+      {user ? <AppNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
