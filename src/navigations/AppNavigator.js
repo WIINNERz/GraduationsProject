@@ -1,52 +1,52 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Home from '../screens/Home';
-import MyPet from '../components/MyPet';
 import PetStack from '../screens/PetStack';
 import ProfileStack from '../screens/ProfileStack';
 
 const Tab = createBottomTabNavigator();
-const getProfileImageUrl = async () => {
-  const db = getFirestore();
-  const auth = getAuth();
-  const user = auth.currentUser;
 
-  if (user) {
-    const userDocRef = doc(db, "Users", user.uid); // ใช้ UID ของผู้ใช้ปัจจุบัน
-    try {
-      const docSnap = await getDoc(userDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        return data.photoURL; // ดึงค่าจากฟิลด์ photourl
-      } else {
-        console.error("No such document!");
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching user document:", error);
-      return null;
-    }
-  } else {
-    console.error("No user is currently signed in.");
-    return null;
-  }
-};
-function ProfileTabIcon() {
+const useProfileImageUrl = () => {
   const [profileImageUrl, setProfileImageUrl] = useState(null);
 
   useEffect(() => {
-    const fetchProfileImage = async () => {
-      const url = await getProfileImageUrl();
-      setProfileImageUrl(url);
-    };
+    const db = getFirestore();
+    const auth = getAuth();
+    const user = auth.currentUser;
 
-    fetchProfileImage();
+    if (user) {
+      const userDocRef = doc(db, "Users", user.uid);
+
+      const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setProfileImageUrl(data.photoURL || null); // Update profileImageUrl with the new data
+        } else {
+          console.error("No such document!");
+          setProfileImageUrl(null);
+        }
+      }, (error) => {
+        console.error("Error fetching user document:", error);
+        setProfileImageUrl(null);
+      });
+
+      return () => unsubscribe(); // Cleanup subscription on unmount
+    } else {
+      console.error("No user is currently signed in.");
+      setProfileImageUrl(null);
+    }
   }, []);
+
+  return profileImageUrl;
+};
+
+function ProfileTabIcon() {
+  const profileImageUrl = useProfileImageUrl();
 
   if (!profileImageUrl) {
     return <MaterialCommunityIcons name="account" size={26} />;
@@ -55,10 +55,11 @@ function ProfileTabIcon() {
   return (
     <Image
       source={{ uri: profileImageUrl }}
-      style={{ width: 26, height: 26, borderRadius: 100 }}
+      style={{ width: 26, height: 26, borderRadius: 13 }} // Updated borderRadius to 13 for a circle
     />
   );
 }
+
 const AppNavigator = () => {
   return (
     <Tab.Navigator>

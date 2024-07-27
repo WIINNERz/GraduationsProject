@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, Touchable, TouchableOpacity ,Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth, firestore, storage } from '../configs/firebaseConfig'; // Adjust path if needed
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, firestore } from '../configs/firebaseConfig';
 import { getDoc, doc, updateDoc } from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker'; // Ensure this is imported
 
-const Profiles = () => {
-  const navigation = useNavigation();
+const ProfileDetail = ({navigation}) => {
+
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [image, setImage] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const user = auth.currentUser;
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
-        const userDoc = doc(firestore, 'Users', user.uid); // Use firestore directly
+        const userDoc = doc(firestore, 'Users', user.uid);
         const docSnap = await getDoc(userDoc);
 
         if (docSnap.exists() && docSnap.data().email === user.email) {
-          setUserData(docSnap.data());
+          const data = docSnap.data();
+          setUserData(data);
+          setFirstname(data.firstname);
+          setLastname(data.lastname);
+          setUsername(data.username);
+          setEmail(data.email);
         } else {
           console.log('No matching user data found');
         }
@@ -33,16 +39,18 @@ const Profiles = () => {
     fetchUserData();
   }, [user]);
 
-  const handleSignOut = () => {
-    auth.signOut() // Use auth directly
-      .then(() => {
-        navigation.navigate('SignIn');
-      })
-      .catch((error) => {
-        console.error(error);
+  const handleSave = async () => {
+    if (user) {
+      const userDoc = doc(firestore, 'Users', user.uid);
+      await updateDoc(userDoc, {
+        firstname,
+        lastname,
+        username,
+        email,
       });
+      alert('Profile updated successfully');
+    }
   };
-
   const pickImage = () => {
     Alert.alert(
       'Select Image',
@@ -106,7 +114,6 @@ const Profiles = () => {
       setUploading(false);
     }
   };
-
   if (loading) {
     return (
       <View style={styles.container}>
@@ -119,17 +126,20 @@ const Profiles = () => {
     return (
       <View style={styles.container}>
         <Text>No user data found or email mismatch.</Text>
-        <Button title="Sign Out" onPress={handleSignOut} />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+        <View style={{flexDirection:'row', justifyContent:'space-between', padding:20}}>
+        <TouchableOpacity onPress={() => navigation.navigate('Profiles')}>
+            <MaterialCommunityIcons name="chevron-left" size={30} color="#3A3A3A" />
+        </TouchableOpacity>
+        </View>
       <View style={styles.profilePanel}>
-        <View style={styles.leftContent}>
-          <View>
-            {userData.photoURL ? (
+      <View style={styles.leftContent}>
+      {userData.photoURL ? (
               <Image source={{ uri: userData.photoURL }} style={styles.image} />
             ) : (
               <MaterialCommunityIcons name="account" size={50} color="gray" />
@@ -137,34 +147,32 @@ const Profiles = () => {
             <TouchableOpacity onPress={pickImage}>
               <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" />
             </TouchableOpacity>
-          </View>
-          <View style={styles.myaccount}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text>{userData.firstname}</Text>
-              <Text> </Text>
-              <Text>{userData.lastname}</Text>
             </View>
-            <Text style={{ opacity: 0.5 }}>@{userData.username}</Text>
-          </View>
+        <View style={styles.myaccount}>
+        <Text style={styles.name}>Firstname</Text>
+        <TextInput
+          style={styles.input}
+          value={firstname}
+          onChangeText={setFirstname}
+          placeholder="First Name"
+        />
+                <Text style={styles.name}>Lastname</Text>
+        <TextInput
+          style={styles.input}
+          value={lastname}
+          onChangeText={setLastname}
+          placeholder="Last Name"
+        />
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
-          <MaterialCommunityIcons name="account-edit" size={40} color="gray" />
-        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email"
+          keyboardType="email-address"
+        />
+        <Button title="Save" onPress={handleSave} />
       </View>
-      <View style={styles.panel}>
-        <View style={styles.leftContent}>
-          <View style={styles.iconContainer}>
-            <MaterialCommunityIcons name="account" size={30} color="gray" />
-          </View>
-          <View style={styles.myaccount}>
-            <Text>My Account</Text>
-            <Text style={{ opacity: 0.5 }}>Make changes to your account</Text>
-          </View>
-        </View>
-        <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
-      </View>
-
-      <Button title="Sign Out" onPress={handleSignOut} />
     </View>
   );
 }
@@ -172,54 +180,56 @@ const Profiles = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  panel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     backgroundColor: '#fff',
+    borderRadius:50,
+    marginTop: 100,
+  },
+  profilePanel: {
+    width:'100%',
     padding: 20,
-    width: '90%',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderColor: '#000',
+  },
+  input: {
+    height: 40,
+    padding: 10,
+    marginTop: 10,
+  },
+  name: {
+    height: 40,
+    borderColor: 'gray',
+    padding: 10,
+    marginTop: 10,
+  },
+  username: {
+    fontSize: 18,
+    color: 'gray',
+    marginTop: 5,
+  },
+  email: {
+    fontSize: 16,
+    color: 'gray',
+    marginTop: 5,
+  },
+  myaccount: {
+    flexDirection: 'row',
+    alignContent: 'flex-start',
+    borderBottomWidth:1,
+    borderBottomColor:'#828282',
   },
   leftContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  iconContainer: {
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 100,
-    height: 40,
-    width: 40,
-  },
-  myaccount: {
-    padding: 10,
-    alignContent: 'flex-start',
-  },
-  profilePanel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    padding: 20,
-    width: '90%',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  image: {
-    width: 80,
-    height: 80,
-    borderRadius: 100,
-    borderWidth: 2,
-  },
   camera: {
     position: 'absolute',
-    top: -30,
-    left: 50,
+    top: 20,
+    left: -30,
   },
 });
 
-export default Profiles;
+export default ProfileDetail;

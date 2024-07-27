@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MyPet from '../components/MyPet';
 import AddPet from '../components/AddPet';
-
+import PetDetail from '../components/PetDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +19,10 @@ export default function PetStack() {
         component={AddPet} 
         options={{ headerShown: false }} 
       />
+      <Stack.Screen 
+        name="PetDetail" 
+        component={PetDetail} 
+        options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }

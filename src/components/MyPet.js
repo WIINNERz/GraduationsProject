@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView ,Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
@@ -8,24 +8,24 @@ import { auth } from '../configs/firebaseConfig';
 export default function MyPet() {
     const [dogs, setDogs] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); // State สำหรับเก็บข้อผิดพลาด
+    const [error, setError] = useState(null);
     const navigation = useNavigation();
     const user = auth.currentUser;
 
     const fetchDogs = async () => {
-        const user = auth.currentUser; 
+        const user = auth.currentUser;
         if (user) {
             try {
                 const db = getFirestore();
-                const petsCollection = collection(db, 'Pets'); 
-                const q = query(petsCollection, where('uid', '==', user.uid)); 
+                const petsCollection = collection(db, 'Pets');
+                const q = query(petsCollection, where('uid', '==', user.uid));
                 const querySnapshot = await getDocs(q);
-                
+
                 const petList = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
                 }));
-                
+
                 setDogs(petList);
             } catch (err) {
                 setError(err.message);
@@ -47,13 +47,13 @@ export default function MyPet() {
 
     return (
         <SafeAreaView style={styles.screen}>
-            <View >
-                <TouchableOpacity style={styles.plusButton} onPress={() => navigation.navigate('AddPet')}>        
+            <View>
+                <TouchableOpacity style={styles.plusButton} onPress={() => navigation.navigate('AddPet')}>
                     <MaterialCommunityIcons name="plus" size={20} color="#F0DFC8" />
                 </TouchableOpacity>
             </View>
             <Text style={styles.title}>My Pets</Text>
-            <View style={styles.container} >
+            <View style={styles.container}>
                 {loading ? (
                     <Text>Loading...</Text>
                 ) : error ? (
@@ -63,22 +63,17 @@ export default function MyPet() {
                         {dogs.length > 0 ? (
                             dogs.map(dog => (
                                 <View key={dog.id} style={styles.dogContainer}>
-                                    <View style={{flexDirection:'row'}}>
-                                        
-                                    {dog.photoURL ? (
-                                        <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
-                                    ) : (
-                                        <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
-                                    )}
-                                    <Text>Name: {dog.name}</Text>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        {dog.photoURL ? (
+                                            <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
+                                        ) : (
+                                            <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
+                                        )}
+                                        <Text>Name: {dog.name}</Text>
                                     </View>
                                     <TouchableOpacity onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
-                                        <MaterialCommunityIcons name="arrow-right" style={{borderRadius:20}} size={40} color="#E16539" />
+                                        <MaterialCommunityIcons name="arrow-right" style={{ borderRadius: 20 }} size={40} color="#E16539" />
                                     </TouchableOpacity>
-                                    {/* <Text>Name: {dog.name}</Text>
-                                    <Text>Type: {dog.type}</Text>
-                                    <Text>Age: {dog.age}</Text>
-                                    <Text>Species: {dog.species}</Text> */}
                                 </View>
                             ))
                         ) : (
@@ -108,13 +103,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 50,
         right: 15,
-        width: 75, 
+        width: 75,
         borderRadius: 20,
         padding: 5,
     },
     dogContainer: {
         flexDirection: 'row',
-        alignItems:'center',
+        alignItems: 'center',
         justifyContent: 'space-between',
         marginVertical: 10,
         marginHorizontal: "auto",
@@ -145,5 +140,4 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         marginRight: 10,
     },
-
 });
