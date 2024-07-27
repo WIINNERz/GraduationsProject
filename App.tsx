@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import useAuth from './src/hooks/useAuth';
 import 'react-native-gesture-handler';
-
 import AuthNavigator from './src/navigations/AuthNavigator';
 import AppNavigator from './src/navigations/AppNavigator';
 import './src/configs/firebaseConfig';

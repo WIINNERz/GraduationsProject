@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView ,Image } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
-import {auth} from '@react-native-firebase/auth';
+import { auth } from '../configs/firebaseConfig';
 
 export default function MyPet() {
     const [dogs, setDogs] = useState([]);
@@ -63,10 +63,22 @@ export default function MyPet() {
                         {dogs.length > 0 ? (
                             dogs.map(dog => (
                                 <View key={dog.id} style={styles.dogContainer}>
+                                    <View style={{flexDirection:'row'}}>
+                                        
+                                    {dog.photoURL ? (
+                                        <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
+                                    ) : (
+                                        <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
+                                    )}
                                     <Text>Name: {dog.name}</Text>
+                                    </View>
+                                    <TouchableOpacity onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
+                                        <MaterialCommunityIcons name="arrow-right" style={{borderRadius:20}} size={40} color="#E16539" />
+                                    </TouchableOpacity>
+                                    {/* <Text>Name: {dog.name}</Text>
                                     <Text>Type: {dog.type}</Text>
                                     <Text>Age: {dog.age}</Text>
-                                    <Text>Species: {dog.species}</Text>
+                                    <Text>Species: {dog.species}</Text> */}
                                 </View>
                             ))
                         ) : (
@@ -101,13 +113,15 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     dogContainer: {
+        flexDirection: 'row',
+        alignItems:'center',
+        justifyContent: 'space-between',
         marginVertical: 10,
-        marginHorizontal: "5%",
+        marginHorizontal: "auto",
         padding: 10,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 5,
+        borderRadius: 10,
         width: '90%',
+        backgroundColor: '#F0DFC8',
     },
     title: {
         fontSize: 20,
@@ -124,6 +138,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontStyle: 'italic',
         color: "gray",
-    }
+    },
+    petPic: {
+        width: 80,
+        height: 80,
+        borderRadius: 50,
+        marginRight: 10,
+    },
 
 });
