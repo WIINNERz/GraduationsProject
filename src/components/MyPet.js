@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth } from '../configs/firebaseConfig';
 
+
 export default function MyPet() {
     const [dogs, setDogs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -59,8 +60,7 @@ export default function MyPet() {
                 ) : error ? (
                     <Text>Error: {error}</Text>
                 ) : (
-                    <View>
-                        {dogs.length > 0 ? (
+                        dogs.length > 0 ? (
                             dogs.map(dog => (
                                 <View key={dog.id} style={styles.dogContainer}>
                                     <View style={{ flexDirection: 'row' }}>
@@ -69,7 +69,7 @@ export default function MyPet() {
                                         ) : (
                                             <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
                                         )}
-                                        <Text>Name: {dog.name}</Text>
+                                        <Text>{dog.name}</Text>
                                     </View>
                                     <TouchableOpacity onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
                                         <MaterialCommunityIcons name="arrow-right" style={{ borderRadius: 20 }} size={40} color="#E16539" />
@@ -78,8 +78,7 @@ export default function MyPet() {
                             ))
                         ) : (
                             <Text style={styles.nopets}> No pets available</Text>
-                        )}
-                    </View>
+                        )
                 )}
             </View>
         </SafeAreaView>
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     container: {
-        marginTop: "20%",
+        marginTop: '20%',
         width: '100%',
         justifyContent: 'center',
     },

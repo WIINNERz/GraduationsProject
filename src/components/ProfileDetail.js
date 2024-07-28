@@ -7,7 +7,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker'; // Ensure this is imported
 
 const ProfileDetail = ({navigation}) => {
-
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [firstname, setFirstname] = useState('');

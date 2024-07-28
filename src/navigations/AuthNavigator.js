@@ -5,6 +5,7 @@ import AuthStack from '../screens/AuthStack';
 import Home from '../screens/Home';
 import ProfileStack from '../screens/ProfileStack';
 import Forgot from '../components/Forgot';
+import HomeStack from '../screens/HomeStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,11 +15,6 @@ const AuthNavigator = () => {
       <Stack.Screen 
         name="Auth" 
         component={AuthStack} 
-        options={{ headerShown: false }} 
-      />
-      <Stack.Screen 
-        name="Home" 
-        component={Home} 
         options={{ headerShown: false }} 
       />
       <Stack.Screen 

@@ -3,6 +3,7 @@ import { View, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 're
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { getFirestore, setDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth ,storage } from '../configs/firebaseConfig';  // Ensure storage is imported from your firebaseconfig
@@ -17,6 +18,12 @@ const AddPet = () => {
     const [type, setType] = useState('');
     const [image, setImage] = useState('');
     const [species, setSpecies] = useState('');
+    const [open, setOpen] = useState(false);
+    const [status, setStatus] = useState(null);
+    const [listStatus, setListStatus] = useState([
+        {label: 'Have Owner', value: 'have_owner'},
+        {label: "Dont't have Owner", value: 'dont_have_owner'}
+      ]);
     const [uploading, setUploading] = useState(false);  // Added state for uploading
 
     const fetchUsername = async (uid) => {
@@ -49,7 +56,8 @@ const AddPet = () => {
                 name,
                 age,
                 type,
-                species
+                species,
+                status
             });
 
             if (image) {
@@ -146,6 +154,14 @@ const AddPet = () => {
                 placeholder="Enter species"
                 value={species}
                 onChangeText={(value) => setSpecies(value)}
+            />
+            <DropDownPicker 
+                open={open}
+                value={status}
+                items={listStatus}
+                setOpen={setOpen}
+                setValue={setStatus}
+                setItems={setListStatus}
             />
             <TouchableOpacity onPress={pickImage}>
                 <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" />

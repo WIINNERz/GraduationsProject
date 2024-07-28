@@ -8,6 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Home from '../screens/Home';
 import PetStack from '../screens/PetStack';
 import ProfileStack from '../screens/ProfileStack';
+import HomeStack from '../screens/HomeStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -62,16 +63,25 @@ function ProfileTabIcon() {
 
 const AppNavigator = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50,
+          position: 'absolute',
+          overflow: 'hidden',
+        },
+      }}>
       <Tab.Screen
-        name="Home"
-        component={Home}
+        name="HomeStack"
+        component={HomeStack}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),
-          headerShown: false }}
+          headerShown: false,
+        }}
       />
       <Tab.Screen
         name="MyPet"
@@ -89,7 +99,7 @@ const AppNavigator = () => {
         options={{
           headerShown: false,
           tabBarIcon: (props) => <ProfileTabIcon {...props} />
-         }}
+        }}
       />
     </Tab.Navigator>
   );
