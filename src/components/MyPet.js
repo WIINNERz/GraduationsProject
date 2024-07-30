@@ -62,19 +62,16 @@ export default function MyPet() {
                 ) : (
                         dogs.length > 0 ? (
                             dogs.map(dog => (
-                                <View key={dog.id} style={styles.dogContainer}>
-                                    <View style={{ flexDirection: 'row' }}>
+                                <TouchableOpacity style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
+                                <View key={dog.id}>
                                         {dog.photoURL ? (
                                             <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
                                         ) : (
                                             <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
                                         )}
-                                        <Text>{dog.name}</Text>
-                                    </View>
-                                    <TouchableOpacity onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
-                                        <MaterialCommunityIcons name="arrow-right" style={{ borderRadius: 20 }} size={40} color="#E16539" />
-                                    </TouchableOpacity>
+                                        <Text style={{textAlign:'center',paddingVertical:10}}>{dog.name}</Text>
                                 </View>
+                                </TouchableOpacity>
                             ))
                         ) : (
                             <Text style={styles.nopets}> No pets available</Text>
@@ -89,11 +86,14 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         backgroundColor: '#fff',
+
     },
     container: {
         marginTop: '20%',
         width: '100%',
-        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
     },
     plusButton: {
         backgroundColor: '#E16539',
@@ -107,14 +107,14 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     dogContainer: {
-        flexDirection: 'row',
         alignItems: 'center',
+        alignContent: 'center',
         justifyContent: 'space-between',
         marginVertical: 10,
         marginHorizontal: "auto",
         padding: 10,
         borderRadius: 10,
-        width: '90%',
+        width: '40%',
         backgroundColor: '#F0DFC8',
     },
     title: {
@@ -137,6 +137,5 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 50,
-        marginRight: 10,
     },
 });

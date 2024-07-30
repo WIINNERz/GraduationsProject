@@ -66,8 +66,8 @@ const Home = () => {
                     )}
                     <Text>{dog.name}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
-                      <MaterialCommunityIcons name="arrow-right" style={{ borderRadius: 20 }} size={40} color="#E16539" />
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
+                      <Text>รายละเอียด</Text>
                     </TouchableOpacity>
                 </View>
               ))
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0DFC8',
   },
   petPic: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     borderRadius: 40,
   },
   nopets: {
@@ -120,6 +120,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  button: {
+    height:40,
+    padding: 10,
+    borderRadius:10,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+  }
 });
 
 export default Home;

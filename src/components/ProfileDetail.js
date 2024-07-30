@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, Touchable, TouchableOpacity ,Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth, firestore } from '../configs/firebaseConfig';
+import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { getDoc, doc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker'; // Ensure this is imported
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
-const ProfileDetail = ({navigation}) => {
+const ProfileDetail = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [image, setImage] = useState(null);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -47,9 +50,10 @@ const ProfileDetail = ({navigation}) => {
         username,
         email,
       });
-      alert('Profile updated successfully');
+      Alert.alert('Profile Saved', 'Profile updated successfully', [{ text: 'OK' }]);
     }
   };
+
   const pickImage = () => {
     Alert.alert(
       'Select Image',
@@ -100,9 +104,9 @@ const ProfileDetail = ({navigation}) => {
       const userDoc = doc(firestore, 'Users', user.uid);
       await updateDoc(userDoc, { photoURL: downloadURL });
 
-      setUserData(prevState => ({
+      setUserData((prevState) => ({
         ...prevState,
-        photoURL: downloadURL
+        photoURL: downloadURL,
       }));
 
       Alert.alert('Success', 'Profile photo updated successfully.');
@@ -113,6 +117,7 @@ const ProfileDetail = ({navigation}) => {
       setUploading(false);
     }
   };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -131,60 +136,63 @@ const ProfileDetail = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-        <View style={{flexDirection:'row', justifyContent:'space-between', padding:20}}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
         <TouchableOpacity onPress={() => navigation.navigate('Profiles')}>
-            <MaterialCommunityIcons name="chevron-left" size={30} color="#3A3A3A" />
+          <MaterialCommunityIcons name="chevron-left" size={30} color="#3A3A3A" />
         </TouchableOpacity>
-        </View>
+      </View>
       <View style={styles.profilePanel}>
-      <View style={styles.leftContent}>
-      {userData.photoURL ? (
-              <Image source={{ uri: userData.photoURL }} style={styles.image} />
-            ) : (
-              <MaterialCommunityIcons name="account" size={50} color="gray" />
-            )}
-            <TouchableOpacity onPress={pickImage}>
-              <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" />
-            </TouchableOpacity>
-            </View>
-        <View style={styles.myaccount}>
-        <Text style={styles.name}>Firstname</Text>
-        <TextInput
-          style={styles.input}
-          value={firstname}
-          onChangeText={setFirstname}
-          placeholder="First Name"
-        />
-                <Text style={styles.name}>Lastname</Text>
-        <TextInput
-          style={styles.input}
-          value={lastname}
-          onChangeText={setLastname}
-          placeholder="Last Name"
-        />
+        <View style={styles.leftContent}>
+          {userData.photoURL ? (
+            <Image source={{ uri: userData.photoURL }} style={styles.image} />
+          ) : (
+            <MaterialCommunityIcons name="account" size={50} color="gray" />
+          )}
+          <TouchableOpacity onPress={pickImage}>
+            <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" />
+          </TouchableOpacity>
         </View>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email"
-          keyboardType="email-address"
-        />
+        <View style={styles.myaccount}>
+          <Text style={styles.name}>Firstname</Text>
+          <TextInput
+            style={styles.input}
+            value={firstname}
+            onChangeText={setFirstname}
+            placeholder="First Name"
+          />
+          <Text style={styles.name}>Lastname</Text>
+          <TextInput
+            style={styles.input}
+            value={lastname}
+            onChangeText={setLastname}
+            placeholder="Last Name"
+          />
+        </View>
+        <View style={{ flexDirection: 'row', padding: 10 }}>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flex: 1 }}
+            onPress={() => navigation.navigate('ChangePassword')}
+          >
+            <Text style={{ color: '#3A3A3A', marginRight: 10 }}>Switch To Foundation</Text>
+            <MaterialCommunityIcons name='chevron-right' size={30} color='#3A3A3A' />
+          </TouchableOpacity>
+        </View>
         <Button title="Save" onPress={handleSave} />
       </View>
+      {uploading && <ActivityIndicator size="large" color="#0000ff" />}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    borderRadius:50,
+    borderRadius: 50,
     marginTop: 100,
   },
   profilePanel: {
-    width:'100%',
+    width: '100%',
     padding: 20,
   },
   image: {
@@ -204,21 +212,11 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
   },
-  username: {
-    fontSize: 18,
-    color: 'gray',
-    marginTop: 5,
-  },
-  email: {
-    fontSize: 16,
-    color: 'gray',
-    marginTop: 5,
-  },
   myaccount: {
     flexDirection: 'row',
     alignContent: 'flex-start',
-    borderBottomWidth:1,
-    borderBottomColor:'#828282',
+    borderBottomWidth: 1,
+    borderBottomColor: '#828282',
   },
   leftContent: {
     flexDirection: 'row',

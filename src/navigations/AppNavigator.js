@@ -4,8 +4,6 @@ import { Image } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import Home from '../screens/Home';
 import PetStack from '../screens/PetStack';
 import ProfileStack from '../screens/ProfileStack';
 import HomeStack from '../screens/HomeStack';
@@ -63,7 +61,7 @@ function ProfileTabIcon() {
 
 const AppNavigator = () => {
   return (
-    <Tab.Navigator
+    <Tab.Navigator initialRouteName='HomeStack'
       screenOptions={{
         tabBarStyle: {
           borderTopLeftRadius: 50,

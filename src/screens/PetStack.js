@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MyPet from '../components/MyPet';
 import AddPet from '../components/AddPet';
 import PetDetail from '../components/PetDetail';
-import Home from './Home';
+import Home from '../components/Home';
 
 const Stack = createNativeStackNavigator();
 
