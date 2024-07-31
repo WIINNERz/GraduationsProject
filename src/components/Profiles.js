@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Alert, Activit
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getDoc, doc, updateDoc ,onSnapshot } from 'firebase/firestore';
+import { getDoc, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
@@ -13,6 +13,7 @@ const Profiles = () => {
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [activated, setActivated] = useState(false);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -145,6 +146,19 @@ const Profiles = () => {
               <Text>{userData.lastname}</Text>
             </View>
             <Text style={{ opacity: 0.5 }}>@{userData.username}</Text>
+            {userData.verify ? (
+                <View style={styles.verified}>
+                <Text>Verified</Text>
+                <Text> </Text>
+                <MaterialCommunityIcons name="check-circle" size={20} color="green" />
+                </View>
+            ) : (
+              <TouchableOpacity style={styles.verified} onPress={() => navigation.navigate('ProfileDetail')}>
+              <Text style={{ opacity: 0.5 }}>Not Verified</Text>
+              </TouchableOpacity>
+
+            )}
+
           </View>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
@@ -167,7 +181,7 @@ const Profiles = () => {
       </View>
       </TouchableOpacity>
       <Button title="Sign Out" onPress={handleSignOut} />
-    </View>
+    </View >
   );
 }
 
@@ -227,6 +241,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 5,
+  },
+  verified: {
+    flexDirection: 'row',
+    backgroundColor: '#f0f0f0',
+    padding: 5,
+    borderRadius: 10,
+    width: 90,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

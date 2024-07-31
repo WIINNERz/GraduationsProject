@@ -136,11 +136,16 @@ const ProfileDetail = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 20,
+      }}>
         <TouchableOpacity onPress={() => navigation.navigate('Profiles')}>
-          <MaterialCommunityIcons name="chevron-left" size={30} color="#3A3A3A" />
+          <Text>Cancel</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.profilePanel}>
         <View style={styles.leftContent}>
           {userData.photoURL ? (

@@ -7,6 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import BackButton from './backbutton';
 
 const PetDetail = ({ navigation }) => {
     const [pet, setPet] = useState(null);
@@ -230,7 +231,7 @@ const PetDetail = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Edit Pet</Text>
+
             {pet?.photoURL ? (
                 <Image source={{ uri: pet.photoURL }} style={styles.image} />
             ) : (

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TextInput,
@@ -7,13 +7,13 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
-import DropDownPicker from 'react-native-dropdown-picker';
-import {getFirestore, setDoc, doc, getDoc, updateDoc} from 'firebase/firestore';
-import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {auth, storage} from '../configs/firebaseConfig'; // Ensure storage is imported from your firebaseconfig
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import { Dropdown } from 'react-native-element-dropdown';
+import { getFirestore, setDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, storage } from '../configs/firebaseConfig'; // Ensure storage is imported from your firebaseconfig
 import MyPet from './MyPet';
 import BackButton from './backbutton';
 import { Text } from 'react-native-paper';
@@ -30,11 +30,18 @@ const AddPet = () => {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(null);
   const [listStatus, setListStatus] = useState([
-    {label: 'Have Owner', value: 'have_owner'},
-    {label: "Dont't have Owner", value: 'dont_have_owner'},
+    { label: 'Have Owner', value: 'have_owner' },
+    { label: "Dont't have Owner", value: 'dont_have_owner' },
   ]);
+  const [value, setValue] = useState(null);
   const [uploading, setUploading] = useState(false); // Added state for uploading
-
+  const renderItem = item => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.textItem}>{item.label}</Text>
+      </View>
+    );
+  };
   const fetchUsername = async uid => {
     const userDocRef = doc(db, 'Users', uid);
     const userDoc = await getDoc(userDocRef);
@@ -54,7 +61,7 @@ const AddPet = () => {
         return;
       }
 
-      const {uid} = user;
+      const { uid } = user;
       const username = await fetchUsername(uid);
       if (!username) return;
 
@@ -81,14 +88,14 @@ const AddPet = () => {
 
   const pickImage = () => {
     Alert.alert('Select Image', 'Choose an option', [
-      {text: 'Camera', onPress: () => openCamera()},
-      {text: 'Gallery', onPress: () => openImageLibrary()},
-      {text: 'Cancel', style: 'cancel'},
+      { text: 'Camera', onPress: () => openCamera() },
+      { text: 'Gallery', onPress: () => openImageLibrary() },
+      { text: 'Cancel', style: 'cancel' },
     ]);
   };
 
   const openImageLibrary = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
 
     if (!result.didCancel && result.assets && result.assets.length > 0) {
       setImage(result.assets[0].uri);
@@ -96,7 +103,7 @@ const AddPet = () => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({mediaType: 'photo', quality: 1});
+    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
 
     if (!result.didCancel && result.assets && result.assets.length > 0) {
       setImage(result.assets[0].uri);
@@ -129,7 +136,7 @@ const AddPet = () => {
       const downloadURL = await getDownloadURL(snapshot.ref);
       console.log('File available at', downloadURL);
 
-      await updateDoc(petDocRef, {photoURL: downloadURL});
+      await updateDoc(petDocRef, { photoURL: downloadURL });
 
       Alert.alert('Success', 'Pet photo updated successfully.');
     } catch (error) {
@@ -179,18 +186,23 @@ const AddPet = () => {
           value={species}
           onChangeText={value => setSpecies(value)}
         />
-        <DropDownPicker
-          open={open}
-          value={status}
-          items={listStatus}
-          setOpen={setOpen}
-          setValue={setStatus}
-          setItems={setListStatus}
-          placeholder="Select status"
-          style={styles.input}
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          iconStyle={styles.iconStyle}
+          data={listStatus}
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder="Select item"
+          value={value}
+          onChange={item => {
+            setStatus(item.value);
+          }}
+          renderItem={renderItem}
         />
-        <TouchableOpacity style={styles.submit} onPress={handleSubmit} ><Text style={{fontWeight : 'bold'}}>Submit</Text></TouchableOpacity>
-        {/* <Button title="Submit" style={{backgroundColor : '#E16539'}} onPress={handleSubmit} /> */}
+        <TouchableOpacity style={styles.submit} onPress={handleSubmit} ><Text style={{ fontWeight: 'bold' }}>Submit</Text></TouchableOpacity>
       </View>
     </View>
   );
@@ -205,7 +217,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   inputcontainer: {
-   padding: 10,
+    padding: 10,
     width: '90%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -221,23 +233,63 @@ const styles = StyleSheet.create({
     borderBottomColor: '#000',
     borderBottomWidth: 1,
   },
-    submit: {
-        width: '25%',
-        padding: 10,
-        margin: 10,
-        borderRadius: 10,
-        height: '8%',
-        fontWeight: 'bold',
-        alignItems: 'center',
-        backgroundColor: '#E16539',
+  submit: {
+    width: '25%',
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+    height: '8%',
+    fontWeight: 'bold',
+    alignItems: 'center',
+    backgroundColor: '#E16539',
+  },
+  title: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginTop: '15%',
+    fontWeight: 'bold',
+    color: '#E16539',
+  },
+  dropdown: {
+    margin: 16,
+    height: 50,
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
     },
-    title: {
-        fontSize: 20, 
-        textAlign: 'center', 
-        marginTop: '15%',
-        fontWeight: 'bold',
-        color: '#E16539',
-    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  item: {
+    padding: 17,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textItem: {
+    flex: 1,
+    fontSize: 16,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
 
 });
 
