@@ -5,9 +5,9 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword} from '@reac
 import { auth } from '../configs/firebaseConfig';
 import { getFirestore, setDoc, doc } from '@react-native-firebase/firestore';
 import ToggleButton from '../components/ToggleButton';
-import SignIn from '../components/SignIn'; 
-import SignUp from '../components/SignUp'; 
-import Forgot from '../components/Forgot';
+import SignIn from '../screens/SignIn'; 
+import SignUp from '../screens/SignUp'; 
+import Forgot from '../screens/Forgot';
 
 
 const AuthStack = () => {

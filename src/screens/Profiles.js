@@ -6,6 +6,8 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getDoc, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import { pickImage, openImageLibrary, openCamera, uploadImage } from '../components/camera' // Import functions from Camera.js
+
 
 const Profiles = () => {
   const navigation = useNavigation();
@@ -46,66 +48,6 @@ const Profiles = () => {
       .catch((error) => {
         console.error('Error signing out:', error);
       });
-  };
-
-  const pickImage = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose an option',
-      [
-        { text: 'Camera', onPress: () => openCamera() },
-        { text: 'Gallery', onPress: () => openImageLibrary() },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
-  };
-
-  const openImageLibrary = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
-    }
-  };
-
-  const openCamera = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
-    }
-  };
-
-  const uploadImage = async (uri) => {
-    if (!uri) return;
-
-    setUploading(true);
-
-    try {
-      const storageRef = ref(storage, `images/${user.uid}/${Date.now()}`);
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      const snapshot = await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(snapshot.ref);
-
-      const userDoc = doc(firestore, 'Users', user.uid);
-      await updateDoc(userDoc, { photoURL: downloadURL });
-
-      setUserData(prevState => ({
-        ...prevState,
-        photoURL: downloadURL
-      }));
-
-      Alert.alert('Success', 'Profile photo updated successfully.');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to upload image. Please try again.');
-      console.error('Error uploading image:', error);
-    } finally {
-      setUploading(false);
-    }
   };
 
   if (loading) {

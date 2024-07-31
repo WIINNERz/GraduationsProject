@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, ActivityIndicator, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, ActivityIndicator, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
@@ -7,7 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import BackButton from './backbutton';
+import BackButton from '../components/backbutton';
 
 const PetDetail = ({ navigation }) => {
     const [pet, setPet] = useState(null);
@@ -230,7 +230,8 @@ const PetDetail = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent} 
+        style={styles.container}>
 
             {pet?.photoURL ? (
                 <Image source={{ uri: pet.photoURL }} style={styles.image} />
@@ -257,6 +258,18 @@ const PetDetail = ({ navigation }) => {
                     value={pet?.breeds || ''}
                     onChangeText={(text) => setPet({ ...pet, breeds: text })}
                 />
+                                <Text>Age (Birthday)</Text>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.inputDate}
+                        value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
+                        editable={false}
+                    />
+                    <TouchableOpacity onPress={() => setShow(true)} style={styles.iconContainer}>
+                        <MaterialCommunityIcons name="calendar" size={24} color="black" />
+                    </TouchableOpacity>
+
+                </View>
                 <View style={styles.whContainer}>
                     <View style={styles.containerwh}>
                         <Text>Weight</Text>
@@ -279,18 +292,8 @@ const PetDetail = ({ navigation }) => {
                         />
                     </View>
                 </View>
-                <Text>Age (Birthday)</Text>
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        style={styles.inputDate}
-                        value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
-                        editable={false}
-                    />
-                    <TouchableOpacity onPress={() => setShow(true)} style={styles.iconContainer}>
-                        <MaterialCommunityIcons name="calendar" size={24} color="black" />
-                    </TouchableOpacity>
+                
 
-                </View>
             </View>
             {show && (
                 <DateTimePicker
@@ -310,16 +313,20 @@ const PetDetail = ({ navigation }) => {
             </View>
             {error && <Text style={styles.errorText}>Error: {error}</Text>}
             {uploading && <ActivityIndicator size="small" color="#0000ff" />}
-        </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff',
+    },
+    scrollViewContent: {
+        flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        padding: 20,
     },
     subContainer: {
         width: '100%',
@@ -335,7 +342,7 @@ const styles = StyleSheet.create({
     containerwh: {
         width: '45%',
         backgroundColor: '#fff',
-        marginHorizontal: 20,
+        marginHorizontal: 17,
     },
     header: {
         fontSize: 24,

@@ -8,7 +8,7 @@ export default function BackButton() {
     const navigation = useNavigation();
     return (
         <View>
-            <TouchableOpacity style={{ top : 40  , left :'8%'} } onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
                 <MaterialCommunityIcons name="arrow-left" size={30} color="#000" />
             </TouchableOpacity>
         </View>

@@ -4,9 +4,9 @@ import { Image } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import PetStack from '../screens/PetStack';
-import ProfileStack from '../screens/ProfileStack';
-import HomeStack from '../screens/HomeStack';
+import PetStack from '../stacks/PetStack';
+import ProfileStack from '../stacks/ProfileStack';
+import HomeStack from '../stacks/HomeStack';
 
 const Tab = createBottomTabNavigator();
 

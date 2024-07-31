@@ -1,10 +1,10 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Profiles from '../components/Profiles';
-import SignIn from '../components/SignIn';
-import ProfileDetail from '../components/ProfileDetail';
-import MyAccount from '../components/MyAccount';4
-import AccountInfo from '../components/AccountInfo';
+import Profiles from '../screens/Profiles';
+import SignIn from '../screens/SignIn';
+import ProfileDetail from '../screens/ProfileDetail';
+import MyAccount from '../screens/MyAccount';
+import AccountInfo from '../screens/AccountInfo';
 
 
 const Stack = createNativeStackNavigator();

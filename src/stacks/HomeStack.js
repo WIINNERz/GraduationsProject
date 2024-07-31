@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Home from '../components/Home';
-import PetDetail from "../components/PetDetail";
+import Home from '../screens/Home';
+import PetDetail from "../screens/PetDetail";
 
 export default function HomeStack(){
     const Stack = createNativeStackNavigator();
