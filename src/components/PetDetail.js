@@ -13,6 +13,7 @@ const PetDetail = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [date, setDate] = useState(new Date());
+    const [age, setAge] = useState('');
     const [show, setShow] = useState(false);
     const [uploading, setUploading] = useState(false);
     const route = useRoute();
@@ -28,15 +29,72 @@ const PetDetail = ({ navigation }) => {
                 ...prevState,
                 birthday: selectedDate
             }));
+            calculateAge(selectedDate);
         }
     };
+    const calculateAge = (birthday) => {
+        const today = new Date();
+        const birthDate = new Date(birthday);
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
 
+        if (days < 0) {
+            const daysInMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            days += daysInMonth;
+            months--;
+        }
+
+        if (months < 0) {
+            months += 12;
+            years--;
+        }
+
+        if (years > 0) {
+            setAge(`${years} year${years > 1 ? 's' : ''}`);
+        } else if (months > 0) {
+            setAge(`${months} month${months > 1 ? 's' : ''}`);
+        } else {
+            setAge(`${days} day${days > 1 ? 's' : ''}`);
+        }
+    };
+    const formatAge = () => {
+        const today = new Date();
+        const birthDate = new Date(date);
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
+
+        if (days < 0) {
+            const daysInMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            days += daysInMonth;
+            months--;
+        }
+
+        if (months < 0) {
+            months += 12;
+            years--;
+        }
+
+        if (years > 0) {
+            return `${years} year${years > 1 ? 's' : ''}`;
+        } else if (months > 0) {
+            return `${months} month${months > 1 ? 's' : ''}`;
+        } else {
+            return `${days} day${days > 1 ? 's' : ''}`;
+        }
+    };
     useEffect(() => {
         const fetchPet = async () => {
             try {
                 const petDoc = await getDoc(doc(firestore, 'Pets', id));
                 if (petDoc.exists()) {
                     setPet({ id: petDoc.id, ...petDoc.data() });
+                    if (petDoc.data().birthday) {
+                        const birthDate = petDoc.data().birthday.toDate();
+                        setDate(birthDate);
+                        calculateAge(birthDate);
+                    }
                 } else {
                     setError('Pet not found');
                 }
@@ -56,7 +114,11 @@ const PetDetail = ({ navigation }) => {
             // Delete the old document
             await deleteDoc(doc(firestore, 'Pets', id));
             // Create a new document with the new ID
-            await setDoc(doc(firestore, 'Pets', newId), { ...pet, id: newId });
+            await setDoc(doc(firestore, 'Pets', newId), {
+                ...pet,
+                id: newId,
+                age: formatAge(),
+            });
             navigation.goBack();
         } catch (err) {
             setError(err.message);
@@ -190,30 +252,29 @@ const PetDetail = ({ navigation }) => {
                 <Text>Breeds</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Age"
-                    keyboardType="numeric"
-                    value={pet?.age ? pet.age.toString() : ''}
-                    onChangeText={(text) => setPet({ ...pet, age: parseInt(text, 10) })}
+                    placeholder="Breeds"
+                    value={pet?.breeds || ''}
+                    onChangeText={(text) => setPet({ ...pet, breeds: text })}
                 />
                 <View style={styles.whContainer}>
                     <View style={styles.containerwh}>
                         <Text>Weight</Text>
                         <TextInput
                             style={styles.inputwh}
-                            placeholder="Age"
+                            placeholder="Weight"
                             keyboardType="numeric"
-                            value={pet?.age ? pet.age.toString() : ''}
-                            onChangeText={(text) => setPet({ ...pet, age: parseInt(text, 10) })}
-                        />
+                            value={pet?.weight ? `${pet.weight} kg` : ''}
+                            onChangeText={(text) => setPet({ ...pet, weight: parseFloat(text) }) }
+                                />
                     </View>
                     <View style={styles.containerwh}>
-                        <Text>Breeds</Text>
+                        <Text>Height</Text>
                         <TextInput
                             style={styles.inputwh}
-                            placeholder="Age"
+                            placeholder="Height"
                             keyboardType="numeric"
-                            value={pet?.age ? pet.age.toString() : ''}
-                            onChangeText={(text) => setPet({ ...pet, age: parseInt(text, 10) })}
+                            value={pet?.height ? `${pet.height} cm` : ''}
+                            onChangeText={(text) => setPet({ ...pet, height: parseFloat(text) }) }
                         />
                     </View>
                 </View>
@@ -221,7 +282,7 @@ const PetDetail = ({ navigation }) => {
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.inputDate}
-                        value={date.toLocaleDateString()}
+                        value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
                         editable={false}
                     />
                     <TouchableOpacity onPress={() => setShow(true)} style={styles.iconContainer}>
@@ -238,8 +299,14 @@ const PetDetail = ({ navigation }) => {
                     onChange={onChange}
                 />
             )}
-            <Button title="Save" onPress={handleSave} />
-            <Button title="Delete" onPress={handleDelete} />
+            <View style={styles.buttonPanel}>
+            <TouchableOpacity style={styles.buttonS} onPress={() => handleSave()}>
+                <Text>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonD} onPress={() => handleDelete()}>
+                <Text>Delete</Text>
+            </TouchableOpacity>
+            </View>
             {error && <Text style={styles.errorText}>Error: {error}</Text>}
             {uploading && <ActivityIndicator size="small" color="#0000ff" />}
         </View>
@@ -292,6 +359,15 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
         borderRadius: 10,
     },
+    inputDate: {
+        width: '90%',
+        padding: 10,
+        marginTop: 5,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 10,
+    },
     errorText: {
         color: 'red',
         marginTop: 10,
@@ -313,11 +389,28 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderBottomWidth: 1,
-        borderColor: 'gray',
     },
     iconContainer: {
         padding: 10,
+    },
+    buttonPanel: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '60%',
+    },
+    buttonS: {
+        width: '40%',
+        backgroundColor: '#F0DFC8',
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    buttonD: {
+        width: '40%',
+        backgroundColor: '#F0DFC8',
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
     },
 });
 

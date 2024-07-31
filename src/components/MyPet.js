@@ -62,8 +62,8 @@ export default function MyPet() {
                 ) : (
                         dogs.length > 0 ? (
                             dogs.map(dog => (
-                                <TouchableOpacity style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
-                                <View key={dog.id}>
+                                <TouchableOpacity key={dog.id} style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
+                                <View>
                                         {dog.photoURL ? (
                                             <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
                                         ) : (
