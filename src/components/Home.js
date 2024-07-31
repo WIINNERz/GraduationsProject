@@ -67,7 +67,7 @@ const Home = () => {
                     <Text>{dog.name}</Text>
                     </View>
                     <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
-                      <Text>รายละเอียด</Text>
+                      <Text>Detail</Text>
                     </TouchableOpacity>
                 </View>
               ))

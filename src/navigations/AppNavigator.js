@@ -68,7 +68,9 @@ const AppNavigator = () => {
           borderTopRightRadius: 50,
           position: 'absolute',
           overflow: 'hidden',
+          
         },
+        tabBarActiveTintColor: '#E16539',
       }}>
       <Tab.Screen
         name="HomeStack"

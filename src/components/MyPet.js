@@ -69,7 +69,7 @@ export default function MyPet() {
                                         ) : (
                                             <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
                                         )}
-                                        <Text style={{textAlign:'center',paddingVertical:10}}>{dog.name}</Text>
+                                        <Text style={{textAlign:'center',paddingVertical:10 , fontWeight : 'bold'}}>{dog.name}</Text>
                                 </View>
                                 </TouchableOpacity>
                             ))
