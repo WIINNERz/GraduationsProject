@@ -14,7 +14,7 @@ const AuthStack = () => {
   const navigation = useNavigation();
   const [isSignIn, setIsSignIn] = React.useState(true);
   const [username, setUsername] = React.useState('');
-  const [emailLog, setEmailLog] = React.useState('test3@t.com');
+  const [emailLog, setEmailLog] = React.useState('');
   const [emailReg, setEmailReg] = React.useState('');
   const [passwordLog, setPasswordLog] = React.useState(123456);
   const [passwordReg, setPasswordReg] = React.useState('');

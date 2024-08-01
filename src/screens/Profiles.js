@@ -3,11 +3,9 @@ import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Alert, Activit
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getDoc, doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import { pickImage, openImageLibrary, openCamera, uploadImage } from '../components/camera' // Import functions from Camera.js
-
 
 const Profiles = () => {
   const navigation = useNavigation();
@@ -15,7 +13,6 @@ const Profiles = () => {
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [activated, setActivated] = useState(false);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -48,6 +45,66 @@ const Profiles = () => {
       .catch((error) => {
         console.error('Error signing out:', error);
       });
+  };
+
+  const pickImage = () => {
+    Alert.alert(
+      'Select Image',
+      'Choose an option',
+      [
+        { text: 'Camera', onPress: () => openCamera() },
+        { text: 'Gallery', onPress: () => openImageLibrary() },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
+
+  const openImageLibrary = async () => {
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      uploadImage(result.assets[0].uri);
+    }
+  };
+
+  const openCamera = async () => {
+    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      uploadImage(result.assets[0].uri);
+    }
+  };
+
+  const uploadImage = async (uri) => {
+    if (!uri) return;
+
+    setUploading(true);
+
+    try {
+      const storageRef = ref(storage, `images/${user.uid}/${Date.now()}`);
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      const snapshot = await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      const userDoc = doc(firestore, 'Users', user.uid);
+      await updateDoc(userDoc, { photoURL: downloadURL });
+
+      setUserData(prevState => ({
+        ...prevState,
+        photoURL: downloadURL
+      }));
+
+      Alert.alert('Success', 'Profile photo updated successfully.');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to upload image. Please try again.');
+      console.error('Error uploading image:', error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (loading) {
@@ -89,18 +146,13 @@ const Profiles = () => {
             </View>
             <Text style={{ opacity: 0.5 }}>@{userData.username}</Text>
             {userData.verify ? (
-                <View style={styles.verified}>
-                <Text>Verified</Text>
-                <Text> </Text>
-                <MaterialCommunityIcons name="check-circle" size={20} color="green" />
-                </View>
-            ) : (
               <TouchableOpacity style={styles.verified} onPress={() => navigation.navigate('ProfileDetail')}>
-              <Text style={{ opacity: 0.5 }}>Not Verified</Text>
+                <Text>Verified</Text>
+                <MaterialCommunityIcons name="check-circle" size={20} color="green" />
               </TouchableOpacity>
-
+            ) : (
+              <Text style={{ opacity: 0.5 }}>Not Verified</Text>
             )}
-
           </View>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
@@ -108,22 +160,21 @@ const Profiles = () => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
-      <View style={styles.panel}>
-
-        <View style={styles.leftContent}>
-          <View style={styles.iconContainer}>
-            <MaterialCommunityIcons name="account" size={30} color="gray" />
+        <View style={styles.panel}>
+          <View style={styles.leftContent}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="account" size={30} color="gray" />
+            </View>
+            <View style={styles.myaccount}>
+              <Text>My Account</Text>
+              <Text style={{ opacity: 0.5 }}>Make changes to your account</Text>
+            </View>
           </View>
-          <View style={styles.myaccount}>
-            <Text>My Account</Text>
-            <Text style={{ opacity: 0.5 }}>Make changes to your account</Text>
-          </View>
+          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
         </View>
-        <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
-      </View>
       </TouchableOpacity>
       <Button title="Sign Out" onPress={handleSignOut} />
-    </View >
+    </View>
   );
 }
 
