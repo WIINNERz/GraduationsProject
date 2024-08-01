@@ -113,7 +113,7 @@ const AddPet = () => {
         chronic,
         location,
         conditions,
-        
+        ...(isChecked ? { status: 'dont_have_owner' } : {}),
       });
   
       // Upload profile image
@@ -128,8 +128,6 @@ const AddPet = () => {
           setUploading(false);
         }
       }
-    
-      navigation.navigate('MyPet');
       // Upload additional images
       if (additionalImages.length > 0) {
         setUploading(true);
@@ -142,6 +140,8 @@ const AddPet = () => {
           setUploading(false);
         }
       }
+      navigation.navigate('MyPet');
+
     } catch (error) {
       console.error('Error adding document: ', error);
     }
@@ -333,7 +333,8 @@ const AddPet = () => {
                 style={styles.inputDate}
                 value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
                 editable={false}
-              /><Calendar date={date} onChange={onDateChange} />
+              />
+              <Calendar date={date} onChange={onDateChange} />
             </View>
             <View style={styles.whContainer}>
               <View style={styles.containerwh}>
