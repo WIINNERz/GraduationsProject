@@ -3,16 +3,13 @@ import { View,Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } fro
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export const SavePButton= ({onPress}) => {
-    const navigation = useNavigation();
+export const SavePButton = ({ onPress }) => {
     return (
-        <View>
-            <TouchableOpacity style={styles.SavePButton}>
-                <Text>Save</Text>
-            </TouchableOpacity>
-        </View>
+      <TouchableOpacity style={styles.SavePButton} onPress={onPress}>
+        <Text style={styles.buttonText}>Save</Text>
+      </TouchableOpacity>
     );
-}
+  };
 export const CancelPButton= () => {
     const navigation = useNavigation();
     return (

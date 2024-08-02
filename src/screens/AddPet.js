@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, onSnapshot,arrayUnion } from 'firebase/firestore';
+import { getFirestore, setDoc, doc, getDoc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import Checkbox from '../components/checkbox';
@@ -39,13 +39,10 @@ const AddPet = () => {
   const [location, setLocation] = useState('');
   const [conditions, setConditions] = useState('');
   const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
   const [imageP, setImageP] = useState(null);
-  const [image, setImage] = useState([]);
-  const [status, setStatus] = useState(null);
-  const [isChecked, setIsChecked] = useState(false);
   const [additionalImages, setAdditionalImages] = useState([]);
-  const [uploading, setUploading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -89,16 +86,16 @@ const AddPet = () => {
         console.error('No user is currently logged in.');
         return;
       }
-  
+
       const { uid } = user;
       const username = await fetchUsername(uid);
       if (!username) return;
-  
+
       if (!name.trim()) {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
-  
+
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
         uid,
@@ -115,7 +112,7 @@ const AddPet = () => {
         conditions,
         ...(isChecked ? { status: 'dont_have_owner' } : {}),
       });
-  
+
       // Upload profile image
       if (imageP) {
         setUploading(true);
@@ -128,6 +125,7 @@ const AddPet = () => {
           setUploading(false);
         }
       }
+
       // Upload additional images
       if (additionalImages.length > 0) {
         setUploading(true);
@@ -140,8 +138,8 @@ const AddPet = () => {
           setUploading(false);
         }
       }
-      navigation.navigate('MyPet');
 
+      navigation.navigate('MyPet');
     } catch (error) {
       console.error('Error adding document: ', error);
     }
@@ -178,6 +176,7 @@ const AddPet = () => {
       setAge(`${days} day${days > 1 ? 's' : ''}`);
     }
   };
+
   const pickImage = () => {
     Alert.alert(
       'Select Image',
@@ -194,8 +193,7 @@ const AddPet = () => {
     const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
+      setImageP(result.assets[0].uri);
     }
   };
 
@@ -203,36 +201,31 @@ const AddPet = () => {
     const result = await launchCamera({ mediaType: 'photo', quality: 1 });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
+      setImageP(result.assets[0].uri);
     }
   };
 
-  const uploadImage = async (uri) => {
+  const uploadImage = async (uri, petDocRef) => {
     if (!uri) return;
 
     setUploading(true);
 
+    const storageRef = ref(storage, `images/${user.uid}/pets/${name}/${Date.now()}`);
+
     try {
-      const storageRef = ref(storage, `images/${user.uid}/pets/${name}/${Date.now()}`);
       const response = await fetch(uri);
       const blob = await response.blob();
 
       const snapshot = await uploadBytes(storageRef, blob);
+      console.log('Uploaded a blob or file!');
+
       const downloadURL = await getDownloadURL(snapshot.ref);
+      console.log('File available at', downloadURL);
 
-      const petDoc = doc(firestore, 'Pets', name);
-      await updateDoc(petDoc, { photoURL: downloadURL });
-
-      setUserData(prevState => ({
-        ...prevState,
-        photoURL: downloadURL
-      }));
-
-      Alert.alert('Success', 'Profile photo updated successfully.');
+      await updateDoc(petDocRef, { photoURL: downloadURL });
     } catch (error) {
       Alert.alert('Error', 'Failed to upload image. Please try again.');
-      console.error('Error uploading image:', error);
+      console.error('Error uploading image: ', error);
     } finally {
       setUploading(false);
     }
@@ -255,6 +248,7 @@ const AddPet = () => {
 
     if (!result.canceled) {
       setAdditionalImages(prevImages => [...prevImages, ...result.assets.map(asset => asset.uri)]);
+      Alert.alert('Success', 'Additional images uploaded successfully.');
     }
   };
 
@@ -265,163 +259,143 @@ const AddPet = () => {
       setAdditionalImages(prevImages => [...prevImages, result.assets[0].uri]);
     }
   };
+
   const uploadAdditionalImages = async (petDocRef) => {
     setUploading(true);
     try {
       for (const uri of additionalImages) {
         if (!uri) continue;
-  
+
         const storageRef = ref(storage, `images/${user.uid}/pets/${name}/additional/${Date.now()}`);
         const response = await fetch(uri);
         const blob = await response.blob();
-  
+
         const snapshot = await uploadBytes(storageRef, blob);
         const downloadURL = await getDownloadURL(snapshot.ref);
-  
+
         await updateDoc(petDocRef, {
-          additionalPhotoURLs: arrayUnion(downloadURL)
+          additionalImages: arrayUnion(downloadURL)
         });
-  
-        Alert.alert('Success', 'Additional images uploaded successfully.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to upload additional images. Please try again.');
-      console.error('Error uploading additional image:', error);
+      console.error('Error uploading additional images: ', error);
+      throw error;
     } finally {
       setUploading(false);
     }
   };
-  
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent} style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
+      <Text style={styles.title}>Add a New Pet</Text>
+      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+        {imageP ? (
+          <Image source={{ uri: imageP }} style={styles.image} />
+        ) : (
+          <MaterialCommunityIcons name="camera-plus" size={50} color="#ccc" />
+        )}
+      </TouchableOpacity>
+      <View style={styles.subContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Pet Name"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Type"
+          value={type}
+          onChangeText={setType}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Breeds"
+          value={breeds}
+          onChangeText={setBreeds}
+        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.inputDate}
+            value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
+            editable={false}
+          />
+          <Calendar date={date} onChange={onDateChange} />
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Weight"
+          value={weight}
+          onChangeText={setWeight}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Height"
+          value={height}
+          onChangeText={setHeight}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Characteristics"
+          value={characteristics}
+          onChangeText={setCharacteristics}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Chronic Diseases"
+          value={chronic}
+          onChangeText={setChronic}
+        />
+      </View>
+      {userData?.verify ? (
         <>
-          <MaterialCommunityIcons name="dog" size={80} color="#D27C2C" style={{ alignSelf: 'center' }} />
-          <TouchableOpacity onPress={pickImage}>
-            <MaterialCommunityIcons name="camera" size={20} color="black" style={styles.camera} />
-          </TouchableOpacity>
-
+          <View style={styles.checkboxContainer}>
+            <Checkbox
+              text="Find Owner"
+              isChecked={isChecked}
+              onPress={() => setIsChecked(!isChecked)}
+            />
+          </View>
           <View style={styles.subContainer}>
-            <Text>Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Name"
-              value={name || ''}
-              onChangeText={(text) => setName(text)}
-            />
-            <Text>Type of Pet</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Type of Pet"
-              value={type || ''}
-              onChangeText={(text) => setType(text)}
-            />
-            <Text>Breeds</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Breeds"
-              value={breeds || ''}
-              onChangeText={(text) => setBreeds(text)}
-            />
-            <Text>Age (Birthday)</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.inputDate}
-                value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
-                editable={false}
-              />
-              <Calendar date={date} onChange={onDateChange} />
-            </View>
-            <View style={styles.whContainer}>
-              <View style={styles.containerwh}>
-                <Text>Weight</Text>
-                <TextInput
-                  style={styles.inputwh}
-                  placeholder="Weight"
-                  keyboardType="numeric"
-                  value={weight || ''}
-                  onChangeText={(text) => setWeight(parseFloat(text))}
-                />
-              </View>
-              <View style={styles.containerwh}>
-                <Text>Height</Text>
-                <TextInput
-                  style={styles.inputwh}
-                  placeholder="Height"
-                  keyboardType="numeric"
-                  value={height || ''}
-                  onChangeText={(text) => setHeight(parseFloat(text))}
-                />
-              </View>
-            </View>
-            <Text>Characteristics</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Characteristics"
-              value={characteristics || ''}
-              onChangeText={(text) => setCharacteristics(text)}
-            />
-            <Text>Chronic Disease</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Chronic Disease"
-              value={chronic || ''}
-              onChangeText={(text) => setChronic(text)}
-            />
-            {userData?.verify ? (
+            {isChecked && (
               <>
-                <Checkbox
-                  text="Find Owner"
-                  isChecked={isChecked}
-                  onPress={() => {
-                    setIsChecked(!isChecked);
-                  }}
-                  style={styles.checkbox}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Location"
+                  value={location}
+                  onChangeText={setLocation}
                 />
-                {isChecked && (
-                  <>
-                    <Text>Present Location</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Present Location"
-                      value={location || ''}
-                      onChangeText={(text) => setLocation(text)}
-                    />
-                    <Text>Condition of Adoption</Text>
-                    <TextInput
-                      style={styles.inputC}
-                      placeholder="Condition of Adoption"
-                      value={conditions || ''}
-                      onChangeText={(text) => setConditions(text)}
-                    />
-                    <Text>Additional pictures</Text>
-                      <TouchableOpacity onPress={pickAdditionalImages}>
-                        <MaterialCommunityIcons name="camera" size={20} color="black" style={styles.cameraP} />
-                      </TouchableOpacity>
-                      {additionalImages.length > 0 && (
-                        <View style={styles.imagePanel}>
-                          {additionalImages.map((uri, index) => (
-                            <Image key={index} source={{ uri }} style={styles.imagePet} />
-                          ))}
-                        </View>
-                      )}
-                  </>
-                )}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Conditions"
+                  value={conditions}
+                  onChangeText={setConditions}
+                />
+                <TouchableOpacity style={styles.additionalImagePicker} onPress={pickAdditionalImages}>
+                  <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
+                </TouchableOpacity>
+                <View style={styles.additionalImagesContainer}>
+                  {additionalImages.map((uri, index) => (
+                    <Image key={index} source={{ uri }} style={styles.additionalImage} />
+                  ))}
+                </View>
               </>
-            ) : null}
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <TouchableOpacity style={styles.SavePButton} onPress={() => handleSubmit()}>
-                <Text>Save</Text>
-              </TouchableOpacity>
-              <CancelPButton />
-            </View>
+            )}
           </View>
         </>
-      )}
+      ) : null}
+      <View style={styles.buttonContainer}>
+        <CancelPButton onPress={() => navigation.navigate('MyPet')} />
+        <SavePButton onPress={handleSubmit} />
+      </View>
     </ScrollView>
   );
 };
@@ -566,6 +540,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: 20,
+  },
+  additionalImagesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  additionalImage: {
+    width: 100,
+    height: 100,
+    margin: 10,
+  },
 });
+
 
 export default AddPet;
