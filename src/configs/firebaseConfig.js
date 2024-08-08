@@ -3,6 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
+import { getFirestore,collection } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDje74xykIZh6uCMGolDMcfNv4Tc5KuLRk",
@@ -19,3 +20,6 @@ const storage = firebase.storage();
 const firestore = firebase.firestore();
 
 export { auth, firestore ,storage};
+export const db = getFirestore(app);
+export const usersRef = collection(db,'Users');
+export const roomRef = collection(db,'Rooms');

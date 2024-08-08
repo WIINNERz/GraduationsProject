@@ -45,14 +45,8 @@ export default function MyPet() {
             fetchDogs();
         }, [])
     );
-
     return (
         <SafeAreaView style={styles.screen}>
-            <View>
-                <TouchableOpacity style={styles.plusButton} onPress={() => navigation.navigate('AddPet')}>
-                    <MaterialCommunityIcons name="plus" size={20} color="#F0DFC8" />
-                </TouchableOpacity>
-            </View>
             <Text style={styles.title}>My Pets</Text>
             <View style={styles.container}>
                 {loading ? (

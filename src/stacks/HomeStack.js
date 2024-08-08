@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from '../screens/Home';
 import PetDetail from "../screens/PetDetail";
+import AddPet from "../screens/AddPet";
 
 export default function HomeStack(){
     const Stack = createNativeStackNavigator();
@@ -11,6 +12,10 @@ export default function HomeStack(){
             component={Home}
             options={{ headerShown: false }}
         />
+        <Stack.Screen
+            name="AddPet"
+            component={AddPet}
+            options={{ headerShown: false }}/>
         <Stack.Screen
             name="PetDetail"
             component={PetDetail}

@@ -295,12 +295,12 @@ const AddPet = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent} style={styles.container}>
-      <Text style={styles.title}>Add a New Pet</Text>
-      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+      <MaterialCommunityIcons name="paw" size={50} color="#E16539" />
+      <TouchableOpacity style={styles.PetPPicker} onPress={pickImage}>
         {imageP ? (
           <Image source={{ uri: imageP }} style={styles.image} />
         ) : (
-          <MaterialCommunityIcons name="camera-plus" size={50} color="#ccc" />
+          <MaterialCommunityIcons name="camera-plus" size={20} color="#000" />
         )}
       </TouchableOpacity>
       <View style={styles.subContainer}>
@@ -478,6 +478,13 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 100,
     borderWidth: 2,
+  },
+  PetPPicker:{
+    position:'absolute',
+    top:45,
+    right:175,
+    padding: 5,
+    borderRadius: 100,
   },
   camera: {
     padding: 5,
