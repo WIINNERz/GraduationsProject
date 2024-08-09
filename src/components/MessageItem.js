@@ -3,12 +3,16 @@ import React from 'react';
 
 export default function MessageItem({ message, currentUser }) {
   const isCurrentUser = message?.userId === currentUser?.uid;
-
+  
+  // Log the profile URL specifically
+  if (isCurrentUser) {
+    console.log('Profile URL of other user:', message?.profileURL);
+  }
   return (
     <View style={styles.container}>
-      <View style={[styles.messageContainer, isCurrentUser ? styles.currentUser : styles.otherUser]}>
-        {!isCurrentUser && message?.profileURL && (
-          <Image source={{ uri: message.profileURL }} style={styles.profileImage} />
+      <View style={[styles.messageContainer, !isCurrentUser ? styles.currentUser : styles.otherUser]}>
+        {isCurrentUser && message?.profileURL && (
+          <Image source={{ uri: message?.profileURL }} style={styles.profileImage} />
         )}
         <View style={styles.messageContent}>
           <Text style={styles.messageText}>{message?.text}</Text>
