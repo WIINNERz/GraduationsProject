@@ -35,7 +35,7 @@ function HomeHeader(){
     return (
         <View style={styles.container}>
             <View>
-            <Text style={{fontSize:20}}>HomeHeader</Text>
+            <Text style={{fontSize:20,fontWeight:'bold'}}>Chat</Text>
             
             </View>
             <View>
