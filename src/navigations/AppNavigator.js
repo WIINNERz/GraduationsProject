@@ -9,7 +9,7 @@ import ProfileStack from '../stacks/ProfileStack';
 import HomeStack from '../stacks/HomeStack';
 import AddPet from '../screens/AddPet';
 import { useNavigation } from '@react-navigation/native';
-import Chat from '../screens/Chat';
+import ChatStack from '../stacks/ChatStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -122,7 +122,7 @@ const AppNavigator = () => {
       />
       <Tab.Screen
         name="Chat"
-        component={Chat}
+        component={ChatStack}
         options={{
           tabBarLabel: 'My Pets',
           tabBarIcon: ({ color, size }) => (

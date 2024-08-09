@@ -7,6 +7,7 @@ export default function ChatItem({ item, router, noBorder }) {
 
     const openChatRoom = () => {
         navigation.navigate('ChatRoom', { params: item});
+        console.log('ChatRoom', item);
     }
     return (
         <TouchableOpacity onPress={openChatRoom} style={styles.list}>
@@ -15,7 +16,6 @@ export default function ChatItem({ item, router, noBorder }) {
                     source={{ uri: item?.photoURL }}
                     style={{ width: 50, height: 50, borderRadius: 50 }} />
                 <View style={{justifyContent:'center',paddingHorizontal: 10,}}>
-                    <Text>{item?.username}</Text>
                     <Text>{item?.username}</Text>
                 </View>
 
