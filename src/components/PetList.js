@@ -1,24 +1,31 @@
-import { View, Text, FlatList } from 'react-native'
-import React from 'react'
-import ChatItem from './ChatItem'
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import React from 'react';
+import PetCard from './PetCard';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ChatList({ users }) {
-    const navigation = useNavigation(); 
+export default function PetList({ pets }) {
+    const navigation = useNavigation();
+    
     return (
-        <View>
-            <FlatList
-                data={users}
-                contentContainerStyle={{ padding: 20 }}
-                keyExtractor={item => Math.random()}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item, index }) => <ChatItem 
-                noBorder={index+1 === users.length}
-                item={item} 
-                index={index}
-                navigation={navigation}
-                />}
-            />
-        </View>
-    )
+        <ScrollView contentContainerStyle={styles.container}>
+            {pets.map((item, index) => (
+                <PetCard
+                    key={item.id}  // Ensure item.id is unique
+                    noBorder={index + 1 === pets.length}
+                    item={item}
+                    index={index}
+                    navigation={navigation}
+                />
+            ))}
+        </ScrollView>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+});

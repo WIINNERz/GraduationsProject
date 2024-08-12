@@ -22,4 +22,5 @@ const firestore = firebase.firestore();
 export { auth, firestore ,storage};
 export const db = getFirestore(app);
 export const usersRef = collection(db,'Users');
+export const petsRef = collection(db,'Pets');
 export const roomRef = collection(db,'Rooms');

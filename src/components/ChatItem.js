@@ -1,8 +1,8 @@
-import { View, Text, Touchable, TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 
-export default function ChatItem({ item, router, noBorder }) {
+export default function ChatItem({ item }) {
     const navigation = useNavigation();
 
     const openChatRoom = () => {

@@ -4,7 +4,7 @@ import ChatItem from './ChatItem'
 import { useNavigation } from '@react-navigation/native';
 
 export default function ChatList({ users }) {
-    const navigation = useNavigation(); 
+    const navigation = useNavigation();
     return (
         <View>
             <FlatList
@@ -12,12 +12,13 @@ export default function ChatList({ users }) {
                 contentContainerStyle={{ padding: 20 }}
                 keyExtractor={item => Math.random()}
                 showsVerticalScrollIndicator={false}
-                renderItem={({ item, index }) => <ChatItem 
-                noBorder={index+1 === users.length}
-                item={item} 
-                index={index}
-                navigation={navigation}
-                />}
+                renderItem={({ item, index }) =>
+                    <ChatItem
+                        noBorder={index + 1 === users.length}
+                        item={item}
+                        index={index}
+                        navigation={navigation}
+                    />}
             />
         </View>
     )
