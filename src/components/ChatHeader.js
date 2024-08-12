@@ -4,7 +4,7 @@ import { auth ,storage,firestore } from "../configs/firebaseConfig";
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from "react";
 
-function HomeHeader(){
+function ChatHeader(){
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [image, setImage] = useState(null);
@@ -72,4 +72,4 @@ const styles = StyleSheet.create({
         
     },
 });
-export default HomeHeader;
+export default ChatHeader;

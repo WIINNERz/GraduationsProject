@@ -82,7 +82,8 @@ const AppNavigator = () => {
     <Tab.Navigator
       initialRouteName='HomeStack'
       screenOptions={{
-        tabBarStyle: styles.tabBar,
+        
+        tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],
         tabBarActiveTintColor: '#E16539',
       }}
     >
@@ -108,7 +109,7 @@ const AppNavigator = () => {
           headerShown: false
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="AddPost"
         component={AddPet} // Use a dummy component for tab button
         options={{
@@ -119,16 +120,17 @@ const AppNavigator = () => {
           ),
           headerShown: false
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Chat"
         component={ChatStack}
         options={{
-          tabBarLabel: 'My Pets',
+          tabBarLabel: 'Chat',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="dog" color={color} size={size} />
+            <MaterialCommunityIcons name="chat" color={color} size={size} />
           ),
-          headerShown: false
+          headerShown: false,
+
         }}
       />
       {/* <Tab.Screen

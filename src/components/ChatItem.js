@@ -7,7 +7,6 @@ export default function ChatItem({ item, router, noBorder }) {
 
     const openChatRoom = () => {
         navigation.navigate('ChatRoom', { params: item});
-        console.log('ChatRoom', item);
     }
     return (
         <TouchableOpacity onPress={openChatRoom} style={styles.list}>

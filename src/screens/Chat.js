@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator } from "react-native";
-import HomeHeader from "../components/HomeHeader";
+import ChatHeader from "../components/ChatHeader";
 import ChatList from "../components/ChatList";
 import { useEffect, useState } from "react";
 import { getDocs, query, where } from 'firebase/firestore';
@@ -36,7 +36,7 @@ const Chat = () => {
 
     return (
         <View>
-            <HomeHeader />
+            <ChatHeader />
             {
                 loading ? (
                     <ActivityIndicator size="large" color="#0000ff" />

@@ -29,25 +29,24 @@ export default function ChatRoomHeader({ user }) {
 const styles = StyleSheet.create({
     header: {
         position:'relative',
-        top: 0,
-        left: 0,
-        right: 0,
+        top: -20,
         padding: 10,
         backgroundColor: '#f8f8f8',
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
         flexDirection: 'row',
-        alignItems: 'center',
         zIndex: 1, // ทำให้แน่ใจว่า header อยู่เหนือเนื้อหาอื่น
     },
     backButton: {
+        position:'relative',
+        right:30,
         padding: 10,
     },
     profileContainer: {
+        position:'relative',
+        right: 30,
         flexDirection: 'row',
         alignItems: 'center',
-        flex: 1,
-        marginLeft: 10,
     },
     image: {
         width: 50,
@@ -58,5 +57,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 18,
         fontWeight: 'bold',
+        paddingLeft: 10,
     },
 });

@@ -12,7 +12,7 @@ export default function ChatStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Chat'>
       <Stack.Screen name="Chat" component={Chat} />
-      <Stack.Screen name="ChatRoom" component={ChatRoom} />
+      <Stack.Screen name="ChatRoom" component={ChatRoom} options={{ tabBarStyle: { display: 'none' } }}  />
       <Stack.Screen name="ChatList" component={ChatList} />
       <Stack.Screen name="ChatItem" component={ChatItem} /> 
     </Stack.Navigator>
