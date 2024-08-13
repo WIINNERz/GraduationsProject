@@ -61,10 +61,12 @@ const AuthStack = () => {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, emailReg, passwordReg);
         const { uid } = userCredential.user;
+        const photoURL = 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
         await setDoc(doc(db, 'Users', uid), {
           username,
           email:emailReg,
-          uid
+          uid,
+          photoURL,
         });
         navigation.navigate('Home');
         setUsername('');

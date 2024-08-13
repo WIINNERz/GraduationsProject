@@ -9,34 +9,8 @@ import PetList from '../components/PetList';
 import useAuth from '../hooks/useAuth';
 
 const Home = () => {
-  const { logout, user } = useAuth();
   const navigation = useNavigation();
-  const [pets, setPets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (user?.uid) {
-      fetchDogs();
-    }
-  }, [user?.uid]);
-
-  const fetchDogs = async () => {
-    try {
-      const q = query(petsRef, where('status', '==', 'dont_have_owner'));
-      const querySnapshot = await getDocs(q);
-      let data = [];
-      querySnapshot.forEach(doc => {
-        data.push({ ...doc.data() });
-      });
-      setPets(data);
-      setLoading(false);
-      console.log('Pets fetched successfully:', data);
-    } catch (error) {
-      console.error("Error fetching pets: ", error);
-      setLoading(false);
-    }
-  }
     return (
       <View>
 
