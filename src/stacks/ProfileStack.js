@@ -5,6 +5,7 @@ import SignIn from '../screens/SignIn';
 import ProfileDetail from '../screens/ProfileDetail';
 import MyAccount from '../screens/MyAccount';
 import AccountInfo from '../screens/AccountInfo';
+import MyPet from '../screens/MyPet';
 
 
 const Stack = createNativeStackNavigator();
@@ -31,6 +32,11 @@ export default function ProfileStack() {
         <Stack.Screen
           name="AccountInfo"
           component={AccountInfo}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MyPet"
+          component={MyPet}
           options={{ headerShown: false }}
         />
       </Stack.Group>

@@ -8,7 +8,7 @@ import HomeHeader from '../components/HomeHeader';
 import PetList from '../components/PetList';
 import useAuth from '../hooks/useAuth';
 
-const Home = () => {
+const FindPet = () => {
   const { logout, user } = useAuth();
   const navigation = useNavigation();
   const [pets, setPets] = useState([]);
@@ -31,7 +31,6 @@ const Home = () => {
       });
       setPets(data);
       setLoading(false);
-      console.log('Pets fetched successfully:', data);
     } catch (error) {
       console.error("Error fetching pets: ", error);
       setLoading(false);
@@ -39,14 +38,24 @@ const Home = () => {
   }
     return (
       <View>
-
+        <HomeHeader />
+        {
+          loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            pets.length > 0 ? (
+              <PetList pets={pets} />
+            ) : (
+              <Text>No Pets</Text>
+            )
+          )
+        }
       </View>
     );
   }
     const styles = StyleSheet.create({
       container: {
-        flex: 1,
         backgroundColor: '#fff',
       },
     });
-    export default Home;
+    export default FindPet;

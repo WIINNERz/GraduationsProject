@@ -5,21 +5,22 @@ import { useNavigation } from '@react-navigation/native';
 export default function PetCard({ item }) {
   const navigation = useNavigation();
   const openPetProfile = () => {
-    navigation.navigate('PetProfile', { params: item });
+    navigation.navigate('PetProfile', { id: item.id });
   }
+
   return (
-    <TouchableOpacity style={styles.list}>
+    <TouchableOpacity style={styles.list} onPress={openPetProfile}>
       <View style={styles.card}>
         <Image
           source={{ uri: item?.photoURL }} style={styles.image} />
-        <Text style={{fontSize:24,color:'black'}}>{item?.name}</Text>
+        <Text style={{ fontSize: 24, color: 'black' }}>{item?.name}</Text>
         <View style={{ flexDirection: 'row', }}>
           <Text>Breed : </Text>
-          <Text style={{color:'black'}}>{item?.breeds}</Text>
+          <Text style={{ color: 'black' }}>{item?.breeds}</Text>
         </View>
         <View style={{ flexDirection: 'row', }}>
           <Text>Age : </Text>
-          <Text style={{color:'black'}}>{item?.age}</Text>
+          <Text style={{ color: 'black' }}>{item?.age}</Text>
         </View>
 
       </View>
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     marginHorizontal: "auto",
     padding: 10,
     borderRadius: 10,
-    width: '40%',
+    width: '60%',
     backgroundColor: '#F0DFC8',
 
   },

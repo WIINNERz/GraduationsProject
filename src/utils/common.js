@@ -3,3 +3,6 @@ export const getRoomId = (userId1,userId2) =>{
     const roomId = sortdIds.join('_');
     return roomId;
 }
+export const getPetId = (petId) =>{
+    return petId;
+}

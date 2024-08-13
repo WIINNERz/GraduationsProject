@@ -47,29 +47,35 @@ export default function MyPet() {
     );
     return (
         <SafeAreaView style={styles.screen}>
-            <Text style={styles.title}>My Pets</Text>
+            <View>
+                <Text style={styles.title}>My Pets</Text>
+                <View style={styles.plusButton}>
+                    <MaterialCommunityIcons name="plus" size={20} color="white" onPress={() => navigation.navigate('AddPet')} />
+                </View>
+            </View>
+
             <View style={styles.container}>
                 {loading ? (
                     <Text>Loading...</Text>
                 ) : error ? (
                     <Text>Error: {error}</Text>
                 ) : (
-                        dogs.length > 0 ? (
-                            dogs.map(dog => (
-                                <TouchableOpacity key={dog.id} style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
+                    dogs.length > 0 ? (
+                        dogs.map(dog => (
+                            <TouchableOpacity key={dog.id} style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
                                 <View>
-                                        {dog.photoURL ? (
-                                            <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
-                                        ) : (
-                                            <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
-                                        )}
-                                        <Text style={{textAlign:'center',paddingVertical:10 , fontWeight : 'bold'}}>{dog.name}</Text>
+                                    {dog.photoURL ? (
+                                        <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
+                                    ) : (
+                                        <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
+                                    )}
+                                    <Text style={{ textAlign: 'center', paddingVertical: 10, fontWeight: 'bold' }}>{dog.name}</Text>
                                 </View>
-                                </TouchableOpacity>
-                            ))
-                        ) : (
-                            <Text style={styles.nopets}> No pets available</Text>
-                        )
+                            </TouchableOpacity>
+                        ))
+                    ) : (
+                        <Text style={styles.nopets}> No pets available</Text>
+                    )
                 )}
             </View>
         </SafeAreaView>

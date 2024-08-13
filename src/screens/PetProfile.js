@@ -4,8 +4,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { style } from 'twrnc';
-
 export default function PetProfile() {
     const navigate = useNavigation();
     const [pet, setPet] = useState(null);
@@ -21,6 +19,8 @@ export default function PetProfile() {
                 const petDoc = await getDoc(doc(firestore, 'Pets', id));
                 if (petDoc.exists()) {
                     setPet({ id: petDoc.id, ...petDoc.data() });
+                } else {
+                    setError('Pet not found');
                 }
             } catch (err) {
                 setError(err.message);

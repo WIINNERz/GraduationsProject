@@ -13,14 +13,6 @@ export default function HomeStack(){
             component={Home}
             options={{ headerShown: false }}
         />
-        <Stack.Screen
-            name="AddPet"
-            component={AddPet}
-            options={{ headerShown: false }}/>
-        <Stack.Screen
-            name="PetProfile"
-            component={PetProfile}
-            options={{ headerShown: false }}/>
         </Stack.Navigator>
 
     );

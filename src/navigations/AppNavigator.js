@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import PetStack from '../stacks/PetStack';
 import ProfileStack from '../stacks/ProfileStack';
 import HomeStack from '../stacks/HomeStack';
-import AddPet from '../screens/AddPet';
+import FindPet from '../screens/FindPet';
 import { useNavigation } from '@react-navigation/native';
 import ChatStack from '../stacks/ChatStack';
 
@@ -102,9 +102,9 @@ const AppNavigator = () => {
         name="Pet"
         component={PetStack}
         options={{
-          tabBarLabel: 'Pets',
+          tabBarLabel: 'Find Pet',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="dog" color={color} size={size} />
+            <MaterialCommunityIcons name="paw-outline" color={color} size={size} />
           ),
           headerShown: false
         }}

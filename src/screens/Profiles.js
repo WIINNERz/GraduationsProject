@@ -165,6 +165,20 @@ const Profiles = () => {
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
         </View>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('MyPet')}>
+        <View style={styles.panel}>
+          <View style={styles.leftContent}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="paw" size={30} color="#D27C2C" />
+            </View>
+            <View style={styles.myaccount}>
+              <Text style={styles.topic}>My Pet</Text>
+              <Text style={{ opacity: 0.5 }}>Make changes to your account</Text>
+            </View>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+        </View>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
         <View style={styles.panel}>
           <View style={styles.leftContent}>

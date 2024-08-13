@@ -88,6 +88,7 @@ const AddPet = () => {
       }
 
       const { uid } = user;
+      const id = name;
       const username = await fetchUsername(uid);
       if (!username) return;
 
@@ -98,6 +99,7 @@ const AddPet = () => {
 
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
+        id,
         uid,
         username,
         name,

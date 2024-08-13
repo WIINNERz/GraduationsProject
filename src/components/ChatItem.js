@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function ChatItem({ item }) {
     const navigation = useNavigation();
-
     const openChatRoom = () => {
         navigation.navigate('ChatRoom', { params: item});
     }

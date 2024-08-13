@@ -18,7 +18,7 @@ export default function PetList({ pets }) {
                 />
             ))}
         </ScrollView>
-    );
+    );  
 }
 
 const styles = StyleSheet.create({
