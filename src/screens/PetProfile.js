@@ -81,6 +81,7 @@ export default function PetProfile() {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'white',
+        flex:1
     },
     panel: {
         height: 350,
