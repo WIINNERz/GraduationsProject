@@ -1,9 +1,10 @@
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AdoptBar from '../components/AdoptBar';
 export default function PetProfile() {
     const navigate = useNavigation();
     const [pet, setPet] = useState(null);
@@ -11,7 +12,19 @@ export default function PetProfile() {
     const { id } = route.params;
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    useFocusEffect(
+        useCallback(() => {
+          navigate.getParent()?.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+    
+          return () => {
+            navigate.getParent()?.setOptions({
+              tabBarStyle: undefined // Reset tabBarStyle to default
+            });
+          };
+        }, [navigate])
+      );
 
     useEffect(() => {
         const fetchPet = async () => {
@@ -41,9 +54,9 @@ export default function PetProfile() {
                     <MaterialCommunityIcons name="account" size={50} color="gray" />
                 )}
             </View>
-            <Text style={{fontSize:24,fontWeight:'bold',color:'black',padding:30}}>{pet?.name}</Text>
+            <Text style={{fontSize:24,fontWeight:'bold',color:'black',paddingVertical:10,paddingHorizontal:30}}>{pet?.name}</Text>
             <View style={styles.panelData}>
-                <Text style={{fontSize:18,color:'black',fontWeight:'bold'}}>Information</Text>
+                <Text style={{fontSize:20,color:'black',fontWeight:'bold'}}>Information</Text>
                 <View style={{flexDirection:'row'}}>
                     <Text style={styles.categoryPet}>Breed: </Text>
                     <Text style={{fontSize:18,color:'black'}}> {pet?.breeds}</Text>
@@ -61,13 +74,12 @@ export default function PetProfile() {
                     <Text style={{fontSize:18,color:'black'}}> {pet?.age}</Text>
                 </View>
             </View>
-
+            <AdoptBar/>
         </ScrollView>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: 'white',
     },
     panel: {
@@ -82,7 +94,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding:20,
         borderWidth:1,
-        margin:20,
+        marginHorizontal:20,
         borderRadius:20,
         borderColor:'#D27C2C',
     },
@@ -90,6 +102,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 20,
         left: 20,
+        backgroundColor: 'white',
+        borderRadius:100,
         zIndex: 1,
     },
     image: {
