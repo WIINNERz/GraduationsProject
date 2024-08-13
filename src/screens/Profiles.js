@@ -126,17 +126,13 @@ const Profiles = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.profilePanel}>
-        <View style={styles.leftContent}>
+        <View style={styles.Content}>
           <View>
             {userData.photoURL ? (
               <Image source={{ uri: userData.photoURL }} style={styles.image} />
             ) : (
               <MaterialCommunityIcons name="account" size={50} color="gray" />
             )}
-            <TouchableOpacity onPress={pickImage} style={styles.cameraButton}>
-              <MaterialCommunityIcons name="camera" size={30} color="#3A3A3A" />
-            </TouchableOpacity>
           </View>
           <View style={styles.myaccount}>
             <View style={{ flexDirection: 'row' }}>
@@ -147,40 +143,104 @@ const Profiles = () => {
             <Text style={{ opacity: 0.5 }}>@{userData.username}</Text>
             {userData.verify ? (
               <TouchableOpacity style={styles.verified} onPress={() => navigation.navigate('ProfileDetail')}>
-                <Text>Verified</Text>
-                <MaterialCommunityIcons name="check-circle" size={20} color="green" />
+                <Text style={{color:'black'}}>Verified</Text>
+                <MaterialCommunityIcons name="account-circle" size={20} color="#D27C2C" />
               </TouchableOpacity>
             ) : (
               <Text style={{ opacity: 0.5 }}>Not Verified</Text>
             )}
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
-          <MaterialCommunityIcons name="account-edit" size={40} color="gray" />
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
+      <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
         <View style={styles.panel}>
           <View style={styles.leftContent}>
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="account" size={30} color="gray" />
+              <MaterialCommunityIcons name="account" size={30} color="#D27C2C" />
             </View>
             <View style={styles.myaccount}>
-              <Text>My Account</Text>
+              <Text style={styles.topic}>My Account</Text>
               <Text style={{ opacity: 0.5 }}>Make changes to your account</Text>
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
         </View>
       </TouchableOpacity>
-      <Button title="Sign Out" onPress={handleSignOut} />
+      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
+        <View style={styles.panel}>
+          <View style={styles.leftContent}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="cog" size={30} color="#D27C2C" />
+            </View>
+            <View style={styles.myaccount}>
+            <Text style={styles.topic}>Setting</Text>
+              <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
+            </View>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
+        <View style={styles.panel}>
+          <View style={styles.leftContent}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="lock-reset" size={30} color="#D27C2C" />
+            </View>
+            <View style={styles.myaccount}>
+            <Text style={styles.topic}>Change Password</Text>
+              <Text style={{ opacity: 0.5 }}>Send reset password link via your email</Text>
+            </View>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
+        <View style={styles.panel}>
+          <View style={styles.leftContent}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="shield-lock" size={30} color="#D27C2C" />
+            </View>
+            <View style={styles.myaccount}>
+            <Text style={styles.topic}>Privacy Policy</Text>
+              <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
+            </View>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
+        <View style={styles.panel}>
+          <View style={styles.leftContent}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="account" size={30} color="#D27C2C" />
+            </View>
+            <View style={styles.myaccount}>
+            <Text style={styles.topic}>sth</Text>
+              <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
+            </View>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleSignOut}>
+        <View style={styles.panel}>
+          <View style={styles.leftContent}>
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="logout" size={30} color="#D27C2C" />
+            </View>
+            <View style={styles.myaccount}>
+            <Text style={styles.topic}>Logout</Text>
+          
+            </View>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -189,9 +249,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 10,
     width: '90%',
-    marginVertical: 10,
+  },
+  Content : { 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(rgba(210, 124, 44, 0.5))',
+    padding: 20,
+    paddingTop:50,
+    width: '100%',
+    borderBottomLeftRadius:50,
+    borderBottomRightRadius:50,
+    marginBottom: 10,
   },
   leftContent: {
     flexDirection: 'row',
@@ -208,17 +279,6 @@ const styles = StyleSheet.create({
   myaccount: {
     padding: 10,
     alignContent: 'flex-start',
-  },
-  profilePanel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    padding: 20,
-    width: '90%',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    marginBottom: 10,
   },
   image: {
     width: 80,
@@ -239,10 +299,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#f0f0f0',
     padding: 5,
-    borderRadius: 10,
+    borderRadius: 50,
     width: 90,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  topic :
+  {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color:'black'
   },
 });
 

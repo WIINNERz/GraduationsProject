@@ -135,14 +135,24 @@ const ProfileDetail = ({ navigation }) => {
   }
 
   return (
+    <View style={{    backgroundColor: 'rgba(rgba(210, 124, 44, 0.5))',}}>
     <View style={styles.container}>
       <View style={{
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         padding: 20,
+        backgroundColor: '#D27C2C',
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
+
       }}>
-        <TouchableOpacity onPress={() => navigation.navigate('Profiles')}>
+        <TouchableOpacity style={styles.topic} onPress={() => navigation.navigate('Profiles')}>
           <Text>Cancel</Text>
+        </TouchableOpacity>
+        <Text style={styles.topic}>Edit Profile</Text>
+        <TouchableOpacity style={styles.topic} onPress={() => navigation.navigate('Profiles')}>
+          <Text>Save</Text>
         </TouchableOpacity>
       </View>
 
@@ -186,15 +196,19 @@ const ProfileDetail = ({ navigation }) => {
       </View>
       {uploading && <ActivityIndicator size="large" color="#0000ff" />}
     </View>
+    </View>
+
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    marginTop: 100,
+    height: '90%',
+    marginTop: '10%',
+    backgroundColor: 'rgba(255, 255, 255, 1)', // พื้นหลังโปร่งใส
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    overflow: 'hidden',
   },
   profilePanel: {
     width: '100%',
@@ -231,6 +245,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     left: -30,
+  },
+  topic: {
+    color:'black'
   },
 });
 
