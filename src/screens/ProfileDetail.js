@@ -49,6 +49,13 @@ const ProfileDetail = ({ navigation }) => {
           setLastname(data.lastname);
           setUsername(data.username);
           setEmail(data.email);
+          setTel(data.tel);
+          setTelEmergency(data.telEmergency);
+          setAddress(data.address);
+          setDistrict(data.district);
+          setProvince(data.province);
+          setZipcode(data.zipcode);
+
         } else {
           console.log('No matching user data found');
         }
@@ -74,7 +81,9 @@ const ProfileDetail = ({ navigation }) => {
         province,
         zipcode
       });
-      Alert.alert('Profile Saved', 'Profile updated successfully', [{ text: 'OK' }]);
+      navigation.navigate('Profiles');
+    }else{
+      Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
     }
   };
 
@@ -372,7 +381,7 @@ const styles = StyleSheet.create({
   },
   verified: {
     flexDirection: 'row',
-    backgroundColor: '#F0DFC8',
+    backgroundColor: '#fff',
     marginTop: 5,
     padding: 5,
     paddingLeft: 10,

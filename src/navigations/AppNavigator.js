@@ -62,8 +62,6 @@ const ProfileTabIcon = () => {
   );
 };
 
-
-
 const AppNavigator = () => {
   return (
     <Tab.Navigator
