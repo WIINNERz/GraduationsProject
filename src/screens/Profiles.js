@@ -126,31 +126,35 @@ const Profiles = () => {
 
   return (
     <View style={styles.container}>
-        <View style={styles.Content}>
-          <View>
-            {userData.photoURL ? (
-              <Image source={{ uri: userData.photoURL }} style={styles.image} />
-            ) : (
-              <MaterialCommunityIcons name="account" size={50} color="gray" />
-            )}
-          </View>
-          <View style={styles.myaccount}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text>{userData.firstname}</Text>
-              <Text> </Text>
-              <Text>{userData.lastname}</Text>
-            </View>
-            <Text style={{ opacity: 0.5 }}>@{userData.username}</Text>
-            {userData.verify ? (
-              <TouchableOpacity style={styles.verified} onPress={() => navigation.navigate('ProfileDetail')}>
-                <Text style={{color:'black'}}>Verified</Text>
-                <MaterialCommunityIcons name="account-circle" size={20} color="#D27C2C" />
-              </TouchableOpacity>
-            ) : (
-              <Text style={{ opacity: 0.5 }}>Not Verified</Text>
-            )}
-          </View>
+      <View style={styles.Content}>
+        <View style={{ paddingRight: 30 }}>
+          {userData.photoURL ? (
+            <Image source={{ uri: userData.photoURL }} style={styles.image} />
+          ) : (
+            <MaterialCommunityIcons name="account" size={50} color="gray" />
+          )}
         </View>
+        <View style={styles.myaccount}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.name}>{userData.firstname}</Text>
+            <Text> </Text>
+            <Text style={styles.name}>{userData.lastname}</Text>
+          </View>
+          <Text style={{ opacity: 0.5 }}>@{userData.username}</Text>
+          {userData.verify ? (
+            <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
+              <View style={styles.verified}>
+                <Text style={{ color: 'black' }}>Verified</Text>
+                <MaterialCommunityIcons name="account-circle" size={20} color="#D27C2C" />
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.verified}>
+              <Text style={{ opacity: 0.5 }}>Not Verified</Text>
+            </View>
+          )}
+        </View>
+      </View>
       <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
         <View style={styles.panel}>
           <View style={styles.leftContent}>
@@ -186,7 +190,7 @@ const Profiles = () => {
               <MaterialCommunityIcons name="cog" size={30} color="#D27C2C" />
             </View>
             <View style={styles.myaccount}>
-            <Text style={styles.topic}>Setting</Text>
+              <Text style={styles.topic}>Setting</Text>
               <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
             </View>
           </View>
@@ -200,7 +204,7 @@ const Profiles = () => {
               <MaterialCommunityIcons name="lock-reset" size={30} color="#D27C2C" />
             </View>
             <View style={styles.myaccount}>
-            <Text style={styles.topic}>Change Password</Text>
+              <Text style={styles.topic}>Change Password</Text>
               <Text style={{ opacity: 0.5 }}>Send reset password link via your email</Text>
             </View>
           </View>
@@ -214,7 +218,7 @@ const Profiles = () => {
               <MaterialCommunityIcons name="shield-lock" size={30} color="#D27C2C" />
             </View>
             <View style={styles.myaccount}>
-            <Text style={styles.topic}>Privacy Policy</Text>
+              <Text style={styles.topic}>Privacy Policy</Text>
               <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
             </View>
           </View>
@@ -228,7 +232,7 @@ const Profiles = () => {
               <MaterialCommunityIcons name="account" size={30} color="#D27C2C" />
             </View>
             <View style={styles.myaccount}>
-            <Text style={styles.topic}>sth</Text>
+              <Text style={styles.topic}>sth</Text>
               <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
             </View>
           </View>
@@ -242,8 +246,8 @@ const Profiles = () => {
               <MaterialCommunityIcons name="logout" size={30} color="#D27C2C" />
             </View>
             <View style={styles.myaccount}>
-            <Text style={styles.topic}>Logout</Text>
-          
+              <Text style={styles.topic}>Logout</Text>
+
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -262,20 +266,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    padding: 10,
+    paddingHorizontal: 10,
     width: '90%',
   },
-  Content : { 
+  Content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(rgba(210, 124, 44, 0.5))',
     padding: 20,
-    paddingTop:50,
+    paddingTop: 50,
     width: '100%',
-    borderBottomLeftRadius:50,
-    borderBottomRightRadius:50,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
     marginBottom: 10,
   },
   leftContent: {
@@ -311,19 +314,24 @@ const styles = StyleSheet.create({
   },
   verified: {
     flexDirection: 'row',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#F0DFC8',
+    marginTop: 5,
     padding: 5,
+    paddingLeft: 10,
+    marginRight: 20,
     borderRadius: 50,
-    width: 90,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 'auto',
   },
-  topic :
+  topic:
   {
     fontSize: 20,
     fontWeight: 'bold',
-    color:'black'
+    color: 'black'
   },
+  name: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  }
 });
 
 export default Profiles;
