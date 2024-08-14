@@ -57,25 +57,12 @@ const ProfileTabIcon = () => {
   return (
     <Image
       source={{ uri: profileImageUrl }}
-      style={styles.profileImage}
+      style={[styles.profileImage, { borderColor: '#E16539', borderWidth: 2 }]} // เพิ่ม border เพื่อให้โดดเด่นขึ้น
     />
   );
 };
 
-const CustomTabBarButton = ({ children }) => {
-  const navigation = useNavigation();
 
-  return (
-    <TouchableOpacity
-      style={styles.customTabBarButton}
-      onPress={() => navigation.navigate('AddPet')}
-    >
-      <View style={styles.tabButtonContainer}>
-        {children}
-      </View>
-    </TouchableOpacity>
-  );
-};
 
 const AppNavigator = () => {
   return (
@@ -133,22 +120,12 @@ const AppNavigator = () => {
 
         }}
       />
-      {/* <Tab.Screen
-        name="MyPet"
-        component={PetStack}
-        options={{
-          tabBarLabel: 'My Pets',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="dog" color={color} size={size} />
-          ),
-          headerShown: false
-        }}
-      /> */}
       <Tab.Screen
         name="Profile"
         component={ProfileStack}
         options={{
           headerShown: false,
+          tabBarLabel: 'Profile',
           tabBarIcon: (props) => <ProfileTabIcon {...props} />
         }}
       />

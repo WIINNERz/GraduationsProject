@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { getDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -23,7 +23,19 @@ const ProfileDetail = ({ navigation }) => {
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
   const user = auth.currentUser;
+  useFocusEffect(
+    useCallback(() => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' }
+      });
 
+      return () => {
+        navigation.getParent()?.setOptions({
+          tabBarStyle: undefined // Reset tabBarStyle to default
+        });
+      };
+    }, [navigation])
+  );
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
@@ -299,12 +311,12 @@ const ProfileDetail = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: '90%',
+    height: '100%',
     marginTop: '10%',
-    backgroundColor: 'rgba(255, 255, 255, 1)', // พื้นหลังโปร่งใส
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     overflow: 'hidden',
+    backgroundColor: '#F0DFC8',
   },
   profilePanel: {
     width: '100%',
