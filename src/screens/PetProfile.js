@@ -63,7 +63,7 @@ export default function PetProfile() {
                 </View>
                 <View style={{flexDirection:'row'}}>
                     <Text style={styles.categoryPet}>Sex: </Text>
-                    <Text style={{fontSize:18,color:'black'}}> {pet?.sex}</Text>
+                    <Text style={{fontSize:18,color:'black'}}> {pet?.gender}</Text>
                 </View>
                 <View style={{flexDirection:'row'}}>
                     <Text style={styles.categoryPet}>Type: </Text>

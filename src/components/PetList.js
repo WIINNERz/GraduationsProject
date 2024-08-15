@@ -23,7 +23,7 @@ export default function PetList({ pets }) {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        padding: 5,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',

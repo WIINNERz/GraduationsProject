@@ -42,7 +42,7 @@ const FindPet = () => {
     if (user?.uid) {
       fetchDogs();
     }
-
+    console.log(pets);
     return () => {
       isMounted = false;  // cleanup function to prevent setting state on unmounted component
     };
@@ -51,13 +51,8 @@ const FindPet = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <View style={styles.ownerButton}>
-          <Text style={{ color: 'white' }}>Looking for Owner</Text>
-        </View>
-        <View style={styles.searchContainer}>
-          <TextInput style={styles.searchInput} placeholder='Find pet name' />
+          <Text style={{ color: 'white',fontWeight:'bold',fontSize:24 }}>Looking for Owner</Text>
           <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
-        </View>
       </View>
 
       {loading ? (
@@ -65,7 +60,10 @@ const FindPet = () => {
       ) : error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : pets.length > 0 ? (
-        <PetList pets={pets} />
+        <View style={styles.petList}>
+        <PetList style={styles.petList} pets={pets} />
+        </View>
+
       ) : (
         <View style={styles.noPetsContainer}>
           <Text style={styles.noPetsText}>No Pets Available</Text>
@@ -80,50 +78,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingBottom: 20,
     height: '100%',
+    width: '100%',
   },
   header: {
-    justifyContent: 'space-between',
-    alignItems: '',
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
-  ownerButton: {
-    backgroundColor: '#E16539',
-    alignContent:'flex-end',
-    alignItems: 'center',
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  searchContainer: {
+    width: '100%',
+    padding:20,
     flexDirection: 'row',
+    backgroundColor: '#D27C2C',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F0DFC8',
-    borderRadius: 10,
-    paddingLeft: 10,
+    borderBottomLeftRadius:20,
+    borderBottomRightRadius:20,
   },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-  },
-  searchIcon: {
-    paddingHorizontal: 10,
-  },
-
-
   errorText: {
     color: 'red',
     textAlign: 'center',
     marginTop: 20,
   },
-  search: {
-    backgroundColor: '#F0DFC8',
-    padding: 10,
-    margin: 10,
-    borderRadius: 10,
-    width: '80%'
+  searchIcon: {
+    position: 'absolute',
+    right: 10,
+    backgroundColor: 'white',
+    borderRadius: 50,
   },
   noPetsContainer: {
     alignItems: 'center',
@@ -132,6 +108,9 @@ const styles = StyleSheet.create({
   noPetsText: {
     fontSize: 18,
     color: '#555',
+  },
+  petList: {
+    marginBottom: 100,
   },
 });
 

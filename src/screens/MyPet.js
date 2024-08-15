@@ -47,11 +47,14 @@ export default function MyPet() {
     );
     return (
         <SafeAreaView style={styles.screen}>
-            <View>
-                <Text style={styles.title}>My Pets</Text>
-                <View style={styles.plusButton}>
-                    <MaterialCommunityIcons name="plus" size={20} color="white" onPress={() => navigation.navigate('AddPet')} />
+            <View style={styles.header}>
+                <View style={{flexDirection:'row',alignItems:'center'}}>
+                    <MaterialCommunityIcons name='paw-outline' size={40} color='white' />
+                    <Text style={styles.title}> PetPal</Text>
                 </View>
+                <TouchableOpacity style={styles.plusButton} onPress={() => navigation.navigate('AddPet')}>
+                    <MaterialCommunityIcons name="plus" size={20} color="#E16539" />
+                </TouchableOpacity>
             </View>
 
             <View style={styles.container}>
@@ -69,7 +72,7 @@ export default function MyPet() {
                                     ) : (
                                         <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
                                     )}
-                                    <Text style={{ textAlign: 'center', paddingVertical: 10, fontWeight: 'bold' }}>{dog.name}</Text>
+                                    <Text style={{ textAlign: 'center', paddingVertical: 10, fontWeight: 'bold',color:'black' }}>{dog.name}</Text>
                                 </View>
                             </TouchableOpacity>
                         ))
@@ -84,9 +87,17 @@ export default function MyPet() {
 
 const styles = StyleSheet.create({
     screen: {
-        flex: 1,
         backgroundColor: '#fff',
-
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#D27C2C',
+        padding: 10,
+        paddingVertical: 20,
+        borderBottomLeftRadius:30,
+        borderBottomRightRadius:30,
     },
     container: {
         marginTop: '20%',
@@ -96,14 +107,11 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     plusButton: {
-        backgroundColor: '#E16539',
+        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'right',
-        position: 'absolute',
-        top: 50,
-        right: 15,
         width: 75,
-        borderRadius: 20,
+        borderRadius: 10,
         padding: 5,
     },
     dogContainer: {
@@ -118,12 +126,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#F0DFC8',
     },
     title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        position: 'absolute',
-        top: 50,
-        left: 15,
-        color: '#E16539',
+        fontSize: 32,
+        fontWeight: '600',
+        color: 'white',
+        backgroundColor: '#D27C2C', 
     },
     nopets: {
         textAlign: 'center',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, ActivityIndicator, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getFirestore, doc, getDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
@@ -119,6 +119,7 @@ const PetDetail = ({ navigation }) => {
                 ...pet,
                 id: newId,
                 age: formatAge(),
+                updatedAt: Timestamp.now(),
             });
             navigation.goBack();
         } catch (err) {
