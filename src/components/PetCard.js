@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    width: '100%'
+    width: '50%',
   },
   card: {
     alignItems: 'center',
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     marginHorizontal: "auto",
     padding: 10,
     borderRadius: 10,
-    width: '60%',
+    width: '100%',
     backgroundColor: '#F0DFC8',
 
   },

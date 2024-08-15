@@ -6,36 +6,26 @@ import PetDetail from '../screens/PetDetail';
 import Home from '../screens/Home';
 import PetProfile from '../screens/PetProfile';
 import FindPet from '../screens/FindPet';
-import ChatRoom from '../screens/ChatRoom';
-import ChatRoom1 from '../screens/ChatRoom1';
 
 const Stack = createNativeStackNavigator();
 
-export default function PetStack() {
+export default function MyPetStack() {
   return (
-    <Stack.Navigator initialRouteName='FindPet'>
-        <Stack.Screen
-        name="FindPet"
-        component={FindPet}
-        options={{ headerShown: false}} />
-      {/* <Stack.Screen
+    <Stack.Navigator initialRouteName='MyPet'>
+      <Stack.Screen
         name="MyPets"
         component={MyPet}
         options={{ headerShown: false }}
-      /> */}
+      />
       <Stack.Screen
-        name="PetProfile"
-        component={PetProfile}
+        name="PetDetail"
+        component={PetDetail}
         options={{ headerShown: false }} />
-      <Stack.Screen
-        name="ChatRoom1"
-        component={ChatRoom1}
+    <Stack.Screen
+        name="AddPet"
+        component={AddPet}
         options={{ headerShown: false }} />
 
-      <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

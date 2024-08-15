@@ -82,7 +82,7 @@ const ProfileDetail = ({ navigation }) => {
         zipcode
       });
       navigation.navigate('Profiles');
-    }else{
+    } else {
       Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
     }
   };
@@ -300,16 +300,14 @@ const ProfileDetail = ({ navigation }) => {
               placeholder="Post Code"
             />
           </View>
-          {/* <View style={{ flexDirection: 'row', padding: 10 }}>
-            <TouchableOpacity
-              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flex: 1 }}
-              onPress={() => navigation.navigate('ChangePassword')}
-            >
-              <Text style={{ color: '#3A3A3A', marginRight: 10 }}>Switch To Foundation</Text>
-              <MaterialCommunityIcons name='chevron-right' size={30} color='#3A3A3A' />
+          <View style={styles.myaccount}>
+            <TouchableOpacity onPress={() => navigation.navigate('Verify')}>
+              <View style={{width:'100%',alignItems : 'center',flexDirection:'row', justifyContent:'space-between' }}>
+              <Text style={styles.name}>Verify your Account</Text>
+              <MaterialCommunityIcons name="chevron-right" size={30} color="#D27C2C" />
+              </View>
             </TouchableOpacity>
-          </View> */}
-          {/* <Button title="Save" onPress={handleSave} /> */}
+          </View>
         </View>
         {uploading && <ActivityIndicator size="large" color="#0000ff" />}
       </View>
@@ -348,8 +346,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
     fontWeight: 'bold',
-    color:'black'
-    
+    color: 'black'
+
   },
   myaccount: {
     flexDirection: 'row',

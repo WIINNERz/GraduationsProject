@@ -299,11 +299,13 @@ const AddPet = () => {
     <ScrollView contentContainerStyle={styles.scrollViewContent} style={styles.container}>
       <MaterialCommunityIcons name="paw" size={50} color="#E16539" />
       <TouchableOpacity style={styles.PetPPicker} onPress={pickImage}>
+        <View style={{position:'static'}}>
         {imageP ? (
           <Image source={{ uri: imageP }} style={styles.image} />
         ) : (
           <MaterialCommunityIcons name="camera-plus" size={20} color="#000" />
         )}
+        </View>
       </TouchableOpacity>
       <View style={styles.subContainer}>
         <TextInput

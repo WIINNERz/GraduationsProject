@@ -10,6 +10,7 @@ import HomeStack from '../stacks/HomeStack';
 import FindPet from '../screens/FindPet';
 import { useNavigation } from '@react-navigation/native';
 import ChatStack from '../stacks/ChatStack';
+import MyPetStack from '../stacks/MyPetStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -73,8 +74,8 @@ const AppNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="HomeStack"
-        component={HomeStack}
+        name="MyPetStack"
+        component={MyPetStack}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
@@ -94,18 +95,6 @@ const AppNavigator = () => {
           headerShown: false
         }}
       />
-      {/* <Tab.Screen
-        name="AddPost"
-        component={AddPet} // Use a dummy component for tab button
-        options={{
-          tabBarButton: (props) => (
-            <CustomTabBarButton>
-              <MaterialCommunityIcons name="plus" color="#fff" size={20} />
-            </CustomTabBarButton>
-          ),
-          headerShown: false
-        }}
-      /> */}
       <Tab.Screen
         name="Chat"
         component={ChatStack}

@@ -6,6 +6,7 @@ import ProfileDetail from '../screens/ProfileDetail';
 import MyAccount from '../screens/MyAccount';
 import AccountInfo from '../screens/AccountInfo';
 import MyPet from '../screens/MyPet';
+import Verify from '../components/Verify';
 
 
 const Stack = createNativeStackNavigator();
@@ -47,6 +48,11 @@ export default function ProfileStack() {
           options={{headerShown: false}}
         />
       </Stack.Group>
+      <Stack.Screen
+          name="Verify"
+          component={Verify}
+          options={{headerShown: false}}
+        />
     </Stack.Navigator>
   );
 }

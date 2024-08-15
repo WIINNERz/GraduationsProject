@@ -1,15 +1,24 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
-export default function AdoptBar() {
+
+
+export default function AdoptBar({id}) {
+    const navigate = useNavigation();
+    const handleContactPress = () => {
+       navigate.navigate('ChatRoom1',{id});
+    console.log(id);
+
+    }
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleContactPress}>
                 <Text style={styles.text}>Contact to Adopt</Text>
             </TouchableOpacity>
             <View style={{flexDirection:'row',alignItems:'center'}}>
-                <TouchableOpacity>
+                <TouchableOpacity >
                     <MaterialCommunityIcons name="heart" size={30} color="#D27C2C" />
                 </TouchableOpacity>
                 <Text>1</Text>

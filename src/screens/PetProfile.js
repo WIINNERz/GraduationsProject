@@ -74,7 +74,7 @@ export default function PetProfile() {
                     <Text style={{fontSize:18,color:'black'}}> {pet?.age}</Text>
                 </View>
             </View>
-            <AdoptBar/>
+            <AdoptBar id={id}/>
         </ScrollView>
     )
 }
