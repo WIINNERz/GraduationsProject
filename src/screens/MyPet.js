@@ -45,6 +45,7 @@ export default function MyPet() {
             fetchDogs();
         }, [])
     );
+    
     return (
         <SafeAreaView style={styles.screen}>
             <View style={styles.header}>
@@ -73,6 +74,7 @@ export default function MyPet() {
                                         <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
                                     )}
                                     <Text style={{ textAlign: 'center', paddingVertical: 10, fontWeight: 'bold',color:'black' }}>{dog.name}</Text>
+                                    <Text style={{fontFamily:'InterBold'}}>sdasd</Text>
                                 </View>
                             </TouchableOpacity>
                         ))
@@ -80,7 +82,11 @@ export default function MyPet() {
                         <Text style={styles.nopets}> No pets available</Text>
                     )
                 )}
+                
             </View>
+            <Text style={{fontSize:24,fontFamily:'InterBold'}}>asdasds</Text>
+            <Text style={{fontSize:24,fontFamily:'MatemasieRegular'}}>asdasds</Text>
+            <Text style={{fontSize:24,fontFamily:'InterBold'}}>asdasds</Text>
         </SafeAreaView>
     );
 }
@@ -128,17 +134,9 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: '600',
-        color: 'white',
+        color: 'black',
         backgroundColor: '#D27C2C', 
-     fontFamily: 'interSemeibold',
-    },
-    nopets: {
-        textAlign: 'center',
-        marginTop: "70%",
-        justifyContent: 'center',
-        fontSize: 20,
-        fontStyle: 'italic',
-        color: "gray",
+        fontFamily: 'InterBold',
     },
     petPic: {
         width: 80,

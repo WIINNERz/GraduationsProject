@@ -10,8 +10,8 @@ export default function PetList({ pets }) {
         <ScrollView contentContainerStyle={styles.container}>
             {pets.map((item, index) => (
                 <PetCard
-                    key={item.id}  // Ensure item.id is unique
-                    noBorder={index + 1 === pets.length}
+                key={item.id || `${item.someProperty}-${index}`} // Ensure key is unique
+                noBorder={index + 1 === pets.length}
                     item={item}
                     index={index}
                     navigation={navigation}

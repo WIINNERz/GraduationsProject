@@ -27,7 +27,6 @@ const Chat = () => {
             });
             setUsers(data);
             setLoading(false);
-            console.log('Users fetched successfully:', data);
         } catch (error) {
             console.error("Error fetching users: ", error);
             setLoading(false);
