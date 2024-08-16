@@ -71,6 +71,7 @@ const AppNavigator = () => {
         
         tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],
         tabBarActiveTintColor: '#E16539',
+        tabBarLabelStyle: { fontSize: 16 }
       }}
     >
       <Tab.Screen
@@ -79,7 +80,7 @@ const AppNavigator = () => {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <MaterialCommunityIcons name="home" color={color} size={40} />
           ),
           headerShown: false,
         }}
@@ -90,7 +91,7 @@ const AppNavigator = () => {
         options={{
           tabBarLabel: 'Find Pet',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="paw-outline" color={color} size={size} />
+            <MaterialCommunityIcons name="paw-outline" color={color} size={40} />
           ),
           headerShown: false
         }}
@@ -101,7 +102,7 @@ const AppNavigator = () => {
         options={{
           tabBarLabel: 'Chat',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chat" color={color} size={size} />
+            <MaterialCommunityIcons name="chat" color={color} size={40} />
           ),
           headerShown: false,
 
@@ -122,9 +123,9 @@ const AppNavigator = () => {
 
 const styles = StyleSheet.create({
   profileImage: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 40,
+    height: 40,
+    borderRadius: 50,
   },
   customTabBarButton: {
     top: 0,
@@ -141,8 +142,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabBar: {
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: "8%", 
     position: 'absolute',
     overflow: 'hidden',
   },

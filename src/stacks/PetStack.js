@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MyPet from '../screens/MyPet';
 import AddPet from '../screens/AddPet';
 import PetDetail from '../screens/PetDetail';
-import Home from '../screens/Home';
+
 import PetProfile from '../screens/PetProfile';
 import FindPet from '../screens/FindPet';
 import ChatRoom from '../screens/ChatRoom';
@@ -32,10 +32,6 @@ export default function PetStack() {
         component={ChatRoom1}
         options={{ headerShown: false }} />
 
-      <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

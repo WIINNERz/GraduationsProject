@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: 'white',
         backgroundColor: '#D27C2C', 
+     fontFamily: 'interSemeibold',
     },
     nopets: {
         textAlign: 'center',

@@ -2,7 +2,6 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import AuthStack from '../stacks/AuthStack';
-import Home from '../screens/Home';
 import ProfileStack from '../stacks/ProfileStack';
 import Forgot from '../screens/Forgot';
 import HomeStack from '../stacks/HomeStack';
