@@ -316,7 +316,9 @@ const AddPet = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
         <MaterialCommunityIcons name="chevron-left" size={40} color="#E16539" />
+        </TouchableOpacity>
         <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 18 }}>Add Pet</Text>
         <Text>          </Text>
       </View>
@@ -439,13 +441,13 @@ const AddPet = () => {
               {isChecked && (
                 <>
                   <TextInput
-                    style={styles.input}
+                    style={styles.inputwh}
                     placeholder="Location"
                     value={location}
                     onChangeText={setLocation}
                   />
                   <TextInput
-                    style={styles.input}
+                    style={styles.inputwh}
                     placeholder="Conditions"
                     value={conditions}
                     onChangeText={setConditions}
@@ -463,7 +465,7 @@ const AddPet = () => {
             </View>
           </>
         ) : null}
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer,{marginBottom:50}]}>
           <CancelPButton onPress={() => navigation.navigate('MyPet')} />
           <SavePButton onPress={handleSubmit} />
         </View>

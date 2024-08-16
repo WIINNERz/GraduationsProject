@@ -74,7 +74,6 @@ export default function MyPet() {
                                         <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
                                     )}
                                     <Text style={{ textAlign: 'center', paddingVertical: 10, fontWeight: 'bold',color:'black' }}>{dog.name}</Text>
-                                    <Text style={{fontFamily:'InterBold'}}>sdasd</Text>
                                 </View>
                             </TouchableOpacity>
                         ))
@@ -84,9 +83,6 @@ export default function MyPet() {
                 )}
                 
             </View>
-            <Text style={{fontSize:24,fontFamily:'InterBold'}}>asdasds</Text>
-            <Text style={{fontSize:24,fontFamily:'MatemasieRegular'}}>asdasds</Text>
-            <Text style={{fontSize:24,fontFamily:'InterBold'}}>asdasds</Text>
         </SafeAreaView>
     );
 }
