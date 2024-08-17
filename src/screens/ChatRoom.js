@@ -25,7 +25,7 @@ export default function ChatRoom({navigation}) {
     
           return () => {
             navigation.getParent()?.setOptions({
-              tabBarStyle: undefined // Reset tabBarStyle to default
+                tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],// Reset tabBarStyle to default
             });
           };
         }, [navigation])
@@ -151,5 +151,12 @@ const styles = StyleSheet.create({
         padding: 10,
         marginLeft: 10,
     },
+    tabBar: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        height: "8%", 
+        position: 'absolute',
+        overflow: 'hidden',
+      },
 });
 
