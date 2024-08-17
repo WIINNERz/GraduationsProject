@@ -26,7 +26,6 @@ export default function MyPet() {
                 }));
 
                 setDogs(petList);
-                console.log(petList);  // Log after setting state
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -80,6 +79,8 @@ export default function MyPet() {
                         keyExtractor={(item) => item.id}
                         numColumns={3}
                         contentContainerStyle={styles.flatListContent}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
                     />
                 ) : (
                     <Text style={styles.nopets}>No pets available</Text>
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: "3%",
-        marginBottom:60,
+        marginBottom: 60,
     },
     dogContainer: {
         alignItems: 'center',
@@ -152,6 +153,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     flatListContent: {
-        alignItems: 'center',
+        alignItems: 'flex-end',
     },
 });
