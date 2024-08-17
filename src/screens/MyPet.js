@@ -80,6 +80,7 @@ export default function MyPet() {
                         keyExtractor={(item) => item.id}
                         numColumns={3}
                         contentContainerStyle={styles.flatListContent}
+                        showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}
                     />
                 ) : (
                     <Text style={styles.nopets}>No pets available</Text>
@@ -94,22 +95,25 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         flex: 1,
         width: '100%',
+        height: '100%',
     },
     header: {
         width: '100%',
         height: "8%",
+        padding: 20,
         flexDirection: 'row',
+        backgroundColor: '#D27C2C',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#D27C2C',
-        padding: 10,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
     },
     container: {
         flex: 1,
-        padding: "3%",
-        marginBottom:60,
+        marginTop: 10,
+        marginBottom: 80,
+        width: '100%',
+         alignItems: 'flex-end',
     },
     dogContainer: {
         alignItems: 'center',
@@ -123,9 +127,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 40,
+        width: 80,
         height: 40,
-        borderRadius: 20,
+        borderRadius: 10,
     },
     petdetail: {
         paddingTop: 5,
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
         fontFamily: 'InterBold',
     },
     title: {
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: '600',
         color: 'white',
         backgroundColor: '#D27C2C',

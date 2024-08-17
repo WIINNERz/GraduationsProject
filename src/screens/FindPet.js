@@ -49,7 +49,7 @@ const FindPet = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 24 }}>Looking for Owner</Text>
+        <Text style={{ color: 'white',  fontFamily: 'InterSemiBold', fontSize: 28 }}>Looking for Owner</Text>
         <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
       </View>
 
@@ -74,12 +74,13 @@ const FindPet = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    paddingBottom: 20,
+    flex : 1,
     height: '100%',
     width: '100%',
   },
   header: {
     width: '100%',
+    height: "8%",
     padding: 20,
     flexDirection: 'row',
     backgroundColor: '#D27C2C',
@@ -108,7 +109,8 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   petList: {
-    marginBottom: 100,
+    marginBottom: 150,
+    
   },
 });
 

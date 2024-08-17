@@ -34,8 +34,8 @@ const Chat = () => {
     }
 
     return (
-        <View>
-            <ChatHeader />
+        <View style={styles.screen}>
+            <ChatHeader  />
             {
                 loading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
@@ -50,5 +50,11 @@ const Chat = () => {
         </View>
     );
 }
+const styles = {
+    screen: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+};
 
 export default Chat;
