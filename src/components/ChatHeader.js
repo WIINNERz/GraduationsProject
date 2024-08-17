@@ -35,7 +35,7 @@ function ChatHeader(){
     return (
         <View style={styles.container}>
             <View>
-            <Text style={{fontSize:20,fontWeight:'bold'}}>Chat</Text>
+            <Text style={{color: 'white',  fontFamily: 'InterSemiBold', fontSize: 28 }}>Chat</Text>
             
             </View>
             <View>
@@ -57,18 +57,20 @@ function ChatHeader(){
 }
 const styles = StyleSheet.create({
     container: {
+        width: '100%',
+        height: "8%",
+        padding: 20,
         flexDirection: 'row',
+        backgroundColor: '#D27C2C',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 25,
-        backgroundColor: '#F0DFC8',
-        borderBottomLeftRadius: 40,
-        borderBottomRightRadius: 40,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
     },
     profileImage: {
-        width: 26,
-        height: 26,
-        borderRadius: 13,
+        width: 48,
+        height: 48,
+        borderRadius: 50,
         
     },
 });
