@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth } from '../configs/firebaseConfig';
-
+import { style } from 'twrnc';
 
 export default function MyPet() {
     const [dogs, setDogs] = useState([]);
@@ -43,18 +43,19 @@ export default function MyPet() {
         useCallback(() => {
             setLoading(true);
             fetchDogs();
+            console.log(dogs);
         }, [])
     );
     
     return (
-        <SafeAreaView style={styles.screen}>
+        <ScrollView contentContainerStyle ={styles.screen}>
             <View style={styles.header}>
                 <View style={{flexDirection:'row',alignItems:'center'}}>
                     <MaterialCommunityIcons name='paw-outline' size={40} color='white' />
                     <Text style={styles.title}> PetPal</Text>
                 </View>
                 <TouchableOpacity style={styles.plusButton} onPress={() => navigation.navigate('AddPet')}>
-                    <MaterialCommunityIcons name="plus" size={20} color="#E16539" />
+                    <MaterialCommunityIcons name="plus" size={30} color="#E16539" />
                 </TouchableOpacity>
             </View>
 
@@ -67,13 +68,14 @@ export default function MyPet() {
                     dogs.length > 0 ? (
                         dogs.map(dog => (
                             <TouchableOpacity key={dog.id} style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: dog.id })}>
-                                <View>
+                                <View  >
                                     {dog.photoURL ? (
                                         <Image source={{ uri: dog.photoURL }} style={styles.petPic} />
                                     ) : (
                                         <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
                                     )}
-                                    <Text style={{ textAlign: 'center', paddingVertical: 10, fontWeight: 'bold',color:'black' }}>{dog.name}</Text>
+                                    <Text style={styles.petdetail}>{dog.name}</Text>
+                          
                                 </View>
                             </TouchableOpacity>
                         ))
@@ -83,30 +85,47 @@ export default function MyPet() {
                 )}
                 
             </View>
-        </SafeAreaView>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     screen: {
         backgroundColor: '#fff',
+        flex: 1,
+        height: '100%',
+        width: '100%',
     },
     header: {
+        width: '100%',
+        height: "8%",
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#D27C2C',
         padding: 10,
-        paddingVertical: 20,
-        borderBottomLeftRadius:30,
-        borderBottomRightRadius:30,
+        borderBottomLeftRadius:20,
+        borderBottomRightRadius:20,
+
     },
     container: {
-        marginTop: '20%',
         width: '100%',
+        padding: "3%",
+        justifyContent: 'flex-start',
         flexDirection: 'row',
-        justifyContent: 'space-between',
         flexWrap: 'wrap',
+        alignContent: 'flex-start',
+
+
+    },
+    dogContainer: {
+        alignItems: 'center',
+        alignContent: 'center',
+        margin: 5,
+        padding : 10,
+        borderRadius: 10,
+        width: '30%',
+        backgroundColor: '#F0DFC8',
     },
     plusButton: {
         backgroundColor: 'white',
@@ -114,29 +133,31 @@ const styles = StyleSheet.create({
         justifyContent: 'right',
         width: 75,
         borderRadius: 10,
-        padding: 5,
+   
     },
-    dogContainer: {
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'space-between',
-        marginVertical: 10,
-        marginHorizontal: "auto",
-        padding: 10,
-        borderRadius: 10,
-        width: '40%',
-        backgroundColor: '#F0DFC8',
+ 
+    petdetail : {
+        paddingTop: 5,
+        fontFamily: 'InterBold',
+        fontSize: 16,
+        color: '#E16539',
+        textAlign: 'center',
+
+          
     },
     title: {
         fontSize: 32,
         fontWeight: '600',
-        color: 'black',
+        color: 'white',
         backgroundColor: '#D27C2C', 
-        fontFamily: 'InterBold',
+        fontFamily: 'InterSemiBold',
+
     },
     petPic: {
         width: 80,
         height: 80,
         borderRadius: 50,
+    
     },
+    
 });
