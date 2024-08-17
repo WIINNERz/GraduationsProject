@@ -41,9 +41,7 @@ const FindPet = () => {
 
     if (user?.uid) {
       fetchDogs();
-    }
-    console.log(pets);
-    return () => {
+    } return () => {
       isMounted = false;  // cleanup function to prevent setting state on unmounted component
     };
   }, [user?.uid]);
@@ -51,8 +49,8 @@ const FindPet = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-          <Text style={{ color: 'white',fontWeight:'bold',fontSize:24 }}>Looking for Owner</Text>
-          <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
+        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 24 }}>Looking for Owner</Text>
+        <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
       </View>
 
       {loading ? (
@@ -61,7 +59,7 @@ const FindPet = () => {
         <Text style={styles.errorText}>{error}</Text>
       ) : pets.length > 0 ? (
         <View style={styles.petList}>
-        <PetList style={styles.petList} pets={pets} />
+          <PetList style={styles.petList} pets={pets} />
         </View>
 
       ) : (
@@ -82,13 +80,13 @@ const styles = StyleSheet.create({
   },
   header: {
     width: '100%',
-    padding:20,
+    padding: 20,
     flexDirection: 'row',
     backgroundColor: '#D27C2C',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomLeftRadius:20,
-    borderBottomRightRadius:20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   errorText: {
     color: 'red',

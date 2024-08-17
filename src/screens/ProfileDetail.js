@@ -31,7 +31,7 @@ const ProfileDetail = ({ navigation }) => {
 
       return () => {
         navigation.getParent()?.setOptions({
-          tabBarStyle: undefined // Reset tabBarStyle to default
+          tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],// Reset tabBarStyle to default
         });
       };
     }, [navigation])
@@ -387,6 +387,13 @@ const styles = StyleSheet.create({
     width: 100,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  tabBar: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: "8%", 
+    position: 'absolute',
+    overflow: 'hidden',
   },
 });
 
