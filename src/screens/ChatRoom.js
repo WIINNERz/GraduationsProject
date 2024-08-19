@@ -8,7 +8,7 @@ import useAuth from '../hooks/useAuth';
 import { getRoomId } from '../utils/common';
 import { setDoc, doc, Timestamp, collection, getDoc, query, orderBy, onSnapshot } from 'firebase/firestore'; // ตรวจสอบให้แน่ใจว่าได้ทำการนำเข้า
 import { auth, db } from '../configs/firebaseConfig';
-import { style } from 'twrnc';
+
 export default function ChatRoom({navigation}) {
     const route = useRoute();
     const { params } = route.params;
