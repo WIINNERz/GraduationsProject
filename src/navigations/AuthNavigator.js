@@ -5,6 +5,9 @@ import AuthStack from '../stacks/AuthStack';
 import ProfileStack from '../stacks/ProfileStack';
 import Forgot from '../screens/Forgot';
 import HomeStack from '../stacks/HomeStack';
+import WaitVerify from '../screens/WaitVerify';
+import MyPetStack from '../stacks/MyPetStack';
+import AuthenStack from '../stacks/AuthenStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,7 +16,7 @@ const AuthNavigator = () => {
     <Stack.Navigator>
       <Stack.Screen 
         name="Auth" 
-        component={AuthStack} 
+        component={AuthenStack} 
         options={{ headerShown: false }} 
       />
       <Stack.Screen 
@@ -21,16 +24,15 @@ const AuthNavigator = () => {
         component={ProfileStack} 
         options={{ headerShown: false }} 
       />
-      <Stack.Screen
-        name="Home"
-        component={HomeStack}
-        options={{ headerShown: false }}
-        />
       <Stack.Screen 
         name="Forgot" 
         component={Forgot} 
         options={{ headerShown: false }} 
       />
+      <Stack.Screen 
+        name="MyPets" 
+        component={MyPetStack} 
+        options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 };

@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
     header: {
         width: '100%',
-        height: "8%",
+        height: "10%",
         padding: 20,
         flexDirection: 'row',
         backgroundColor: '#D27C2C',
@@ -117,8 +117,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         width: '30%',
-        backgroundColor: '#F0DFC8',
-    },
+        backgroundColor: '#F0DFC8',    },
     plusButton: {
         backgroundColor: 'white',
         alignItems: 'center',

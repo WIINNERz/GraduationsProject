@@ -18,11 +18,6 @@ export default function PetStack() {
         name="FindPet"
         component={FindPet}
         options={{ headerShown: false}} />
-      {/* <Stack.Screen
-        name="MyPets"
-        component={MyPet}
-        options={{ headerShown: false }}
-      /> */}
       <Stack.Screen
         name="PetProfile"
         component={PetProfile}
@@ -31,7 +26,6 @@ export default function PetStack() {
         name="ChatRoom1"
         component={ChatRoom1}
         options={{ headerShown: false }} />
-
     </Stack.Navigator>
   );
 }

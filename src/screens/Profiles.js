@@ -183,7 +183,7 @@ const Profiles = () => {
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
         <View style={styles.panel}>
           <View style={styles.leftContent}>
             <View style={styles.iconContainer}>

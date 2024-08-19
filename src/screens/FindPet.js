@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   petList: {
-    marginBottom: 150,
+    marginBottom: 60,
     
   },
 });
