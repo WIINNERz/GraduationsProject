@@ -1,0 +1,81 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/InteBlack.ttf",
+      "sha1": "1a88281108c184915828226c768844e63e09b3f9"
+    },
+    {
+      "path": "src/assets/fonts/InterBlackItalic.ttf",
+      "sha1": "639632354ab48d6b6f9f0c5603e125bd5f75ee0a"
+    },
+    {
+      "path": "src/assets/fonts/InterBold.ttf",
+      "sha1": "f3a55daa485aea77a3225cdb628e025291b28f0b"
+    },
+    {
+      "path": "src/assets/fonts/InterBoldItalic.ttf",
+      "sha1": "2b100487138017b405acc73f638ff0bca2102695"
+    },
+    {
+      "path": "src/assets/fonts/InterExtraBold.ttf",
+      "sha1": "0f4e77952476d538c57dc3cff12926581f82c3a8"
+    },
+    {
+      "path": "src/assets/fonts/InterExtraBoldItalic.ttf",
+      "sha1": "08b1caa442bb18acd2168ec206bca6932c18565d"
+    },
+    {
+      "path": "src/assets/fonts/InterExtraLight.ttf",
+      "sha1": "80da6a4be8894c6481dc4465b884c4c161b4d3a8"
+    },
+    {
+      "path": "src/assets/fonts/InterExtraLightItalic.ttf",
+      "sha1": "43e187b77fe222b0d43c037fe450317a3e0dc543"
+    },
+    {
+      "path": "src/assets/fonts/InterItalic.ttf",
+      "sha1": "a431bf3e3b06d12ad9e2a1e0c9ff2056b272a61f"
+    },
+    {
+      "path": "src/assets/fonts/InterLight.ttf",
+      "sha1": "a67e1cb8acb26c3b95fa9c2c49f6d43141c491bb"
+    },
+    {
+      "path": "src/assets/fonts/InterLightItalic.ttf",
+      "sha1": "93d97af9b7f26b8a4f1d085f48cd92ed4606b087"
+    },
+    {
+      "path": "src/assets/fonts/InterMedium.ttf",
+      "sha1": "d135ba8c8d7b74a8878a4a73794ddfa739fa7348"
+    },
+    {
+      "path": "src/assets/fonts/InterMediumItalic.ttf",
+      "sha1": "16a84cb180cbe4b50b31c88a4a8ded8112e28df1"
+    },
+    {
+      "path": "src/assets/fonts/InterRegular.ttf",
+      "sha1": "6177ac91c6fb7df9b09beda7802ea15699a88703"
+    },
+    {
+      "path": "src/assets/fonts/InterSemiBold.ttf",
+      "sha1": "49c4ab71faa7118520a21452906e04f1340c864c"
+    },
+    {
+      "path": "src/assets/fonts/InterSemiBoldItalic.ttf",
+      "sha1": "f7fee5e04197edf59736530b4db51a01b7645a1a"
+    },
+    {
+      "path": "src/assets/fonts/InterThin.ttf",
+      "sha1": "dfe9285979c848f94da3d3f7c7e4d13a5680143c"
+    },
+    {
+      "path": "src/assets/fonts/InterThinItalic.ttf",
+      "sha1": "beed0d0fb7783d5da5d366036b5e481f895e1970"
+    },
+    {
+      "path": "src/assets/fonts/MatemasieRegular.ttf",
+      "sha1": "93e6850e547d573281adc597282b7238321213f5"
+    }
+  ]
+}
