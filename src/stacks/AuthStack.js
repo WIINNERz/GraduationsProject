@@ -4,15 +4,15 @@ import {useNavigation} from '@react-navigation/native';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  sendEmailVerification 
+  sendEmailVerification,
 } from 'firebase/auth';
-import {auth} from '../configs/firebaseConfig';
-import {getFirestore, setDoc, doc} from '@react-native-firebase/firestore';
+import {auth , firestore} from '../configs/firebaseConfig';
+import {getFirestore, setDoc ,doc , updateDoc} from '@react-native-firebase/firestore';
 import ToggleButton from '../components/ToggleButton';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Forgot from '../screens/Forgot';
-
+import Aes from 'react-native-aes-crypto';
 const AuthStack = () => {
   const navigation = useNavigation();
   const [isSignIn, setIsSignIn] = React.useState(true);
@@ -29,6 +29,48 @@ const AuthStack = () => {
   const [error, setError] = React.useState('');
   const db = getFirestore();
   const backgroundAnimation = React.useRef(new Animated.Value(0)).current;
+
+  async function createAndEncryptMasterKey(passwordReg) {
+    try {
+      // 1. Generate a random master key
+      const masterKey = await Aes.randomKey(32); // 256-bit master key
+      // 2. Generate a salt and derive a key from the password
+      const salt = await Aes.randomKey(16); // 128-bit salt
+      const iterations = 5000;
+      const keyLength = 256;
+      const hash = 'sha256';
+      const passkey = await Aes.pbkdf2(
+        passwordReg,
+        salt,
+        iterations,
+        keyLength,
+        hash,
+      );
+      // 3. Generate a random IV for encryption
+      const iv = await Aes.randomKey(16); // 128-bit IV
+      // 4. Encrypt the master key using AES-256-CBC with the derived key
+      const encryptedMasterKey = await Aes.encrypt(
+        masterKey,
+        passkey,
+        iv,
+        'aes-256-cbc',
+      );
+      // 5. Save the encrypted master key, salt, and IV to Firestore
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await updateDoc(doc(db, 'Users', currentUser.uid), {
+          masterKey: encryptedMasterKey,
+          salt,
+          iv,
+        });
+      } else {
+        console.error('No user is currently signed in.');
+      }
+    } catch (error) {
+      console.error('Error during master key creation and encryption:', error);
+      throw error;
+    }
+  }
 
   const validatePassword = password => {
     const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{6,}$/;
@@ -53,138 +95,141 @@ const AuthStack = () => {
       setError('Please fill in both fields.');
     }
   };
-  
 
-//     if (emailReg && passwordReg && passwordReg === confirmPassword) {
-//         if (!validatePassword(passwordReg)) {
-//             setError(
-//                 'Password must be at least 6 characters long, include letters and numbers, and contain at least one uppercase letter.',
-//             );
-//             return;
-//         }
-//         setLoading(true);
-//         setError('');
-//         try {
-//             const tempUser = await createUserWithEmailAndPassword(
-//                 auth,
-//                 emailReg,
-//                 passwordReg,
-//             );
+  //     if (emailReg && passwordReg && passwordReg === confirmPassword) {
+  //         if (!validatePassword(passwordReg)) {
+  //             setError(
+  //                 'Password must be at least 6 characters long, include letters and numbers, and contain at least one uppercase letter.',
+  //             );
+  //             return;
+  //         }
+  //         setLoading(true);
+  //         setError('');
+  //         try {
+  //             const tempUser = await createUserWithEmailAndPassword(
+  //                 auth,
+  //                 emailReg,
+  //                 passwordReg,
+  //             );
 
-//             // ส่งอีเมลยืนยัน
-//             await tempUser.user.sendEmailVerification();
+  //             // ส่งอีเมลยืนยัน
+  //             await tempUser.user.sendEmailVerification();
 
-//             // แจ้งให้ผู้ใช้ตรวจสอบอีเมลเพื่อยืนยัน
-//             setError('A verification email has been sent. Please verify your email to complete registration.');
-            
-//             // หยุดแสดง loading indicator
-//             setLoading(false);
-            
-//             // นำทางไปยังหน้า WaitVerify
-//             console.log('Navigating to WaitVerify with uid:', tempUser.user.uid);
-//             navigation.navigate('WaitVerify', { uid: tempUser.user.uid });
+  //             // แจ้งให้ผู้ใช้ตรวจสอบอีเมลเพื่อยืนยัน
+  //             setError('A verification email has been sent. Please verify your email to complete registration.');
 
-//             // วนลูปรอการยืนยันอีเมล
-//             const checkVerificationInterval = setInterval(async () => {
-//                 await tempUser.user.reload(); // รีโหลดข้อมูลผู้ใช้
-//                 if (tempUser.user.emailVerified) {
-//                     clearInterval(checkVerificationInterval); // หยุดการตรวจสอบเมื่อยืนยันแล้ว
+  //             // หยุดแสดง loading indicator
+  //             setLoading(false);
 
-//                     // สร้างผู้ใช้ที่สมบูรณ์และบันทึกข้อมูลใน Firestore
-//                     const { uid } = tempUser.user;
-//                     const photoURL =
-//                         'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
+  //             // นำทางไปยังหน้า WaitVerify
+  //             console.log('Navigating to WaitVerify with uid:', tempUser.user.uid);
+  //             navigation.navigate('WaitVerify', { uid: tempUser.user.uid });
 
-//                     await setDoc(doc(db, 'Users', uid), {
-//                         username,
-//                         email: emailReg,
-//                         uid,
-//                         photoURL,
-//                     });
+  //             // วนลูปรอการยืนยันอีเมล
+  //             const checkVerificationInterval = setInterval(async () => {
+  //                 await tempUser.user.reload(); // รีโหลดข้อมูลผู้ใช้
+  //                 if (tempUser.user.emailVerified) {
+  //                     clearInterval(checkVerificationInterval); // หยุดการตรวจสอบเมื่อยืนยันแล้ว
 
-//                     setUsername('');
-//                     setEmailReg('');
-//                     setPasswordReg('');
-//                     setConfirmPassword('');
+  //                     // สร้างผู้ใช้ที่สมบูรณ์และบันทึกข้อมูลใน Firestore
+  //                     const { uid } = tempUser.user;
+  //                     const photoURL =
+  //                         'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
 
-//                     // นำผู้ใช้ไปยังหน้าหลักหลังจากยืนยันเสร็จ
-//                     navigation.navigate('Home');
-//                 }
-//             }, 3000); // เช็คสถานะทุกๆ 3 วินาที
+  //                     await setDoc(doc(db, 'Users', uid), {
+  //                         username,
+  //                         email: emailReg,
+  //                         uid,
+  //                         photoURL,
+  //                     });
 
-//         } catch (err) {
-//             setError('Failed to register. Please try again.');
-//             console.log(err);
-//             setLoading(false);
-//         }
-//     } else {
-//         setError('Please fill in all fields and make sure passwords match.');
-//     }
-// };
+  //                     setUsername('');
+  //                     setEmailReg('');
+  //                     setPasswordReg('');
+  //                     setConfirmPassword('');
 
-const handleSignUp = async () => {
-  if (emailReg && passwordReg && passwordReg === confirmPassword) {
-    if (!validatePassword(passwordReg)) {
-      setError(
-        'Password must be at least 6 characters long, include letters and numbers, and contain at least one uppercase letter.',
-      );
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      const tempUser = await createUserWithEmailAndPassword(auth, emailReg, passwordReg);
+  //                     // นำผู้ใช้ไปยังหน้าหลักหลังจากยืนยันเสร็จ
+  //                     navigation.navigate('Home');
+  //                 }
+  //             }, 3000); // เช็คสถานะทุกๆ 3 วินาที
 
-      // Send verification email
-      if (tempUser && tempUser.user) {
-        // Send verification email
-        await sendEmailVerification(tempUser.user);
-        
-        // Inform the user to verify their email
-        setError('A verification email has been sent. Please verify your email to complete registration.');
-        
-        // Navigate to WaitVerify screen
-        navigation.navigate('WaitVerify', { uid: tempUser.user.uid });
-        
-        // Poll for email verification
-        const checkVerificationInterval = setInterval(async () => {
-          await tempUser.user.reload(); // Reload user data
-          if (tempUser.user.emailVerified) {
-            clearInterval(checkVerificationInterval); // Stop checking when verified
-            
-            // Save user data to Firestore
-            const { uid } = tempUser.user;
-            const photoURL = 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
-            
-            await setDoc(doc(db, 'Users', uid), {
-              username,
-              email: emailReg,
-              uid,
-              photoURL,
-            });
-            
-            // Clear form fields and stop loading
-            setUsername('');
-            setEmailReg('');
-            setPasswordReg('');
-            setConfirmPassword('');
-            setLoading(false);
-          }
-        }, 3000); // Check every 3 seconds
-      }else{
-        throw new Error('User object is undefined');
+  //         } catch (err) {
+  //             setError('Failed to register. Please try again.');
+  //             console.log(err);
+  //             setLoading(false);
+  //         }
+  //     } else {
+  //         setError('Please fill in all fields and make sure passwords match.');
+  //     }
+  // };
+
+  const handleSignUp = async () => {
+    if (emailReg && passwordReg && passwordReg === confirmPassword) {
+      if (!validatePassword(passwordReg)) {
+        setError(
+          'Password must be at least 6 characters long, include letters and numbers, and contain at least one uppercase letter.',
+        );
+        return;
       }
-    } catch (err) {
-      setError('Failed to register. Please try again.');
-      console.error('Error registering:', err);
-      setLoading(false);
+      setLoading(true);
+      setError('');
+      try {
+        const tempUser = await createUserWithEmailAndPassword(
+          auth,
+          emailReg,
+          passwordReg,
+        );
+
+        // Send verification email
+        if (tempUser && tempUser.user) {
+          // Send verification email
+          await sendEmailVerification(tempUser.user);
+
+          // Inform the user to verify their email
+          setError(
+            'A verification email has been sent. Please verify your email to complete registration.',
+          );
+
+          // Navigate to WaitVerify screen
+          navigation.navigate('WaitVerify', {uid: tempUser.user.uid});
+
+          // Poll for email verification
+          const checkVerificationInterval = setInterval(async () => {
+            await tempUser.user.reload(); // Reload user data
+            if (tempUser.user.emailVerified) {
+              clearInterval(checkVerificationInterval); // Stop checking when verified
+
+              // Save user data to Firestore
+              const {uid} = tempUser.user;
+              const photoURL =
+                'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
+              await setDoc(doc(db, 'Users', uid), {
+                username,
+                email: emailReg,
+                uid,
+                photoURL,
+              });
+              createAndEncryptMasterKey(passwordReg);
+              // Clear form fields and stop loading
+              setUsername('');
+              setEmailReg('');
+              setPasswordReg('');
+              setConfirmPassword('');
+              setLoading(false);
+            }
+          }, 3000); // Check every 3 seconds
+        } else {
+          throw new Error('User object is undefined');
+        }
+      } catch (err) {
+        setError('Failed to register. Please try again.');
+        console.error('Error registering:', err);
+        setLoading(false);
+      }
+    } else {
+      setError('Please fill in all fields and make sure passwords match.');
     }
-  } else {
-    setError('Please fill in all fields and make sure passwords match.');
-  }
-};
-
-
+  };
 
   const startAnimation = index => {
     Animated.timing(backgroundAnimation, {
