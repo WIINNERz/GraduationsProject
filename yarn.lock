@@ -5038,6 +5038,11 @@ react-is@^16.7.0:
 react-is@^17.0.1:
   version "17.0.2"
 
+react-native-aes-crypto@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.npmjs.org/react-native-aes-crypto/-/react-native-aes-crypto-3.0.3.tgz"
+  integrity sha512-6yJjAix83xMDMCDUQLVpoHQMkTfeWoKrDXWP2Yrl68o2053aHPk3hTW6sCTYLj5HmftZ9S9DQ3DelP7WVlIDtw==
+
 react-native-element-dropdown@^2.12.1:
   version "2.12.1"
   resolved "https://registry.npmjs.org/react-native-element-dropdown/-/react-native-element-dropdown-2.12.1.tgz"
