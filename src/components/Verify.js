@@ -1,12 +1,13 @@
 import {View, Text, StyleSheet, TextInput, Button, Alert} from 'react-native';
 import React from 'react';
-import {sha256} from 'react-native-sha256';
+import Aes from 'react-native-aes-crypto';
 import {useState} from 'react';
 import {auth, firestore, storage} from '../configs/firebaseConfig';
 import {getDocs, doc, updateDoc , collection} from 'firebase/firestore';
 
 const Verify = () => {
     const [id, setId] = useState('');
+
 
     const validateThaiId = async id => {
         const thaiIdInput = id;
@@ -26,7 +27,7 @@ const Verify = () => {
             return;
         }
         try {
-            const hash = await sha256(thaiIdInput);
+            const hash = await Aes.sha256(thaiIdInput);
             console.log('hash=', hash);
 
             const usersSnapshot = await getDocs(collection(firestore, 'Users'));
