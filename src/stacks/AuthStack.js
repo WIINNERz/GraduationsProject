@@ -4,6 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendEmailVerification 
 } from 'firebase/auth';
 import {auth} from '../configs/firebaseConfig';
 import {getFirestore, setDoc, doc} from '@react-native-firebase/firestore';
@@ -135,40 +136,44 @@ const handleSignUp = async () => {
       const tempUser = await createUserWithEmailAndPassword(auth, emailReg, passwordReg);
 
       // Send verification email
-      await tempUser.user.sendEmailVerification();
-
-      // Inform the user to verify their email
-      setError('A verification email has been sent. Please verify your email to complete registration.');
-      
-      // Navigate to WaitVerify screen
-      navigation.navigate('WaitVerify', { uid: tempUser.user.uid });
-
-      // Poll for email verification
-      const checkVerificationInterval = setInterval(async () => {
-        await tempUser.user.reload(); // Reload user data
-        if (tempUser.user.emailVerified) {
-          clearInterval(checkVerificationInterval); // Stop checking when verified
-
-          // Save user data to Firestore
-          const { uid } = tempUser.user;
-          const photoURL = 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
-
-          await setDoc(doc(db, 'Users', uid), {
-            username,
-            email: emailReg,
-            uid,
-            photoURL,
-          });
-
-          // Clear form fields and stop loading
-          setUsername('');
-          setEmailReg('');
-          setPasswordReg('');
-          setConfirmPassword('');
-          setLoading(false);
-        }
-      }, 3000); // Check every 3 seconds
-
+      if (tempUser && tempUser.user) {
+        // Send verification email
+        await sendEmailVerification(tempUser.user);
+        
+        // Inform the user to verify their email
+        setError('A verification email has been sent. Please verify your email to complete registration.');
+        
+        // Navigate to WaitVerify screen
+        navigation.navigate('WaitVerify', { uid: tempUser.user.uid });
+        
+        // Poll for email verification
+        const checkVerificationInterval = setInterval(async () => {
+          await tempUser.user.reload(); // Reload user data
+          if (tempUser.user.emailVerified) {
+            clearInterval(checkVerificationInterval); // Stop checking when verified
+            
+            // Save user data to Firestore
+            const { uid } = tempUser.user;
+            const photoURL = 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
+            
+            await setDoc(doc(db, 'Users', uid), {
+              username,
+              email: emailReg,
+              uid,
+              photoURL,
+            });
+            
+            // Clear form fields and stop loading
+            setUsername('');
+            setEmailReg('');
+            setPasswordReg('');
+            setConfirmPassword('');
+            setLoading(false);
+          }
+        }, 3000); // Check every 3 seconds
+      }else{
+        throw new Error('User object is undefined');
+      }
     } catch (err) {
       setError('Failed to register. Please try again.');
       console.error('Error registering:', err);
