@@ -8,6 +8,7 @@ import AccountInfo from '../screens/AccountInfo';
 import MyPet from '../screens/MyPet';
 import Verify from '../components/Verify';
 import Settings from '../screens/Settings';
+import ChangePassword from '../screens/ChangePassword';
 
 
 const Stack = createNativeStackNavigator();
@@ -50,6 +51,11 @@ export default function ProfileStack() {
         <Stack.Screen
           name="ProfileDetail"
           component={ProfileDetail}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="ChangePassword"
+          component={ChangePassword}
           options={{headerShown: false}}
         />
       </Stack.Group>
