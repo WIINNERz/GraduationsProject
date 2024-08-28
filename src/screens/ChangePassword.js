@@ -131,6 +131,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
     },
+    tabBar: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        height: "8%", 
+        position: 'absolute',
+        overflow: 'hidden',
+      },
 });
 
 export default ChangePassword;
