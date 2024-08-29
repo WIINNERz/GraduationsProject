@@ -2,11 +2,12 @@ import {View, Text, StyleSheet, TextInput, Button, Alert} from 'react-native';
 import React from 'react';
 import Aes from 'react-native-aes-crypto';
 import {useState} from 'react';
-import {auth, firestore, storage} from '../configs/firebaseConfig';
-import {getDocs, doc, updateDoc , collection} from 'firebase/firestore';
+import {auth, firestore} from '../configs/firebaseConfig';
+import {getDocs, doc, updateDoc , collection } from 'firebase/firestore';
 
 const Verify = () => {
     const [id, setId] = useState('');
+
 
 
     const validateThaiId = async id => {
@@ -70,7 +71,8 @@ const Verify = () => {
                     placeholder="Enter Thai ID"
                     onChangeText={text => setId(text)}
                 />
-                <Button title="Submit" onPress={() => validateThaiId(id)} />
+                 <Button title="Submit" onPress={() => validateThaiId(id)} /> 
+                
             </View>
         </View>
     );
