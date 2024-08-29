@@ -13,6 +13,7 @@ import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Forgot from '../screens/Forgot';
 import Aes from 'react-native-aes-crypto';
+import Keymanagement from '../components/Keymanagement';
 const AuthStack = () => {
   const navigation = useNavigation();
   const [isSignIn, setIsSignIn] = React.useState(true);
@@ -82,6 +83,11 @@ const AuthStack = () => {
       setError('');
       try {
         await signInWithEmailAndPassword(auth, emailLog, passwordLog);
+        const KeymanagementInstance = Keymanagement();
+        const passkey = await KeymanagementInstance.getpasskey(passwordLog);
+        let decmasterkey =  await KeymanagementInstance.getmasterkey(passkey);
+        await KeymanagementInstance.storeKey(decmasterkey);
+        decmasterkey = null;
         navigation.navigate('MyPets');
         setEmailLog('');
         setPasswordLog('');
