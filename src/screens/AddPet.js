@@ -164,7 +164,7 @@ const AddPet = () => {
           updatedAt: Timestamp.now(),
         });
       }
-      navigation.navigate('MyPet');
+      navigation.navigate('MyPets');
     } catch (error) {
       console.error('Error adding document: ', error);
     }
