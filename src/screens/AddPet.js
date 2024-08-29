@@ -47,8 +47,8 @@ const AddPet = () => {
   const [uploading, setUploading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const data = [
-    { label: "Don't have owner" , value: "Don't Have owner" },
-    { label: "Have owner" , value: "Have owner" },
+    { label: "Don't have owner" , value: "dont_have_owner" },
+    { label: "Have owner" , value: "have_owner" },
   ]
     const [status, setStatus] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
@@ -311,18 +311,18 @@ const AddPet = () => {
   };
 
   const genderData = [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
-    { label: 'Others', value: 'others' },
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+    { label: 'Others', value: 'Others' },
   ];
 
   const typeData = [
-    { label: 'Cat', value: 'cat' }, 
-    { label: 'Dog', value: 'dog' },
-    { label: 'Snake', value: 'snake' },
-    { label: 'Fish', value: 'fish' },
-    { label: 'Sheep', value: 'sheep' },
-    { label: 'Others', value: 'other' }, //do we need to input/specify the others?
+    { label: 'Cat', value: 'Cat' }, 
+    { label: 'Dog', value: 'Dog' },
+    { label: 'Snake', value: 'Snake' },
+    { label: 'Fish', value: 'Fish' },
+    { label: 'Sheep', value: 'Sheep' },
+    { label: 'Others', value: 'Other' }, //do we need to input/specify the others?
   ];
 
 
@@ -366,8 +366,10 @@ const AddPet = () => {
             />
             <TextInput
               style={styles.input}
+              placeholder='Age'
               value={age}  
               onChangeText={setAge}
+              keyboardType='numeric'
             />
           </View>
           <View style={styles.box2}>
@@ -438,12 +440,14 @@ const AddPet = () => {
             placeholder="Weight"
             value={weight}
             onChangeText={setWeight}
+            keyboardType='numeric'
           />
           <TextInput
             style={styles.input}
             placeholder="Height"
             value={height}
             onChangeText={setHeight}
+            keyboardType='numeric'
           />
           </View>
           <TextInput

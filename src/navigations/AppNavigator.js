@@ -52,7 +52,7 @@ const ProfileTabIcon = () => {
   const profileImageUrl = useProfileImageUrl();
 
   if (!profileImageUrl) {
-    return <MaterialCommunityIcons name="account" size={26} />;
+    return <MaterialCommunityIcons name="account" size={40} />;
   }
 
   return (
