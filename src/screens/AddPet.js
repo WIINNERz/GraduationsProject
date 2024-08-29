@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+//import CryptoJS from 'crypto-js';
 import {
   View,
   TextInput,
@@ -104,6 +105,10 @@ const AddPet = () => {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
+
+      // const encryptedData = {
+      //   age: CryptoJS.AES.encrypt(age, 'age').toString(),
+      // }
 
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
@@ -305,6 +310,22 @@ const AddPet = () => {
     }
   };
 
+  const genderData = [
+    { label: 'Male', value: 'male' },
+    { label: 'Female', value: 'female' },
+    { label: 'Others', value: 'others' },
+  ];
+
+  const typeData = [
+    { label: 'Cat', value: 'cat' }, 
+    { label: 'Dog', value: 'dog' },
+    { label: 'Snake', value: 'snake' },
+    { label: 'Fish', value: 'fish' },
+    { label: 'Sheep', value: 'sheep' },
+    { label: 'Others', value: 'other' }, //do we need to input/specify the others?
+  ];
+
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -345,15 +366,29 @@ const AddPet = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Age"
+              value={age}  
+              onChangeText={setAge}
             />
           </View>
           <View style={styles.box2}>
-          <TextInput
-            style={styles.input}
-            placeholder="Gender"
+          <Dropdown
+            style={[styles.input, isFocus && { borderColor: 'blue' }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={genderData}
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocus ? 'Gender' : '...'}
             value={gender}
-            onChangeText={setGender}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={item => {
+              setGender(item.value);
+              setIsFocus(false);
+            }}
           />
 
           <TextInput
@@ -364,15 +399,28 @@ const AddPet = () => {
           />
           
           </View>
+          <Dropdown
+        style={[styles.inputwh, isFocus && { borderColor: 'blue' }]}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        data={typeData}
+        maxHeight={300}
+        labelField="label"
+        valueField="value"
+        placeholder={!isFocus ? 'Type' : '...'}
+        value={type}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        onChange={item => {
+          setType(item.value);
+          setIsFocus(false);
+        }}
+      />
           <TextInput
             style={styles.inputwh}
-            placeholder="Type"
-            value={type}
-            onChangeText={setType}
-          />
-          <TextInput
-            style={styles.inputwh}
-            placeholder="Breeds"
+            placeholder="Breed"
             value={breeds}
             onChangeText={setBreeds}
           />
