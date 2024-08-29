@@ -3,14 +3,15 @@ import React from 'react';
 
 export default function MessageItem({ message, currentUser }) {
   const isCurrentUser = message?.userId === currentUser?.uid;
-    return (
+  return (
     <View style={styles.container}>
-      <View style={[styles.messageContainer, !isCurrentUser ? styles.currentUser : styles.otherUser]}>
-          <Image source={{ uri: message?.profileURL }} style={styles.profileImage} />
+      <View style={[styles.messageContainer, isCurrentUser ? styles.currentUser : styles.otherUser]}>
+        {!isCurrentUser && message?.profileURL && (
+          <Image source={{ uri: message.profileURL }} style={styles.profileImage} />
+        )}
         <View style={styles.messageContent}>
           <Text style={styles.messageText}>{message?.text}</Text>
           <Text style={styles.timestamp}>
-            {/* Display a timestamp if available */}
             {message?.createdAt?.toDate().toLocaleTimeString()}
           </Text>
         </View>
@@ -21,7 +22,7 @@ export default function MessageItem({ message, currentUser }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   messageContainer: {
     flexDirection: 'row',
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     marginTop: 5,
-    textAlign: 'right', // Align timestamp text to the right
+    textAlign: 'right',
   },
   profileImage: {
     width: 40,
