@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
         flexDirection: 'row',
-        zIndex: 1, // ทำให้แน่ใจว่า header อยู่เหนือเนื้อหาอื่น
+        zIndex: 1,
     },
     backButton: {
         position:'relative',

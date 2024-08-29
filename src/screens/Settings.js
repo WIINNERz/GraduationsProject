@@ -1,21 +1,24 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import React from 'react';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
+import { getFirestore, doc, deleteDoc } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
 
 const handleDeleteAccount = async () => {
   try {
     const user = auth.currentUser;
 
     if (user) {
+      const db = getFirestore();
+
       // Delete user data from Firestore
-      const userDocRef = firestore.collection('Users').doc(user.uid);
-      await userDocRef.delete();
+      const userDocRef = doc(db, 'Users', user.uid);
+      await deleteDoc(userDocRef);
 
       // Try to delete user image from Firebase Storage
       try {
-        const storageRef = storage.ref();
-        const userImageRef = storageRef.child(`user_images/${user.uid}`);
-        await userImageRef.delete();
+        const userImageRef = ref(storage, `user_images/${user.uid}`);
+        await deleteObject(userImageRef);
       } catch (storageError) {
         // If the file does not exist, it will throw an error which can be ignored
         console.log('No image found to delete:', storageError.message);

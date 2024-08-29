@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
     header: {
         width: '100%',
-        height: "10%",
+        height: "8%",
         padding: 20,
         flexDirection: 'row',
         backgroundColor: '#D27C2C',
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         fontFamily: 'InterBold',
     },
     title: {
-        fontSize: 28,
+        fontSize: 26,
         fontWeight: '600',
         color: 'white',
         backgroundColor: '#D27C2C',

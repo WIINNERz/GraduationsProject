@@ -35,7 +35,7 @@ function ChatHeader(){
     return (
         <View style={styles.container}>
             <View>
-            <Text style={{color: 'white',  fontFamily: 'InterSemiBold', fontSize: 28 }}>Chat</Text>
+            <Text style={{color: 'white',  fontFamily: 'InterSemiBold', fontSize: 26 }}>Chat</Text>
             
             </View>
             <View>

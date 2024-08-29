@@ -20,7 +20,7 @@ export default function PetProfile() {
     
           return () => {
             navigate.getParent()?.setOptions({
-                tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],// Reset tabBarStyle to default
+                tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }], // Reset tabBarStyle to default
             });
           };
         }, [navigate])

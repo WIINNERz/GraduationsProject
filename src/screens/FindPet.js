@@ -16,7 +16,7 @@ const FindPet = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;  // flag to track if the component is mounted
+    let isMounted = true; 
 
     const fetchDogs = async () => {
       try {
@@ -49,7 +49,7 @@ const FindPet = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={{ color: 'white',  fontFamily: 'InterSemiBold', fontSize: 28 }}>Looking for Owner</Text>
+        <Text style={{ color: 'white',  fontFamily: 'InterSemiBold', fontSize: 26 }}>Looking for Owner</Text>
         <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
       </View>
 
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     flex : 1,
     height: '100%',
     width: '100%',
+    marginBottom: 80,
   },
   header: {
     width: '100%',

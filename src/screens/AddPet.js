@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+//import CryptoJS from 'crypto-js';
 import {
   View,
   TextInput,
@@ -46,8 +47,8 @@ const AddPet = () => {
   const [uploading, setUploading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const data = [
-    { label: "Don't have owner" , value: "Don't Have owner" },
-    { label: "Have owner" , value: "Have owner" },
+    { label: "Don't have owner" , value: "dont_have_owner" },
+    { label: "Have owner" , value: "have_owner" },
   ]
     const [status, setStatus] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
@@ -104,6 +105,10 @@ const AddPet = () => {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
+
+      // const encryptedData = {
+      //   age: CryptoJS.AES.encrypt(age, 'age').toString(),
+      // }
 
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
@@ -305,6 +310,22 @@ const AddPet = () => {
     }
   };
 
+  const genderData = [
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+    { label: 'Others', value: 'Others' },
+  ];
+
+  const typeData = [
+    { label: 'Cat', value: 'Cat' }, 
+    { label: 'Dog', value: 'Dog' },
+    { label: 'Snake', value: 'Snake' },
+    { label: 'Fish', value: 'Fish' },
+    { label: 'Sheep', value: 'Sheep' },
+    { label: 'Others', value: 'Other' }, //do we need to input/specify the others?
+  ];
+
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -345,15 +366,31 @@ const AddPet = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Age"
+              placeholder='Age'
+              value={age}  
+              onChangeText={setAge}
+              keyboardType='numeric'
             />
           </View>
           <View style={styles.box2}>
-          <TextInput
-            style={styles.input}
-            placeholder="Gender"
+          <Dropdown
+            style={[styles.input, isFocus && { borderColor: 'blue' }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={genderData}
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocus ? 'Gender' : '...'}
             value={gender}
-            onChangeText={setGender}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={item => {
+              setGender(item.value);
+              setIsFocus(false);
+            }}
           />
 
           <TextInput
@@ -364,15 +401,28 @@ const AddPet = () => {
           />
           
           </View>
+          <Dropdown
+        style={[styles.inputwh, isFocus && { borderColor: 'blue' }]}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        data={typeData}
+        maxHeight={300}
+        labelField="label"
+        valueField="value"
+        placeholder={!isFocus ? 'Type' : '...'}
+        value={type}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        onChange={item => {
+          setType(item.value);
+          setIsFocus(false);
+        }}
+      />
           <TextInput
             style={styles.inputwh}
-            placeholder="Type"
-            value={type}
-            onChangeText={setType}
-          />
-          <TextInput
-            style={styles.inputwh}
-            placeholder="Breeds"
+            placeholder="Breed"
             value={breeds}
             onChangeText={setBreeds}
           />
@@ -390,12 +440,14 @@ const AddPet = () => {
             placeholder="Weight"
             value={weight}
             onChangeText={setWeight}
+            keyboardType='numeric'
           />
           <TextInput
             style={styles.input}
             placeholder="Height"
             value={height}
             onChangeText={setHeight}
+            keyboardType='numeric'
           />
           </View>
           <TextInput
