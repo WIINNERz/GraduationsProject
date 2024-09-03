@@ -4,10 +4,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import ChatRoomHeader from '../components/ChatRoomHeader';
 import MessageList from '../components/MessageList';
-import useAuth from '../hooks/useAuth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getRoomId } from '../utils/common';
 import { setDoc, doc, Timestamp, collection, getDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { auth, db } from '../configs/firebaseConfig';
+import { auth, db, storage } from '../configs/firebaseConfig';
 import PlusBoxChatRoom from '../components/PlusBoxChatRoom';
 
 export default function ChatRoom({navigation}) {
@@ -15,6 +15,7 @@ export default function ChatRoom({navigation}) {
     const { params } = route.params;
     const user = auth.currentUser;
     const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState('');
     const textRef = useRef('');
     const inputRef = useRef(null);
     const [userProfile, setUserProfile] = useState({ profileURL: '', senderName: '' });
@@ -66,7 +67,7 @@ export default function ChatRoom({navigation}) {
 
     const fetchUserProfile = async () => {
         try {
-            const userDocRef = doc(db, 'Users', params.uid);
+            const userDocRef = doc(db, 'Users', user.uid);
             const userDoc = await getDoc(userDocRef);
             if (userDoc.exists()) {
                 const userData = userDoc.data();
@@ -81,36 +82,53 @@ export default function ChatRoom({navigation}) {
         }
     };
 
-    const handleSendMessage = async () => {
-        let message = textRef.current.trim();
-        if (!message) return;
+    const handleSendMessage = async (message, type = 'text') => {
+        let trimmedMessage = message.trim();
+        if (!trimmedMessage) return;
+    
         try {
             let roomId = getRoomId(user.uid, params.uid);
             const docRef = doc(db, 'Rooms', roomId);
             const messageRef = collection(docRef, 'Messages');
             textRef.current = '';
-            if(inputRef) inputRef?.current?.clear();
+            let imageUrl = '';
+            if (type === 'image') {
+                const storageRef = ref(storage, `chat/${roomId}/${user.uid}/${Date.now()}`);
+                const response = await fetch(message);
+                const blob = await response.blob();
+                const snapshot = await uploadBytes(storageRef, blob);
+                imageUrl = await getDownloadURL(snapshot.ref);
+            }
             await setDoc(doc(messageRef), {
                 userId: user?.uid,
-                text: message,
-                profileURL: userProfile.profileURL, 
+                text: type === 'text' ? trimmedMessage : '',
+                profileURL: userProfile.profileURL,
                 senderName: userProfile.senderName,
+                imageUrl: type === 'image' ? imageUrl : '',
                 createdAt: Timestamp.fromDate(new Date()),
             });
+            setMessage(''); 
         } catch (error) {
             console.error('Error sending message:', error);
         }
-    }
+    };
+
+    const handleImagePicked = (url) => {
+        const filename = url.split('/').pop();
+        textRef.current = filename;
+        if (inputRef) inputRef.current?.setNativeProps({ text: filename });
+        handleSendMessage(url, 'image'); 
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.chatContainer}>
-            <ChatRoomHeader user={params} />
-            <MessageList messages={messages} currentUser={user} />
+                <ChatRoomHeader user={params} />
+                <MessageList messages={messages} currentUser={user} />
             </View>
             {isBoxed && (
             <View style={styles.tabPlusBox}>
-                <PlusBoxChatRoom />
+                <PlusBoxChatRoom onImagePicked={handleImagePicked} />
             </View>
             )}
             <View style={styles.chatInput}>
@@ -120,10 +138,11 @@ export default function ChatRoom({navigation}) {
                 <TextInput
                     ref={inputRef}
                     placeholder='Type a message'
-                    onChangeText={value => textRef.current = value}
+                    value={message}  
+                    onChangeText={value => setMessage(value)}  
                     style={styles.textInput}
                 />
-                <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+                <TouchableOpacity onPress={() => handleSendMessage(message)} style={styles.sendButton}>
                     <MaterialCommunityIcons name="send-circle" size={30} color="#007bff" />
                 </TouchableOpacity>
             </View>

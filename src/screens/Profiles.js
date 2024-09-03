@@ -20,7 +20,6 @@ const Profiles = () => {
 
     const userDoc = doc(firestore, 'Users', user.uid);
 
-    // Set up Firestore listener
     const unsubscribe = onSnapshot(userDoc, (docSnap) => {
       if (docSnap.exists() && docSnap.data().email === user.email) {
         setUserData(docSnap.data());
@@ -32,8 +31,6 @@ const Profiles = () => {
       console.error('Error fetching user data:', error);
       setLoading(false);
     });
-
-    // Clean up the listener on component unmount
     return () => unsubscribe();
   }, [user]);
 

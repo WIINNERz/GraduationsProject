@@ -3,17 +3,24 @@ import React from 'react';
 
 export default function MessageItem({ message, currentUser }) {
   const isCurrentUser = message?.userId === currentUser?.uid;
+  const profileURL = message?.profileURL || ''; 
+  const text = message?.text || '';
+  const imageUrl = message?.imageUrl || '';
+  const createdAt = message?.createdAt?.toDate().toLocaleTimeString() || '';
+
   return (
     <View style={styles.container}>
       <View style={[styles.messageContainer, isCurrentUser ? styles.currentUser : styles.otherUser]}>
-        {!isCurrentUser && message?.profileURL && (
-          <Image source={{ uri: message.profileURL }} style={styles.profileImage} />
-        )}
+        {!isCurrentUser && profileURL ? (
+          <Image source={{ uri: profileURL }} style={styles.profileImage} />
+        ) : null}
         <View style={styles.messageContent}>
-          <Text style={styles.messageText}>{message?.text}</Text>
-          <Text style={styles.timestamp}>
-            {message?.createdAt?.toDate().toLocaleTimeString()}
-          </Text>
+          {imageUrl ? (
+            <Image source={{ uri: imageUrl }} style={styles.messageImage} />
+          ) : (
+            <Text style={styles.messageText}>{text}</Text>
+          )}
+          <Text style={styles.timestamp}>{createdAt}</Text>
         </View>
       </View>
     </View>
@@ -27,6 +34,7 @@ const styles = StyleSheet.create({
   messageContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    marginVertical: 5,
   },
   currentUser: {
     justifyContent: 'flex-end',
@@ -42,6 +50,11 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
+  },
+  messageImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 5,
   },
   timestamp: {
     fontSize: 12,
