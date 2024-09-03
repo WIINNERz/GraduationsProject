@@ -30,48 +30,48 @@ const AuthStack = () => {
   const [error, setError] = React.useState('');
   const db = getFirestore();
   const backgroundAnimation = React.useRef(new Animated.Value(0)).current;
-
-  async function createAndEncryptMasterKey(passwordReg) {
-    try {
-      // 1. Generate a random master key
-      const masterKey = await Aes.randomKey(32); // 256-bit master key
-      // 2. Generate a salt and derive a key from the password
-      const salt = await Aes.randomKey(16); // 128-bit salt
-      const iterations = 5000;
-      const keyLength = 256;
-      const hash = 'sha256';
-      const passkey = await Aes.pbkdf2(
-        passwordReg,
-        salt,
-        iterations,
-        keyLength,
-        hash,
-      );
-      // 3. Generate a random IV for encryption
-      const iv = await Aes.randomKey(16); // 128-bit IV
-      // 4. Encrypt the master key using AES-256-CBC with the derived key
-      const encryptedMasterKey = await Aes.encrypt(
-        masterKey,
-        passkey,
-        iv,
-        'aes-256-cbc',
-      );
-      // 5. Save the encrypted master key, salt, and IV to Firestore
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        await updateDoc(doc(db, 'Users', currentUser.uid), {
-          masterKey: encryptedMasterKey,
-          salt,
-          iv,
-        });
-      } else {
-        console.error('No user is currently signed in.');
-      }
-    } catch (error) {
-      console.error('Error during master key creation and encryption:', error);
-      throw error;
-    }
-  }
+  const KeymanagementInstance = Keymanagement();
+  // async function createAndEncryptMasterKey(passwordReg) {
+  //   try {
+  //     // 1. Generate a random master key
+  //     const masterKey = await Aes.randomKey(32); // 256-bit master key
+  //     // 2. Generate a salt and derive a key from the password
+  //     const salt = await Aes.randomKey(16); // 128-bit salt
+  //     const iterations = 5000;
+  //     const keyLength = 256;
+  //     const hash = 'sha256';
+  //     const passkey = await Aes.pbkdf2(
+  //       passwordReg,
+  //       salt,
+  //       iterations,
+  //       keyLength,
+  //       hash,
+  //     );
+  //     // 3. Generate a random IV for encryption
+  //     const iv = await Aes.randomKey(16); // 128-bit IV
+  //     // 4. Encrypt the master key using AES-256-CBC with the derived key
+  //     const encryptedMasterKey = await Aes.encrypt(
+  //       masterKey,
+  //       passkey,
+  //       iv,
+  //       'aes-256-cbc',
+  //     );
+  //     // 5. Save the encrypted master key, salt, and IV to Firestore
+  //     const currentUser = auth.currentUser;
+  //     if (currentUser) {
+  //       await updateDoc(doc(db, 'Users', currentUser.uid), {
+  //         masterKey: encryptedMasterKey,
+  //         salt,
+  //         iv,
+  //       });
+  //     } else {
+  //       console.error('No user is currently signed in.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during master key creation and encryption:', error);
+  //     throw error;
+  //   }
+  // }
 
   const validatePassword = password => {
     const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{6,}$/;
@@ -83,7 +83,8 @@ const AuthStack = () => {
       setError('');
       try {
         await signInWithEmailAndPassword(auth, emailLog, passwordLog);
-        const KeymanagementInstance = Keymanagement();
+        // add if statement to check if user is verified
+        // const KeymanagementInstance = Keymanagement();
         const passkey = await KeymanagementInstance.getpasskey(passwordLog);
         let decmasterkey =  await KeymanagementInstance.getmasterkey(passkey);
         await KeymanagementInstance.storeKey(decmasterkey);
@@ -148,7 +149,9 @@ const AuthStack = () => {
                 uid,
                 photoURL,
               });
-              createAndEncryptMasterKey(passwordReg);
+
+              // createAndEncryptMasterKey(passwordReg);
+              await KeymanagementInstance.createAndEncryptMasterKey(passwordReg);
               // Clear form fields and stop loading
               setUsername('');
               setEmailReg('');

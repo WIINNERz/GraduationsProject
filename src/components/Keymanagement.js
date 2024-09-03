@@ -1,7 +1,9 @@
 import * as Keychain from 'react-native-keychain';
 import Aes from 'react-native-aes-crypto';
 import {auth, firestore} from '../configs/firebaseConfig';
-import {getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc , updateDoc } from 'firebase/firestore';
+
+
 
 const Keymanagement = () => {
   const iterations = 5000, keyLength = 256, hash = 'sha256';
@@ -50,11 +52,89 @@ const Keymanagement = () => {
       return null;
     }
   }
+  async function createAndEncryptMasterKey(passwordReg) {
+    try {
+      // 1. Generate a random master key
+      const masterKey = await Aes.randomKey(32); // 256-bit master key
+      // 2. Generate a salt and derive a key from the password
+      const salt = await Aes.randomKey(16); // 128-bit salt
+      const iterations = 5000;
+      const keyLength = 256;
+      const hash = 'sha256';
+      const passkey = await Aes.pbkdf2(
+        passwordReg,
+        salt,
+        iterations,
+        keyLength,
+        hash,
+      );
+      // 3. Generate a random IV for encryption
+      const iv = await Aes.randomKey(16); // 128-bit IV
+      // 4. Encrypt the master key using AES-256-CBC with the derived key
+      const encryptedMasterKey = await Aes.encrypt(
+        masterKey,
+        passkey,
+        iv,
+        'aes-256-cbc',
+      );
+      console.log('Master key:', masterKey);
+      // 5. Save the encrypted master key, salt, and IV to Firestore
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userRef = doc(firestore, 'Users', currentUser.uid);
+        await updateDoc(userRef, {
+          masterKey: encryptedMasterKey,
+          salt,
+          iv,
+        });
+        console.log('Master key created and encrypted successfully!');
+      } else {
+        console.error('No user is currently signed in.');
+      }
+ 
+    } catch (error) {
+      console.error('Error during master key creation and encryption:', error);
+      throw error;
+    }
+  }
+  async function Reencrpytmaseky(oldPassword, newPassword) {
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+        Alert.alert('Error', 'No user found. Please sign in again.', [{ text: 'OK' }]);
+        return;
+    }
+    try {
+            const { masterKey, iv, salt } = await getuserkey();
+            const iterations = 5000, keyLength = 256, hash = 'sha256';
+            const passkey = await Aes.pbkdf2(oldPassword, salt, iterations, keyLength, hash);
+
+            try {
+                const decryptMasterKey = await Aes.decrypt(masterKey, passkey, iv, 'aes-256-cbc');
+                const newpasskey = await Aes.pbkdf2(newPassword, salt, iterations, keyLength, hash);
+                const reencryptMaskey = await Aes.encrypt(decryptMasterKey, newpasskey, iv, 'aes-256-cbc');
+                const userRef = doc(firestore, 'Users', currentUser.uid);
+                await updateDoc(userRef, {
+                    masterKey: reencryptMaskey
+                });
+                console.log('Master', masterKey);
+                console.log('Master key updated successfully!');
+            } catch (decryptError) {
+                console.error('Error decrypting master key: ', decryptError);
+                Alert.alert('Error', 'Failed to decrypt master key. Please check your old password.', [{ text: 'OK' }]);
+            }
+        
+    } catch (error) {
+        console.error('Error updating masterkey: ', error);
+    }
+}
 
   return {
     storeKey,
     getpasskey,
     getmasterkey,
+    createAndEncryptMasterKey,
+    Reencrpytmaseky,
   };
 };
 
