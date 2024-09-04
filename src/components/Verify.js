@@ -5,9 +5,25 @@ import {useState} from 'react';
 import {auth, firestore} from '../configs/firebaseConfig';
 import {getDocs, doc, updateDoc , collection } from 'firebase/firestore';
 
+import * as Keychain from 'react-native-keychain';
+import Keymanagement from './Keymanagement';
+
+
 const Verify = () => {
     const [id, setId] = useState('');
+    
 
+    // retrieve key example
+    // async function retrievekey() {
+    //     try {
+    //     const KeymanagementInstance = Keymanagement();
+    //     const key = await KeymanagementInstance.retrievekey();
+    //     }
+    //     catch (error) {
+    //         console.error(error);
+    //         return null;
+    //     }
+    //   }
 
 
     const validateThaiId = async id => {
@@ -30,6 +46,7 @@ const Verify = () => {
         try {
             const hash = await Aes.sha256(thaiIdInput);
             console.log('hash=', hash);
+            const encryptedHash = Crypto.AES.encrypt(hash , 'secret key 123').toString();
 
             const usersSnapshot = await getDocs(collection(firestore, 'Users'));
             let hashExists = false;
@@ -72,6 +89,7 @@ const Verify = () => {
                     onChangeText={text => setId(text)}
                 />
                  <Button title="Submit" onPress={() => validateThaiId(id)} /> 
+                 <Button title="getkey" onPress={() => retrievekey()}/> 
                 
             </View>
         </View>

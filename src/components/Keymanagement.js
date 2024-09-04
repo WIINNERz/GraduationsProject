@@ -1,13 +1,13 @@
 import * as Keychain from 'react-native-keychain';
 import Aes from 'react-native-aes-crypto';
+import { Alert } from 'react-native';
 import {auth, firestore} from '../configs/firebaseConfig';
 import { getDoc, doc , updateDoc } from 'firebase/firestore';
 
 
-
 const Keymanagement = () => {
   const iterations = 5000, keyLength = 256, hash = 'sha256';
-
+  const currentUser = auth.currentUser;
   async function getuserkey() {
     const currentUser = auth.currentUser;
     try {
@@ -30,6 +30,22 @@ const Keymanagement = () => {
       console.error('Could not store key', error);
     }
   }
+  async function retrievekey() {
+    try {
+      const credentials = await Keychain.getGenericPassword();
+      if (credentials) {
+        console.log('Credentials successfully loaded for' + credentials.username);
+        return credentials.password;
+      } else {
+        console.log('No credentials stored');
+        return null;
+      }
+    } catch (error) {
+      console.error('Could not load credentials. ', error);
+      return null;
+    }
+  }
+
 
   async function getpasskey(password) {
     try {
@@ -52,15 +68,12 @@ const Keymanagement = () => {
       return null;
     }
   }
-  async function createAndEncryptMasterKey(passwordReg) {
+  async function createAndEncryptMasterKey(passwordReg ,uid) {
     try {
       // 1. Generate a random master key
       const masterKey = await Aes.randomKey(32); // 256-bit master key
       // 2. Generate a salt and derive a key from the password
       const salt = await Aes.randomKey(16); // 128-bit salt
-      const iterations = 5000;
-      const keyLength = 256;
-      const hash = 'sha256';
       const passkey = await Aes.pbkdf2(
         passwordReg,
         salt,
@@ -77,21 +90,14 @@ const Keymanagement = () => {
         iv,
         'aes-256-cbc',
       );
-      console.log('Master key:', masterKey);
       // 5. Save the encrypted master key, salt, and IV to Firestore
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        const userRef = doc(firestore, 'Users', currentUser.uid);
+        const userRef = doc(firestore, 'Users', uid);
         await updateDoc(userRef, {
           masterKey: encryptedMasterKey,
           salt,
           iv,
         });
         console.log('Master key created and encrypted successfully!');
-      } else {
-        console.error('No user is currently signed in.');
-      }
- 
     } catch (error) {
       console.error('Error during master key creation and encryption:', error);
       throw error;
@@ -117,7 +123,6 @@ const Keymanagement = () => {
                 await updateDoc(userRef, {
                     masterKey: reencryptMaskey
                 });
-                console.log('Master', masterKey);
                 console.log('Master key updated successfully!');
             } catch (decryptError) {
                 console.error('Error decrypting master key: ', decryptError);
@@ -128,6 +133,10 @@ const Keymanagement = () => {
         console.error('Error updating masterkey: ', error);
     }
 }
+  async function encryptData(data) {
+    // https://www.npmjs.com/package/aes-ecb
+  }
+
 
   return {
     storeKey,
@@ -135,6 +144,7 @@ const Keymanagement = () => {
     getmasterkey,
     createAndEncryptMasterKey,
     Reencrpytmaseky,
+    retrievekey,
   };
 };
 
