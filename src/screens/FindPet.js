@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     flex : 1,
     height: '100%',
     width: '100%',
-    marginBottom: 80,
   },
   header: {
     width: '100%',
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   petList: {
-    marginBottom: 60,
+    marginBottom: 150,
     
   },
 });
