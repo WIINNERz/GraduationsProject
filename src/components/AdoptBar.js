@@ -1,24 +1,23 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { auth } from '../configs/firebaseConfig';
 
+const AdoptBar = ({ uid}) => {
+    const navigation = useNavigation();
 
-
-export default function AdoptBar({id}) {
-    const navigate = useNavigation();
     const handleContactPress = () => {
-       navigate.navigate('ChatRoom1',{id});
-    console.log(id);
-
-    }
+        navigation.navigate('ChatRoom1', { uid });
+        console.log(uid);
+    };
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.button} onPress={handleContactPress}>
                 <Text style={styles.text}>Contact to Adopt</Text>
             </TouchableOpacity>
-            <View style={{flexDirection:'row',alignItems:'center'}}>
-                <TouchableOpacity >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity>
                     <MaterialCommunityIcons name="heart" size={30} color="#D27C2C" />
                 </TouchableOpacity>
                 <Text>1</Text>
@@ -27,8 +26,9 @@ export default function AdoptBar({id}) {
                 <Text style={styles.text}>Add to Favorite</Text>
             </TouchableOpacity>
         </View>
-    )
+    );
 }
+
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
@@ -50,5 +50,6 @@ const styles = StyleSheet.create({
     text: {
         color: 'white',
         fontWeight: 'bold',
-    }
-})
+    },
+});
+export default AdoptBar;

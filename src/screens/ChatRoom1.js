@@ -1,43 +1,47 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import ChatRoomHeader from '../components/ChatRoomHeader';
 import MessageList from '../components/MessageList';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getRoomId } from '../utils/common';
-import { setDoc, doc, Timestamp, collection, getDoc, query, where, getDocs, onSnapshot, orderBy } from 'firebase/firestore';
-import { auth, db } from '../configs/firebaseConfig';
+import { setDoc, doc, Timestamp, collection, getDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { auth, db, storage } from '../configs/firebaseConfig';
+import PlusBoxChatRoom from '../components/PlusBoxChatRoom';
 
-export default function ChatRoom({navigation}) {
+export default function ChatRoom1({ navigation }) {
     const route = useRoute();
-    const { id } = route.params;
-    const { params } = route.params;
+    const {uid } = route.params;
     const user = auth.currentUser;
     const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState('');
     const textRef = useRef('');
     const inputRef = useRef(null);
     const [userProfile, setUserProfile] = useState({ profileURL: '', senderName: '' });
+    const [header, setHeader] = useState({ username: '' });
+    const [isBoxed, setIsBoxed] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
+          navigation.getParent()?.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+    
+          return () => {
             navigation.getParent()?.setOptions({
-                tabBarStyle: { display: 'none' }
+                tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],
             });
-
-            return () => {
-                navigation.getParent()?.setOptions({
-                    tabBarStyle: undefined
-                });
-            };
+          };
         }, [navigation])
-    );
+      );
 
     useEffect(() => {
         if (user) {
             createRoomIfNotExists();
-            fetchPetUserProfile();
-            
-            let roomId = getRoomId(user.uid, id.uid);
+            fetchUserProfile();
+
+            let roomId = getRoomId(user.uid, uid);
             const docRef = doc(db, 'Rooms', roomId);
             const messageRef = collection(docRef, 'Messages');
             const q = query(messageRef, orderBy('createdAt', 'asc'));
@@ -55,104 +59,91 @@ export default function ChatRoom({navigation}) {
     }, [user]);
 
     const createRoomIfNotExists = async () => {
-        try {
-            // ดึงค่า `uid` จากเอกสารใน `Pets`
-            const petRef = doc(db, 'Pets', id);
-            const petDoc = await getDoc(petRef);
-            if (petDoc.exists()) {
-                const petData = petDoc.data();
-                const petUid = petData.uid;
-
-                if (petUid) {
-                    // ตรวจสอบว่ามีเอกสารใน `Rooms` ที่มี `uid` ตรงกับ `petUid` หรือไม่
-                    const roomsRef = collection(db, 'Rooms');
-                    const q = query(roomsRef, where('uid', '==', petUid));
-                    const querySnapshot = await getDocs(q);
-
-                    if (querySnapshot.empty) {
-                        // ถ้าไม่มีห้องที่ตรงกับ `petUid`, สร้างห้องใหม่
-                        let roomId = getRoomId(user.uid, petUid);
-                        const newRoomRef = doc(db, 'Rooms', roomId);
-                        await setDoc(newRoomRef, {
-                            roomId,
-                            uid: petUid,
-                            createdAt: Timestamp.fromDate(new Date()),
-                            // เพิ่มฟิลด์อื่นๆ ที่ต้องการที่นี่
-                        });
-                        console.log('New room created with ID:', roomId);
-                    } else {
-                        console.log('Room(s) already exist for the pet UID');
-                    }
-                } else {
-                    console.error('Pet UID is undefined or null');
-                }
-            } else {
-                console.error('Pet document does not exist');
-            }
-        } catch (error) {
-            console.error('Error creating room if not exists:', error);
-        }
+        let roomId = getRoomId(user.uid, uid);
+        await setDoc(doc(db, 'Rooms', roomId), {
+            roomId,
+            createdAt: Timestamp.fromDate(new Date()),
+        });
     };
-
-    const fetchPetUserProfile = async () => {
+    const fetchUserProfile = async () => {
         try {
-            const userPetRef = doc(db, 'Pets', id); // Use id directly
-            const userPetDoc = await getDoc(userPetRef);
-            if (userPetDoc.exists()) {
-                const petData = userPetDoc.data();
+            const userDocRef = doc(db, 'Users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
                 setUserProfile({
-                    profileURL: petData.photoURL || '',
-                    senderName: petData.username || '',
+                    profileURL: userData.photoURL || '',
+                    senderName: userData.username || '',
                 });
-                console.log('Pet data:', petData);
-            } else {
-                console.error('Pet document does not exist');
             }
+
         } catch (error) {
-            console.error('Error fetching pet user profile:', error);
+            console.error('Error fetching user profile:', error);
         }
     };
 
-    const handleSendMessage = async () => {
-        let message = textRef.current.trim();
-        if (!message) return;
+    const handleSendMessage = async (message, type = 'text') => {
+        let trimmedMessage = message.trim();
+        if (!trimmedMessage) return;
+
         try {
-            let roomId = getRoomId(user.uid, params.uid);
+            let roomId = getRoomId(user.uid, uid);
             const docRef = doc(db, 'Rooms', roomId);
             const messageRef = collection(docRef, 'Messages');
             textRef.current = '';
-            if (inputRef) inputRef.current?.clear();
-            const newDoc = await setDoc(doc(messageRef), {
+            let imageUrl = '';
+            if (type === 'image') {
+                const storageRef = ref(storage, `chat/${roomId}/${user.uid}/${Date.now()}`);
+                const response = await fetch(message);
+                const blob = await response.blob();
+                const snapshot = await uploadBytes(storageRef, blob);
+                imageUrl = await getDownloadURL(snapshot.ref);
+            }
+            await setDoc(doc(messageRef), {
                 userId: user?.uid,
-                text: message,
-                profileURL: userProfile.profileURL, // Use fetched profile URL
+                text: type === 'text' ? trimmedMessage : '',
+                profileURL: userProfile.profileURL,
                 senderName: userProfile.senderName,
+                imageUrl: type === 'image' ? imageUrl : '',
                 createdAt: Timestamp.fromDate(new Date()),
             });
-            console.log('New message id:', newDoc.id);
+            setMessage('');
         } catch (error) {
             console.error('Error sending message:', error);
         }
     };
 
+    const handleImagePicked = (url) => {
+        const filename = url.split('/').pop();
+        textRef.current = filename;
+        if (inputRef) inputRef.current?.setNativeProps({ text: filename });
+        handleSendMessage(url, 'image');
+    };
+
+
     return (
         <View style={styles.container}>
             <View style={styles.chatContainer}>
-                <ChatRoomHeader user={params} />
+                <ChatRoomHeader user={header} />
                 <MessageList messages={messages} currentUser={user} />
             </View>
-
+            {isBoxed && (
+                <View style={styles.tabPlusBox}>
+                    <PlusBoxChatRoom onImagePicked={handleImagePicked} />
+                </View>
+            )}
             <View style={styles.chatInput}>
-                <TouchableOpacity style={{ padding: 10 }}>
+                <TouchableOpacity style={{ padding: 10 }} onPress={() => setIsBoxed(!isBoxed)}>
                     <MaterialCommunityIcons name='plus' size={30} color="#007bff" />
                 </TouchableOpacity>
                 <TextInput
                     ref={inputRef}
                     placeholder='Type a message'
-                    onChangeText={value => textRef.current = value}
-                    style={styles.textInput} // Apply the new text input style
+                    value={message}
+                    onChangeText={value => setMessage(value)}
+                    style={styles.textInput}
                 />
-                <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+                <TouchableOpacity onPress={() => handleSendMessage(message)} style={styles.sendButton}>
                     <MaterialCommunityIcons name="send-circle" size={30} color="#007bff" />
                 </TouchableOpacity>
             </View>
@@ -163,21 +154,21 @@ export default function ChatRoom({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'flex-end', // Align items to the bottom
-        backgroundColor: '#f5f5f5', // Light background color
+        justifyContent: 'flex-end',
+        backgroundColor: '#f5f5f5',
     },
     chatContainer: {
         flex: 1,
-        padding: 20,
+        padding: 20
     },
     chatInput: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,
-        backgroundColor: '#fff',
+        backgroundColor: '#EDE6E6',
         borderWidth: 1,
         borderColor: '#ddd',
-        elevation: 2, // Add a shadow effect for better visibility
+        elevation: 2,
     },
     textInput: {
         flex: 1,
@@ -190,5 +181,12 @@ const styles = StyleSheet.create({
     sendButton: {
         padding: 10,
         marginLeft: 10,
+    },
+    tabBar: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        height: "8%",
+        position: 'absolute',
+        overflow: 'hidden',
     },
 });
