@@ -368,12 +368,14 @@ await setDoc(petDocRef, {
             <TextInput
               style={styles.input}
               placeholder="Name"
+              placeholderTextColor={"gray"}
               value={name}
               onChangeText={setName}
             />
             <TextInput
               style={styles.input}
               placeholder='Age'
+              placeholderTextColor={"gray"}
               value={age}  
               onChangeText={setAge}
               keyboardType='numeric'
@@ -383,6 +385,7 @@ await setDoc(petDocRef, {
           <Dropdown
             style={[styles.input, isFocus && { borderColor: 'blue' }]}
             placeholderStyle={styles.placeholderStyle}
+            itemTextStyle={styles.itemTextStyle} 
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
             iconStyle={styles.iconStyle}
@@ -391,6 +394,7 @@ await setDoc(petDocRef, {
             labelField="label"
             valueField="value"
             placeholder={!isFocus ? 'Gender' : '...'}
+            
             value={gender}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
@@ -403,6 +407,7 @@ await setDoc(petDocRef, {
           <TextInput
             style={styles.input}
             placeholder="Color"
+            placeholderTextColor={"gray"}
             value={color}
             onChangeText={setColor}
           />
@@ -414,6 +419,7 @@ await setDoc(petDocRef, {
         selectedTextStyle={styles.selectedTextStyle}
         inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
+        itemTextStyle={styles.itemTextStyle} 
         data={typeData}
         maxHeight={300}
         labelField="label"
@@ -430,6 +436,7 @@ await setDoc(petDocRef, {
           <TextInput
             style={styles.inputwh}
             placeholder="Breed"
+            placeholderTextColor={"gray"}
             value={breeds}
             onChangeText={setBreeds}
           />
@@ -445,6 +452,7 @@ await setDoc(petDocRef, {
           <TextInput
             style={styles.input}
             placeholder="Weight"
+            placeholderTextColor={"gray"}
             value={weight}
             onChangeText={setWeight}
             keyboardType='numeric'
@@ -452,6 +460,7 @@ await setDoc(petDocRef, {
           <TextInput
             style={styles.input}
             placeholder="Height"
+            placeholderTextColor={"gray"}
             value={height}
             onChangeText={setHeight}
             keyboardType='numeric'
@@ -460,12 +469,14 @@ await setDoc(petDocRef, {
           <TextInput
             style={styles.inputwh}
             placeholder="Characteristics"
+            placeholderTextColor={"gray"}
             value={characteristics}
             onChangeText={setCharacteristics}
           />
           <TextInput
             style={styles.inputwh}
             placeholder="Chronic Diseases"
+            placeholderTextColor={"gray"}
             value={chronic}
             onChangeText={setChronic}
           />
@@ -473,6 +484,7 @@ await setDoc(petDocRef, {
           style={[styles.dropdown, isFocus ]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
+          itemTextStyle={styles.itemTextStyle} 
           data={data}
           maxHeight={300}
           labelField="label"
@@ -502,12 +514,14 @@ await setDoc(petDocRef, {
                   <TextInput
                     style={styles.inputwh}
                     placeholder="Location"
+                    placeholderTextColor={"gray"}
                     value={location}
                     onChangeText={setLocation}
                   />
                   <TextInput
                     style={styles.inputwh}
                     placeholder="Conditions"
+                    placeholderTextColor={"gray"}
                     value={conditions}
                     onChangeText={setConditions}
                   />
@@ -537,6 +551,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     alignItems: 'center',
+   
   },
   subContainer: {
     width: '100%',
@@ -586,6 +601,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
+    color: 'black',
+    
   },
   inputC: {
     width: '100%',
@@ -605,6 +622,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
+    color : 'black',
   },
   inputDate: {
     width: '90%',
@@ -614,6 +632,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
+    color: 'black',
   },
   errorText: {
     color: 'red',
@@ -708,6 +727,8 @@ const styles = StyleSheet.create({
     borderWidth: 0.2,
     borderRadius: 5,
     paddingHorizontal: 8,
+  
+    
   },
   icon: {
     marginRight: 5,
@@ -723,9 +744,12 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 14,
+    color: 'gray',
+    
   },
   selectedTextStyle: {
     fontSize: 16,
+    color: 'black',
   },
   iconStyle: {
     width: 20,
@@ -734,6 +758,11 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    color: 'black',
+
+  },
+  itemTextStyle: {
+    color: 'gray', // Change this to your desired item text color
   },
 });
 

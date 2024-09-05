@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1,
     paddingLeft: 50,
+    color: '#000',
   },
   iconStyle: {
     position: 'absolute',

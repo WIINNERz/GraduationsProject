@@ -13,6 +13,7 @@ import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Forgot from '../screens/Forgot';
 import Keymanagement from '../components/Keymanagement';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 const AuthStack = () => {
   const navigation = useNavigation();
   const [isSignIn, setIsSignIn] = React.useState(true);
@@ -151,6 +152,7 @@ const AuthStack = () => {
           setIsSignIn={setIsSignIn}
           startAnimation={startAnimation}
           backgroundAnimation={backgroundAnimation}
+  
         />
       </View>
       {isSignIn ? (
@@ -191,6 +193,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    color: "black",
   },
 });
 
