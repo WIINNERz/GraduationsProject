@@ -103,42 +103,59 @@ const AddPet = () => {
       const id = name;
       const dateTime = new Timestamp.now();
       const username = await fetchUsername(user.uid);
-      const key = await KeymanagementInstance.getmasterkey();
+const key = await KeymanagementInstance.retrievemasterkey();
 
-      if (!username) return;
+if (!username) return;
 
-      if (!name.trim()) {
-        Alert.alert('Error', 'Pet name cannot be empty.');
-        return;
-      }
+if (!name.trim()) {
+  Alert.alert('Error', 'Pet name cannot be empty.');
+  return;
+}
 
-      const encryptedData = {
-        age: CryptoJS.AES.encrypt(age, key).toString(),
-        breeds: CryptoJS.AES.encrypt(breeds, key).toString(),
-        weight: CryptoJS.AES.encrypt(weight, key).toString(),
-        height: CryptoJS.AES.encrypt(height, key).toString(),
-        characteristics: CryptoJS.AES.encrypt(characteristics, key).toString(),
-        chronic: CryptoJS.AES.encrypt(chronic, key).toString(),
-        location: CryptoJS.AES.encrypt(location, key).toString(),
-        conditions: CryptoJS.AES.encrypt(conditions, key).toString(),
-        color: CryptoJS.AES.encrypt(color, key).toString(),
-        gender: CryptoJS.AES.encrypt(gender, key).toString(),
-      };
-      const petDocRef = doc(db, 'Pets', name);
-      await setDoc(petDocRef, {
-        id,
-        uid: user.uid,
-        username,
-        name,
-        encryptedData,
-        type,
-        dateTime,
-        status,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-        ...(isChecked ? { status: 'dont_have_owner' } : {}),
-      });
+let dataToStore = {};
 
+if (status === 'have_owner') {
+  dataToStore = {
+    age: CryptoJS.AES.encrypt(age, key).toString(),
+    breeds: CryptoJS.AES.encrypt(breeds, key).toString(),
+    weight: CryptoJS.AES.encrypt(weight, key).toString(),
+    height: CryptoJS.AES.encrypt(height, key).toString(),
+    characteristics: CryptoJS.AES.encrypt(characteristics, key).toString(),
+    chronic: CryptoJS.AES.encrypt(chronic, key).toString(),
+    location: CryptoJS.AES.encrypt(location, key).toString(),
+    conditions: CryptoJS.AES.encrypt(conditions, key).toString(),
+    color: CryptoJS.AES.encrypt(color, key).toString(),
+    gender: CryptoJS.AES.encrypt(gender, key).toString(),
+  };
+} else {
+  dataToStore = {
+    age,
+    breeds,
+    weight,
+    height,
+    characteristics,
+    chronic,
+    location,
+    conditions,
+    color,
+    gender,
+  };
+}
+
+const petDocRef = doc(db, 'Pets', name);
+await setDoc(petDocRef, {
+  id,
+  uid: user.uid,
+  username,
+  name,
+  ...dataToStore,
+  type,
+  dateTime,
+  status,
+  createdAt: Timestamp.now(),
+  updatedAt: Timestamp.now(),
+  ...(isChecked ? { status: 'dont_have_owner' } : {}),
+});
       if (imageP) {
         await uploadImage(imageP, petDocRef);
       }
@@ -322,6 +339,7 @@ const AddPet = () => {
       </View>
     );
   }
+  
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
