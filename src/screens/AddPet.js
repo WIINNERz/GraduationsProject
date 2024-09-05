@@ -114,8 +114,16 @@ const AddPet = () => {
 
       const encryptedData = {
         age: CryptoJS.AES.encrypt(age, key).toString(),
+        breeds: CryptoJS.AES.encrypt(breeds, key).toString(),
+        weight: CryptoJS.AES.encrypt(weight, key).toString(),
+        height: CryptoJS.AES.encrypt(height, key).toString(),
+        characteristics: CryptoJS.AES.encrypt(characteristics, key).toString(),
+        chronic: CryptoJS.AES.encrypt(chronic, key).toString(),
+        location: CryptoJS.AES.encrypt(location, key).toString(),
+        conditions: CryptoJS.AES.encrypt(conditions, key).toString(),
+        color: CryptoJS.AES.encrypt(color, key).toString(),
+        gender: CryptoJS.AES.encrypt(gender, key).toString(),
       };
-
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
         id,
@@ -124,16 +132,7 @@ const AddPet = () => {
         name,
         encryptedData,
         type,
-        breeds,
-        weight,
-        height,
-        characteristics,
-        chronic,
-        location,
-        conditions,
         dateTime,
-        color,
-        gender,
         status,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
