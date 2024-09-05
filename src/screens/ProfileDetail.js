@@ -69,23 +69,31 @@ const ProfileDetail = ({ navigation }) => {
   const handleSave = async () => {
     if (user) {
       const userDoc = doc(firestore, 'Users', user.uid);
-      await updateDoc(userDoc, {
-        firstname,
-        lastname,
-        username,
-        email,
-        tel,
-        telEmergency,
-        address,
-        district,
-        province,
-        zipcode
-      });
-      navigation.navigate('Profiles');
+      const updatedData = {
+        firstname: firstname || null,
+        lastname: lastname || null,
+        username: username || null,
+        email: email || null,
+        tel: tel || null,
+        telEmergency: telEmergency || null,
+        address: address || null,
+        district: district || null,
+        province: province || null,
+        zipcode: zipcode || null
+      };
+  
+      try {
+        await updateDoc(userDoc, updatedData);
+        navigation.navigate('Profiles');
+      } catch (error) {
+        Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
+        console.error('Error updating document: ', error);
+      }
     } else {
       Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
     }
   };
+  
 
   const pickImage = () => {
     Alert.alert(

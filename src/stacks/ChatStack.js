@@ -10,11 +10,11 @@ export default function ChatStack() {
   const Stack = createNativeStackNavigator();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Chat'>
-      <Stack.Screen name="Chat" component={Chat} />
-      <Stack.Screen name="ChatRoom" component={ChatRoom} options={{ tabBarStyle: { display: 'none' } }}  />
-      <Stack.Screen name="ChatList" component={ChatList} />
-      <Stack.Screen name="ChatItem" component={ChatItem} /> 
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ChatScreen" component={Chat} />
+      <Stack.Screen name="ChatRoomScreen" component={ChatRoom} options={{ tabBarStyle: { display: 'none' } }}  />
+      <Stack.Screen name="ChatListScreen" component={ChatList} />
+      <Stack.Screen name="ChatItemScreen" component={ChatItem} /> 
     </Stack.Navigator>
   )
 }
