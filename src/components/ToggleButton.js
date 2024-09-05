@@ -29,7 +29,7 @@ const ToggleButton = ({ isSignIn, setIsSignIn, startAnimation, backgroundAnimati
           setIsSignIn(true);
         }}
       >
-        <Text>Sign In</Text>
+        <Text style={styles.Text}>Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
@@ -38,7 +38,7 @@ const ToggleButton = ({ isSignIn, setIsSignIn, startAnimation, backgroundAnimati
           setIsSignIn(false);
         }}
       >
-        <Text>Sign Up</Text>
+        <Text style={styles.Text}>Sign Up</Text>
       </TouchableOpacity>
     </View>
   );
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
+    
   },
   button: {
     alignItems: 'center',
@@ -60,6 +61,9 @@ const styles = StyleSheet.create({
     height: 40,
     paddingVertical: 10,
     borderRadius: 100,
+  },
+  Text: {
+    color: 'black',
   },
 });
 
