@@ -14,17 +14,25 @@ const Verify = () => {
     
 
     // retrieve key example
-    // async function retrievekey() {
-    //     try {
-    //     const KeymanagementInstance = Keymanagement();
-    //     const key = await KeymanagementInstance.retrievekey();
-    //     }
-    //     catch (error) {
-    //         console.error(error);
-    //         return null;
-    //     }
-    //   }
+    async function retrievekey() {
+        try {
+        const KeymanagementInstance = Keymanagement();
+        const key = await KeymanagementInstance.retrievekey();
+        }
+        catch (error) {
+            console.error(error);
+            return null;
+        }
+      }
+      async function encrypt(id) {
+        try {
+            const KeymanagementInstance = Keymanagement();
+            await KeymanagementInstance.encryptData(id);
+        } catch (error) {
+            console.error(error);
 
+        }
+    }   
 
     const validateThaiId = async id => {
         const thaiIdInput = id;
@@ -89,6 +97,7 @@ const Verify = () => {
                     onChangeText={text => setId(text)}
                 />
                  <Button title="Submit" onPress={() => validateThaiId(id)} /> 
+                 <Button title="enc" onPress={() => encrypt(id)} />
                  <Button title="getkey" onPress={() => retrievekey()}/> 
                 
             </View>

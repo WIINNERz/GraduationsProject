@@ -1,8 +1,11 @@
 import * as Keychain from 'react-native-keychain';
-import Aes from 'react-native-aes-crypto';
+import Aes, { encrypt } from 'react-native-aes-crypto';
 import { Alert } from 'react-native';
 import {auth, firestore} from '../configs/firebaseConfig';
 import { getDoc, doc , updateDoc } from 'firebase/firestore';
+import crypto from 'crypto-js';
+
+
 
 
 const Keymanagement = () => {
@@ -134,7 +137,18 @@ const Keymanagement = () => {
     }
 }
   async function encryptData(data) {
-    // https://www.npmjs.com/package/aes-ecb
+    try{
+     const maskey =  await retrievekey();
+      const encryptedData = crypto.AES.encrypt(data, maskey , {
+        mode : crypto.mode.ECB,
+        padding : crypto.pad.Pkcs7
+      });
+      console.log(encryptData);
+      console.log('Data encrypted successfully');
+    } catch (error) {
+      console.error('Could not encrypt data', error);
+      return null;
+    }
   }
 
 
@@ -145,6 +159,7 @@ const Keymanagement = () => {
     createAndEncryptMasterKey,
     Reencrpytmaseky,
     retrievekey,
+    encryptData,
   };
 };
 

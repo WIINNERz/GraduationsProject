@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+
 const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEntry, toggleSecureEntry, handleSignIn, loading, error, navigation }) => {
   return (
     <View style={styles.formContainer}>
@@ -11,6 +12,7 @@ const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEn
           style={styles.inputStyle}
           autoCorrect={false}
           placeholder="Email"
+          placeholderTextColor={"gray"}
           autoCapitalize='none'
           value={emailLog}
           onChangeText={(value) => setEmailLog(value)}
@@ -28,6 +30,7 @@ const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEn
           autoCorrect={false}
           secureTextEntry={isSecureEntry}
           placeholder="Password"
+          placeholderTextColor={"gray"}
           autoCapitalize='none'
           value={passwordLog}
           onChangeText={(value) => setPasswordLog(value)}

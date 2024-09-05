@@ -11,6 +11,7 @@ const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, set
           style={styles.inputStyle}
           autoCorrect={false}
           placeholder="Username"
+          placeholderTextColor={"gray"}
           autoCapitalize='none'
           value={username}
           onChangeText={(value) => setUsername(value)}
@@ -27,6 +28,7 @@ const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, set
           style={styles.inputStyle}
           autoCorrect={false}
           placeholder="Email"
+          placeholderTextColor={"gray"}
           autoCapitalize='none'
           value={emailReg}
           onChangeText={(value) => setEmailReg(value)}
@@ -44,6 +46,7 @@ const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, set
           autoCorrect={false}
           secureTextEntry={isSecureEntry}
           placeholder="Password"
+          placeholderTextColor={"gray"}
           autoCapitalize='none'
           value={passwordReg}
           onChangeText={(value) => setPasswordReg(value)}
@@ -61,6 +64,7 @@ const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, set
           autoCorrect={false}
           secureTextEntry={isSecureEntry}
           placeholder="Confirm Password"
+          placeholderTextColor={"gray"}
           autoCapitalize='none'
           value={confirmPassword}
           onChangeText={(value) => setConfirmPassword(value)}
