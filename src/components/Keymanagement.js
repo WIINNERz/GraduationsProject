@@ -3,9 +3,7 @@ import Aes, { encrypt } from 'react-native-aes-crypto';
 import { Alert } from 'react-native';
 import {auth, firestore} from '../configs/firebaseConfig';
 import { getDoc, doc , updateDoc } from 'firebase/firestore';
-import crypto from 'crypto-js';
-
-
+import crypto from 'rn-crypto-js';
 
 
 const Keymanagement = () => {
@@ -73,10 +71,8 @@ const Keymanagement = () => {
   }
   async function createAndEncryptMasterKey(passwordReg ,uid) {
     try {
-      // 1. Generate a random master key
-      const masterKey = await Aes.randomKey(32); // 256-bit master key
-      // 2. Generate a salt and derive a key from the password
-      const salt = await Aes.randomKey(16); // 128-bit salt
+      const masterKey = await Aes.randomKey(32); 
+      const salt = await Aes.randomKey(16); 
       const passkey = await Aes.pbkdf2(
         passwordReg,
         salt,
@@ -84,16 +80,13 @@ const Keymanagement = () => {
         keyLength,
         hash,
       );
-      // 3. Generate a random IV for encryption
       const iv = await Aes.randomKey(16); // 128-bit IV
-      // 4. Encrypt the master key using AES-256-CBC with the derived key
       const encryptedMasterKey = await Aes.encrypt(
         masterKey,
         passkey,
         iv,
         'aes-256-cbc',
       );
-      // 5. Save the encrypted master key, salt, and IV to Firestore
         const userRef = doc(firestore, 'Users', uid);
         await updateDoc(userRef, {
           masterKey: encryptedMasterKey,
@@ -106,6 +99,7 @@ const Keymanagement = () => {
       throw error;
     }
   }
+
   async function Reencrpytmaseky(oldPassword, newPassword) {
     const currentUser = auth.currentUser;
 
@@ -139,18 +133,23 @@ const Keymanagement = () => {
   async function encryptData(data) {
     try{
      const maskey =  await retrievekey();
-      const encryptedData = crypto.AES.encrypt(data, maskey , {
-        mode : crypto.mode.ECB,
-        padding : crypto.pad.Pkcs7
-      });
-      console.log(encryptData);
-      console.log('Data encrypted successfully');
+     const encryptData = crypto.AES.encrypt(data, maskey).toString();
+     return encryptData;
     } catch (error) {
       console.error('Could not encrypt data', error);
       return null;
     }
   }
-
+  async function decryptData(data) {
+    try{
+      const maskey =  await retrievekey();
+      const decryptData = crypto.AES.decrypt(data, maskey).toString(crypto.enc.Utf8);
+      return decryptData;
+    } catch (error) {
+      console.error('Could not decrypt data', error);
+      return null;
+    }
+  }
 
   return {
     storeKey,
@@ -160,6 +159,7 @@ const Keymanagement = () => {
     Reencrpytmaseky,
     retrievekey,
     encryptData,
+    decryptData,
   };
 };
 
