@@ -31,7 +31,7 @@ const Keymanagement = () => {
       console.error('Could not store key', error);
     }
   }
-  async function retrievekey() {
+  async function retrievemasterkey() {
     try {
       const credentials = await Keychain.getGenericPassword();
       if (credentials) {
@@ -39,11 +39,11 @@ const Keymanagement = () => {
         return credentials.password;
       } else {
         console.log('No credentials stored');
-        return null;
+        return "";
       }
     } catch (error) {
       console.error('Could not load credentials. ', error);
-      return null;
+      return "";
     }
   }
 
@@ -55,7 +55,7 @@ const Keymanagement = () => {
       return passkey;
     } catch (error) {
       console.error('Could not get passkey', error);
-      return null;
+      return "";
     }
   }
 
@@ -65,8 +65,8 @@ const Keymanagement = () => {
       const decryptMasterKey = await Aes.decrypt(masterKey, passkey, iv, 'aes-256-cbc');
       return decryptMasterKey;
     } catch (error) {
-      console.error('Could not get masterkey', error);
-      return null;
+      console.error(error);
+      return "";
     }
   }
   async function createAndEncryptMasterKey(passwordReg ,uid) {
@@ -132,22 +132,23 @@ const Keymanagement = () => {
 }
   async function encryptData(data) {
     try{
-     const maskey =  await retrievekey();
+     const maskey =  await retrievemasterkey();
      const encryptData = crypto.AES.encrypt(data, maskey).toString();
+     console.log('encryptData', encryptData);
      return encryptData;
     } catch (error) {
       console.error('Could not encrypt data', error);
-      return null;
+      return "";
     }
   }
   async function decryptData(data) {
     try{
-      const maskey =  await retrievekey();
+      const maskey =  await retrievemasterkey();
       const decryptData = crypto.AES.decrypt(data, maskey).toString(crypto.enc.Utf8);
       return decryptData;
     } catch (error) {
       console.error('Could not decrypt data', error);
-      return null;
+      return "";
     }
   }
 
@@ -157,7 +158,7 @@ const Keymanagement = () => {
     getmasterkey,
     createAndEncryptMasterKey,
     Reencrpytmaseky,
-    retrievekey,
+    retrievemasterkey,
     encryptData,
     decryptData,
   };

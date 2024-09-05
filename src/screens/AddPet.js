@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-//import CryptoJS from 'crypto-js';
+import CryptoJS from "rn-crypto-js";
 import {
   View,
   TextInput,
@@ -22,6 +22,7 @@ import Checkbox from '../components/checkbox';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { CancelPButton, SavePButton } from '../components/Button';
 import Calendar from '../components/calendar';
+import Keymanagement from '../components/Keymanagement';
 
 const AddPet = () => {
   const db = getFirestore();
@@ -46,12 +47,16 @@ const AddPet = () => {
   const [additionalImages, setAdditionalImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+  const KeymanagementInstance = Keymanagement();
+  
+
   const data = [
-    { label: "Don't have owner" , value: "dont_have_owner" },
-    { label: "Have owner" , value: "have_owner" },
-  ]
-    const [status, setStatus] = useState(null);
-    const [isFocus, setIsFocus] = useState(false);
+    { label: "Don't have owner", value: "dont_have_owner" },
+    { label: "Have owner", value: "have_owner" },
+  ];
+
   useEffect(() => {
     if (!user) return;
 
@@ -83,7 +88,7 @@ const AddPet = () => {
       return userDoc.data().username;
     } else {
       console.error('No such user document!');
-      return null;
+      return "";
     }
   };
 
@@ -95,10 +100,11 @@ const AddPet = () => {
         return;
       }
 
-      const { uid } = user;
       const id = name;
       const dateTime = new Timestamp.now();
-      const username = await fetchUsername(uid);
+      const username = await fetchUsername(user.uid);
+      const key = await KeymanagementInstance.getmasterkey();
+
       if (!username) return;
 
       if (!name.trim()) {
@@ -106,17 +112,17 @@ const AddPet = () => {
         return;
       }
 
-      // const encryptedData = {
-      //   age: CryptoJS.AES.encrypt(age, 'age').toString(),
-      // }
+      const encryptedData = {
+        age: CryptoJS.AES.encrypt(age, key).toString(),
+      };
 
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
         id,
-        uid,
+        uid: user.uid,
         username,
         name,
-        age,
+        encryptedData,
         type,
         breeds,
         weight,
@@ -129,41 +135,25 @@ const AddPet = () => {
         color,
         gender,
         status,
-        createdAt: Timestamp.now(),  // ฟิลด์นี้ใช้เก็บเวลาที่สร้างเอกสาร
+        createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
         ...(isChecked ? { status: 'dont_have_owner' } : {}),
       });
 
-      // Upload profile image
       if (imageP) {
-        setUploading(true);
-        try {
-          await uploadImage(imageP, petDocRef);
-        } catch (error) {
-          Alert.alert('Error', 'Failed to upload profile image. Please try again.');
-          console.error('Error uploading profile image: ', error);
-        } finally {
-          setUploading(false);
-        }
+        await uploadImage(imageP, petDocRef);
       }
 
-      // Upload additional images
       if (additionalImages.length > 0) {
-        setUploading(true);
-        try {
-          await uploadAdditionalImages(petDocRef);
-        } catch (error) {
-          Alert.alert('Error', 'Failed to upload additional images. Please try again.');
-          console.error('Error uploading additional images: ', error);
-        } finally {
-          setUploading(false);
-        }
+        await uploadAdditionalImages(petDocRef);
       }
+
       if (imageP || additionalImages.length > 0) {
         await updateDoc(petDocRef, {
           updatedAt: Timestamp.now(),
         });
       }
+
       navigation.navigate('MyPets');
     } catch (error) {
       console.error('Error adding document: ', error);

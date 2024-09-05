@@ -14,16 +14,7 @@ const Verify = () => {
     
 
     // retrieve key example
-    async function retrievekey() {
-        try {
-        const KeymanagementInstance = Keymanagement();
-        const key = await KeymanagementInstance.retrievekey();
-        }
-        catch (error) {
-            console.error(error);
-            return null;
-        }
-      }
+
       async function encrypt(id) {
         try {
             const KeymanagementInstance = Keymanagement();
