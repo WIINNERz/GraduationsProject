@@ -1,34 +1,30 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
-import React from 'react'
+import { TouchableOpacity, Text, View, Image } from 'react-native';
+import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-export default function ChatItem({ item }) {
+const ChatItem = ({ item }) => {
     const navigation = useNavigation();
-    const openChatRoom = () => {
-        navigation.navigate('ChatRoom', { params: item});
-    }
-    return (
-        <TouchableOpacity onPress={openChatRoom} style={styles.list}>
-            <View style={{ flexDirection: 'row' }}>
-                <Image
-                    source={{ uri: item?.photoURL }}
-                    style={{ width: 50, height: 50, borderRadius: 50 }} />
-                <View style={{justifyContent:'center',paddingHorizontal: 10,}}>
-                    <Text>{item?.username}</Text>
-                </View>
 
+    const handlePress = () => {
+        console.log("item",item);
+        navigation.navigate('ChatRoomScreen', {
+            uid: item.uid,
+            username: item.username,
+            photoURL: item.photoURLURL,
+            // Add other parameters as needed
+        });
+    };
+
+    return (
+        <TouchableOpacity onPress={handlePress}>
+            <View style={{ flexDirection: 'row', padding: 10 }}>
+                <Image source={{ uri: item.photoURL }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+                <View style={{ marginLeft: 10 }}>
+                    <Text>{item.username}</Text>
+                </View>
             </View>
-            <Text>Time</Text>
         </TouchableOpacity>
-    )
-}
-const styles = StyleSheet.create({
-    list: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e5e5e5',
-    },
-})
+    );
+};
+
+export default ChatItem;

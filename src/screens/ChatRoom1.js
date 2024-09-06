@@ -12,7 +12,7 @@ import PlusBoxChatRoom from '../components/PlusBoxChatRoom';
 
 export default function ChatRoom1({ navigation }) {
     const route = useRoute();
-    const {uid } = route.params;
+    const { uid, username, profileURL } = route.params;
     const user = auth.currentUser;
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
@@ -60,11 +60,22 @@ export default function ChatRoom1({ navigation }) {
 
     const createRoomIfNotExists = async () => {
         let roomId = getRoomId(user.uid, uid);
-        await setDoc(doc(db, 'Rooms', roomId), {
-            roomId,
-            createdAt: Timestamp.fromDate(new Date()),
-        });
+        const roomRef = doc(db, 'Rooms', roomId);
+        
+        const roomDoc = await getDoc(roomRef);
+        if (!roomDoc.exists()) {
+            const createdAt = Timestamp.fromDate(new Date());
+            await setDoc(roomRef, {
+                roomId,
+                createdAt,
+            });
+            console.log('Room created with ID:', roomId);
+            console.log('Creation timestamp:', createdAt.toDate());
+        } else {
+            console.log('Room already exists with ID:', roomId);
+        }
     };
+    
     const fetchUserProfile = async () => {
         try {
             const userDocRef = doc(db, 'Users', user.uid);
@@ -75,6 +86,7 @@ export default function ChatRoom1({ navigation }) {
                     profileURL: userData.photoURL || '',
                     senderName: userData.username || '',
                 });
+                setHeader({ username: userData.username || '' });
             }
 
         } catch (error) {
@@ -119,7 +131,6 @@ export default function ChatRoom1({ navigation }) {
         if (inputRef) inputRef.current?.setNativeProps({ text: filename });
         handleSendMessage(url, 'image');
     };
-
 
     return (
         <View style={styles.container}>

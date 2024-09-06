@@ -2,54 +2,90 @@ import { View, Text, ActivityIndicator } from "react-native";
 import ChatHeader from "../components/ChatHeader";
 import ChatList from "../components/ChatList";
 import { useEffect, useState } from "react";
-import { getDocs, query, where } from 'firebase/firestore';
-import { usersRef } from "../configs/firebaseConfig";
+import { getDocs, collection, doc, getDoc } from 'firebase/firestore';
+import { db } from "../configs/firebaseConfig";
 import useAuth from "../hooks/useAuth";
 
 const Chat = () => {
-    const { logout, user } = useAuth();
-    const [users, setUsers] = useState([]);
+    const { user } = useAuth();
+    const [chatRooms, setChatRooms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         if (user?.uid) {
-            getUsers();
+            fetchChatRooms();
         }
     }, [user?.uid]);
 
-    const getUsers = async () => {
+    const fetchChatRooms = async () => {
         try {
-            const q = query(usersRef, where('uid', '!=', user.uid));
-            const querySnapshot = await getDocs(q);
-            let data = [];
+            const roomsRef = collection(db, 'Rooms');
+            const querySnapshot = await getDocs(roomsRef);
+            let rooms = [];
+            let userIds = new Set();
+
             querySnapshot.forEach(doc => {
-                data.push({ ...doc.data() });
+                const roomData = { id: doc.id, ...doc.data() };
+                const { roomId } = roomData;
+                const [userId1, userId2] = roomId.split('_');
+
+                if (userId1 === user.uid || userId2 === user.uid) {
+                    rooms.push(roomData);
+                    userIds.add(userId1 === user.uid ? userId2 : userId1);
+                }
             });
-            setUsers(data);
+
+            console.log("Fetched chat rooms:", rooms);
+            console.log("User IDs to fetch:", Array.from(userIds));
+
+            if (userIds.size > 0) {
+                const usersData = [];
+                for (const uid of userIds) {
+                    const userDocRef = doc(db, 'Users', uid);
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        usersData.push(userDoc.data());
+                    } else {
+                        console.log(`User with UID ${uid} does not exist.`);
+                    }
+                }
+                console.log("Fetched users:", usersData);
+                setUsers(usersData);
+            } else {
+                console.log("No additional users found.");
+            }
+
+            setChatRooms(rooms);
             setLoading(false);
         } catch (error) {
-            console.error("Error fetching users: ", error);
+            console.error("Error fetching chat rooms: ", error);
             setLoading(false);
         }
     }
 
     return (
         <View style={styles.screen}>
-            <ChatHeader  />
+            <ChatHeader />
             {
                 loading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
                 ) : (
-                    users.length > 0 ? (
-                        <ChatList users={users} />
+                    chatRooms.length > 0 ? (
+                        <ChatList
+                            rooms={chatRooms}
+                            users={users}
+                            currentUserId={user.uid} 
+                        />
                     ) : (
-                        <Text>No users found</Text>
+                        <Text>No chat rooms found</Text>
                     )
                 )
             }
         </View>
     );
 }
+
 const styles = {
     screen: {
         flex: 1,
