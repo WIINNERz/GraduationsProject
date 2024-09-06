@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function ChatList({ rooms, users, currentUserId }) {
     const navigation = useNavigation();
-
+    console.log(users);
     const userMap = users.reduce((map, user) => {
         map[user.uid] = user;
         return map;

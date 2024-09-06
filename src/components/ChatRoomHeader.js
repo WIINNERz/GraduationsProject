@@ -5,9 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function ChatRoomHeader({ user }) {
     const navigation = useNavigation();
+    const defaultImage ='https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';; 
 
     const handleBackPress = () => {
-        navigation.goBack(); // กลับไปยังหน้าก่อนหน้า
+        navigation.goBack(); 
     };
 
     return (
@@ -17,7 +18,7 @@ export default function ChatRoomHeader({ user }) {
             </TouchableOpacity>
             <View style={styles.profileContainer}>
                 <Image
-                    source={{ uri: user?.photoURL }}
+                    source={{ uri: user?.photoURL || defaultImage }}
                     style={styles.image}
                 />
                 <Text style={styles.username}>{user?.username || 'No Username'}</Text>
@@ -28,7 +29,7 @@ export default function ChatRoomHeader({ user }) {
 
 const styles = StyleSheet.create({
     header: {
-        position:'relative',
+        position: 'relative',
         top: -20,
         padding: 10,
         backgroundColor: '#f8f8f8',
@@ -38,12 +39,12 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     backButton: {
-        position:'relative',
-        right:30,
+        position: 'relative',
+        right: 30,
         padding: 10,
     },
     profileContainer: {
-        position:'relative',
+        position: 'relative',
         right: 30,
         flexDirection: 'row',
         alignItems: 'center',

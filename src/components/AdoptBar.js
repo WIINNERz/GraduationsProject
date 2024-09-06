@@ -1,11 +1,24 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth } from '../configs/firebaseConfig';
 
 const AdoptBar = ({ uid}) => {
     const navigation = useNavigation();
+    useFocusEffect(
+        useCallback(() => {
+            navigation.getParent()?.setOptions({
+                tabBarStyle: { display: 'none' }
+            });
+
+            return () => {
+                navigation.getParent()?.setOptions({
+                    tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], // Reset tabBarStyle to default
+                });
+            };
+        }, [navigation])
+    );
 
     const handleContactPress = () => {
         navigation.navigate('ChatRoom1', { uid });

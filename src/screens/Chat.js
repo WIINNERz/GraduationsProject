@@ -36,8 +36,6 @@ const Chat = () => {
                 }
             });
 
-            console.log("Fetched chat rooms:", rooms);
-            console.log("User IDs to fetch:", Array.from(userIds));
 
             if (userIds.size > 0) {
                 const usersData = [];
@@ -50,7 +48,6 @@ const Chat = () => {
                         console.log(`User with UID ${uid} does not exist.`);
                     }
                 }
-                console.log("Fetched users:", usersData);
                 setUsers(usersData);
             } else {
                 console.log("No additional users found.");

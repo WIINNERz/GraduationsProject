@@ -19,22 +19,22 @@ export default function ChatRoom1({ navigation }) {
     const textRef = useRef('');
     const inputRef = useRef(null);
     const [userProfile, setUserProfile] = useState({ profileURL: '', senderName: '' });
-    const [header, setHeader] = useState({ username: '' });
+    const [header, setHeader] = useState({ username: '', photoURL: '' });
     const [isBoxed, setIsBoxed] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
-          navigation.getParent()?.setOptions({
-            tabBarStyle: { display: 'none' }
-          });
-    
-          return () => {
             navigation.getParent()?.setOptions({
-                tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],
+                tabBarStyle: { display: 'none' }
             });
-          };
+
+            return () => {
+                navigation.getParent()?.setOptions({
+                    tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], // Reset tabBarStyle to default
+                });
+            };
         }, [navigation])
-      );
+    );
 
     useEffect(() => {
         if (user) {
@@ -69,13 +69,29 @@ export default function ChatRoom1({ navigation }) {
                 roomId,
                 createdAt,
             });
-            console.log('Room created with ID:', roomId);
-            console.log('Creation timestamp:', createdAt.toDate());
         } else {
-            console.log('Room already exists with ID:', roomId);
+            // console.log('Room already exists with ID:', roomId);
         }
     };
-    
+    const fetchOtherUserProfile = async (otherUserId) => {
+        try {
+            const userDocRef = doc(db, 'Users', otherUserId);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                setHeader({ 
+                    username: userData.username || '',
+                    photoURL: userData.photoURL || ''
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching other user profile:', error);
+        }
+    };
+    useEffect(() => {
+        const otherUserId = uid;
+        fetchOtherUserProfile(otherUserId);
+    }, [uid]);
     const fetchUserProfile = async () => {
         try {
             const userDocRef = doc(db, 'Users', user.uid);
@@ -86,7 +102,6 @@ export default function ChatRoom1({ navigation }) {
                     profileURL: userData.photoURL || '',
                     senderName: userData.username || '',
                 });
-                setHeader({ username: userData.username || '' });
             }
 
         } catch (error) {
@@ -116,7 +131,7 @@ export default function ChatRoom1({ navigation }) {
                 text: type === 'text' ? trimmedMessage : '',
                 profileURL: userProfile.profileURL,
                 senderName: userProfile.senderName,
-                imageUrl: type === 'image' ? imageUrl : '',
+                imageUrl: type === 'image' ? imageUrl : '' ,
                 createdAt: Timestamp.fromDate(new Date()),
             });
             setMessage('');

@@ -9,7 +9,7 @@ const ChatItem = ({ item }) => {
         navigation.navigate('ChatRoomScreen', {
             uid: item.uid,
             username: item.username,
-            photoURL: item.photoURLURL,
+            photoURL: item.photoURL,
         });
     };
 
