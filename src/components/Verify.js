@@ -13,18 +13,6 @@ const Verify = () => {
     const [id, setId] = useState('');
     
 
-    // retrieve key example
-
-      async function encrypt(id) {
-        try {
-            const KeymanagementInstance = Keymanagement();
-            await KeymanagementInstance.encryptData(id);
-        } catch (error) {
-            console.error(error);
-
-        }
-    }   
-
     const validateThaiId = async id => {
         const thaiIdInput = id;
         const m = thaiIdInput.match(/(\d{12})(\d)/);
@@ -45,8 +33,6 @@ const Verify = () => {
         try {
             const hash = await Aes.sha256(thaiIdInput);
             console.log('hash=', hash);
-            const encryptedHash = Crypto.AES.encrypt(hash , 'secret key 123').toString();
-
             const usersSnapshot = await getDocs(collection(firestore, 'Users'));
             let hashExists = false;
 
@@ -58,7 +44,7 @@ const Verify = () => {
             });
 
             if (hashExists) {
-                Alert.alert('This ID card number has already been used.');
+                Alert.alert('This ID card number has already been used');
             } else {
                 // const auth = getAuth();
                 const currentUser = auth.currentUser;
@@ -69,6 +55,7 @@ const Verify = () => {
                         verify: true,
                         hashedID: hash
                     });
+                    Alert('Your account has been verified.');
                     console.log(`Updated user ${currentUser.uid}`);
                 } else {
                     Alert.alert('No user is currently signed in.');
@@ -88,8 +75,6 @@ const Verify = () => {
                     onChangeText={text => setId(text)}
                 />
                  <Button title="Submit" onPress={() => validateThaiId(id)} /> 
-                 <Button title="enc" onPress={() => encrypt(id)} />
-                 <Button title="getkey" onPress={() => retrievekey()}/> 
                 
             </View>
         </View>
