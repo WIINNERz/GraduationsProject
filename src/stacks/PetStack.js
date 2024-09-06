@@ -13,19 +13,19 @@ const Stack = createNativeStackNavigator();
 
 export default function PetStack() {
   return (
-    <Stack.Navigator initialRouteName='FindPet'>
-        <Stack.Screen
+    <Stack.Navigator initialRouteName='FindPet' screenOptions={{ headerShown: false }}>
+      <Stack.Screen
         name="FindPet"
-        component={FindPet}
-        options={{ headerShown: false}} />
+        component={FindPet} />
       <Stack.Screen
         name="PetProfile"
-        component={PetProfile}
-        options={{ headerShown: false }} />
+        component={PetProfile} />
       <Stack.Screen
         name="ChatRoom1"
         component={ChatRoom1}
-        options={{ headerShown: false }} />
+        options={{
+          tabBarStyle: { display: 'none' }
+        }} />
     </Stack.Navigator>
   );
 }

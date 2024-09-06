@@ -78,7 +78,9 @@ const Chat = () => {
                             currentUserId={user.uid} 
                         />
                     ) : (
-                        <Text>No chat rooms found</Text>
+                        <View style={styles.nochat}>
+                            <Text>No chats found.</Text>
+                        </View>
                     )
                 )
             }
@@ -90,6 +92,11 @@ const styles = {
     screen: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    nochat: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 };
 

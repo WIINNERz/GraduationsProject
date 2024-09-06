@@ -6,12 +6,10 @@ const ChatItem = ({ item }) => {
     const navigation = useNavigation();
 
     const handlePress = () => {
-        console.log("item",item);
         navigation.navigate('ChatRoomScreen', {
             uid: item.uid,
             username: item.username,
             photoURL: item.photoURLURL,
-            // Add other parameters as needed
         });
     };
 
