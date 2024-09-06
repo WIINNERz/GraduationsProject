@@ -1,63 +1,97 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { auth, firestore, storage } from '../configs/firebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {auth, firestore, storage} from '../configs/firebaseConfig';
+import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {doc, updateDoc, onSnapshot} from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import Keymanagement from '../components/Keymanagement';
 
 const Profiles = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState(null);
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const user = auth.currentUser;
+  const KeymanagementInstance = Keymanagement();
 
   useEffect(() => {
     if (!user) return;
-
     const userDoc = doc(firestore, 'Users', user.uid);
+    const unsubscribe = onSnapshot(
+      userDoc,
+      async docSnap => {
+        if (docSnap.exists() && docSnap.data().email === user.email) {
+          setUserData(docSnap.data());
+          const encfn = docSnap.data().firstname;
+          const encln = docSnap.data().lastname;
 
-    const unsubscribe = onSnapshot(userDoc, (docSnap) => {
-      if (docSnap.exists() && docSnap.data().email === user.email) {
-        setUserData(docSnap.data());
-      } else {
-        console.log('No matching user data found');
-      }
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching user data:', error);
-      setLoading(false);
-    });
+
+          try {
+            const decryptedFirstname = encfn
+              ? await KeymanagementInstance.decryptData(encfn)
+              : '';
+            const decryptedLastname = encln
+              ? await KeymanagementInstance.decryptData(encln)
+              : '';
+
+
+
+            setFirstname(decryptedFirstname ?? '');
+            setLastname(decryptedLastname ?? '');
+          } catch (error) {
+            console.error('Error decrypting user data:', error);
+            setFirstname('');
+            setLastname('');
+          }
+        } else {
+          console.log('No matching user data found');
+        }
+        setLoading(false);
+      },
+      error => {
+        console.error('Error fetching user data:', error);
+        setLoading(false);
+      },
+    );
+
     return () => unsubscribe();
   }, [user]);
 
   const handleSignOut = () => {
-    auth.signOut()
+    auth
+      .signOut()
       .then(() => {
         navigation.navigate('SignIn');
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error signing out:', error);
       });
   };
 
   const pickImage = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose an option',
-      [
-        { text: 'Camera', onPress: () => openCamera() },
-        { text: 'Gallery', onPress: () => openImageLibrary() },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
+    Alert.alert('Select Image', 'Choose an option', [
+      {text: 'Camera', onPress: () => openCamera()},
+      {text: 'Gallery', onPress: () => openImageLibrary()},
+      {text: 'Cancel', style: 'cancel'},
+    ]);
   };
 
   const openImageLibrary = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
+    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -66,7 +100,7 @@ const Profiles = () => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+    const result = await launchCamera({mediaType: 'photo', quality: 1});
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -74,7 +108,7 @@ const Profiles = () => {
     }
   };
 
-  const uploadImage = async (uri) => {
+  const uploadImage = async uri => {
     if (!uri) return;
 
     setUploading(true);
@@ -88,11 +122,11 @@ const Profiles = () => {
       const downloadURL = await getDownloadURL(snapshot.ref);
 
       const userDoc = doc(firestore, 'Users', user.uid);
-      await updateDoc(userDoc, { photoURL: downloadURL });
+      await updateDoc(userDoc, {photoURL: downloadURL});
 
       setUserData(prevState => ({
         ...prevState,
-        photoURL: downloadURL
+        photoURL: downloadURL,
       }));
 
       Alert.alert('Success', 'Profile photo updated successfully.');
@@ -124,30 +158,35 @@ const Profiles = () => {
   return (
     <View style={styles.container}>
       <View style={styles.Content}>
-        <View style={{ paddingRight: 30 }}>
+        <View style={{paddingRight: 30}}>
           {userData.photoURL ? (
-            <Image source={{ uri: userData.photoURL }} style={styles.image} />
+            <Image source={{uri: userData.photoURL}} style={styles.image} />
           ) : (
             <MaterialCommunityIcons name="account" size={50} color="gray" />
           )}
         </View>
         <View style={styles.myaccount}>
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.name}>{userData.firstname}</Text>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.name}>{firstname}</Text>
             <Text> </Text>
-            <Text style={styles.name}>{userData.lastname}</Text>
+            <Text style={styles.name}>{lastname}</Text>
           </View>
-          <Text style={{ opacity: 0.5 }}>@{userData.username}</Text>
+          <Text style={{opacity: 0.5}}>@{userData.username}</Text>
           {userData.verify ? (
-            <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ProfileDetail')}>
               <View style={styles.verified}>
-                <Text style={{ color: 'black' }}>Verified</Text>
-                <MaterialCommunityIcons name="account-circle" size={20} color="#D27C2C" />
+                <Text style={{color: 'black'}}>Verified</Text>
+                <MaterialCommunityIcons
+                  name="account-circle"
+                  size={20}
+                  color="#D27C2C"
+                />
               </View>
             </TouchableOpacity>
           ) : (
             <View style={styles.verified}>
-              <Text style={{ opacity: 0.5 }}>Not Verified</Text>
+              <Text style={{opacity: 0.5}}>Not Verified</Text>
             </View>
           )}
         </View>
@@ -156,11 +195,15 @@ const Profiles = () => {
         <View style={styles.panel}>
           <View style={styles.leftContent}>
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="account" size={30} color="#D27C2C" />
+              <MaterialCommunityIcons
+                name="account"
+                size={30}
+                color="#D27C2C"
+              />
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>My Account</Text>
-              <Text style={{ opacity: 0.5 }}>Make changes to your account</Text>
+              <Text style={{opacity: 0.5}}>Make changes to your account</Text>
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -174,7 +217,7 @@ const Profiles = () => {
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>My Pet</Text>
-              <Text style={{ opacity: 0.5 }}>Make changes to your account</Text>
+              <Text style={{opacity: 0.5}}>Make changes to your account</Text>
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -188,7 +231,9 @@ const Profiles = () => {
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>Setting</Text>
-              <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
+              <Text style={{opacity: 0.5}}>
+                Further secure your account for safety
+              </Text>
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -198,11 +243,17 @@ const Profiles = () => {
         <View style={styles.panel}>
           <View style={styles.leftContent}>
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="lock-reset" size={30} color="#D27C2C" />
+              <MaterialCommunityIcons
+                name="lock-reset"
+                size={30}
+                color="#D27C2C"
+              />
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>Change Password</Text>
-              <Text style={{ opacity: 0.5 }}>Send reset password link via your email</Text>
+              <Text style={{opacity: 0.5}}>
+                Send reset password link via your email
+              </Text>
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -212,11 +263,17 @@ const Profiles = () => {
         <View style={styles.panel}>
           <View style={styles.leftContent}>
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="shield-lock" size={30} color="#D27C2C" />
+              <MaterialCommunityIcons
+                name="shield-lock"
+                size={30}
+                color="#D27C2C"
+              />
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>Privacy Policy</Text>
-              <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
+              <Text style={{opacity: 0.5}}>
+                Further secure your account for safety
+              </Text>
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -226,11 +283,17 @@ const Profiles = () => {
         <View style={styles.panel}>
           <View style={styles.leftContent}>
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="account" size={30} color="#D27C2C" />
+              <MaterialCommunityIcons
+                name="account"
+                size={30}
+                color="#D27C2C"
+              />
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>sth</Text>
-              <Text style={{ opacity: 0.5 }}>Further secure your account for safety</Text>
+              <Text style={{opacity: 0.5}}>
+                Further secure your account for safety
+              </Text>
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -244,7 +307,6 @@ const Profiles = () => {
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>Logout</Text>
-
             </View>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
@@ -252,7 +314,7 @@ const Profiles = () => {
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -311,24 +373,24 @@ const styles = StyleSheet.create({
   },
   verified: {
     flexDirection: 'row',
+    justifyContent: 'center',
     backgroundColor: '#F0DFC8',
     marginTop: 5,
     padding: 5,
     paddingLeft: 10,
     marginRight: 20,
     borderRadius: 50,
-    width: 'auto',
+    width: 100,
   },
-  topic:
-  {
+  topic: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'black'
+    color: 'black',
   },
   name: {
     fontWeight: 'bold',
     fontSize: 16,
-  }
+  },
 });
 
 export default Profiles;

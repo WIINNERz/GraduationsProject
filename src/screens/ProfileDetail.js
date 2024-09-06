@@ -6,7 +6,9 @@ import { getDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-
+import Keymanagement from '../components/Keymanagement';
+import CryptoJS from "rn-crypto-js";
+import { decrypt } from 'react-native-aes-crypto';
 const ProfileDetail = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,7 @@ const ProfileDetail = ({ navigation }) => {
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
   const user = auth.currentUser;
+  const KeymanagementInstance = Keymanagement();
   useFocusEffect(
     useCallback(() => {
       navigation.getParent()?.setOptions({
@@ -44,18 +47,30 @@ const ProfileDetail = ({ navigation }) => {
 
         if (docSnap.exists() && docSnap.data().email === user.email) {
           const data = docSnap.data();
+          try {
+          const decryptedFirstname = data.firstname ? await KeymanagementInstance.decryptData(data.firstname) : null;
+          const decryptedLastname = data.lastname ? await KeymanagementInstance.decryptData(data.lastname) : null;
+          const decryptedTel = data.tel ? await KeymanagementInstance.decryptData(data.tel) : null;
+          const decryptedTelEmergency = data.telEmergency ? await KeymanagementInstance.decryptData(data.telEmergency) : null;
+          const decryptedAddress = data.address ? await KeymanagementInstance.decryptData(data.address) : null;
+          const decryptedDistrict = data.district ? await KeymanagementInstance.decryptData(data.district) : null;
+          const decryptedProvince = data.province ? await KeymanagementInstance.decryptData(data.province) : null;
+          const decryptedZipcode = data.zipcode ? await KeymanagementInstance.decryptData(data.zipcode) : null;  
           setUserData(data);
-          setFirstname(data.firstname);
-          setLastname(data.lastname);
+          setFirstname(decryptedFirstname);
+          setLastname(decryptedLastname);
           setUsername(data.username);
           setEmail(data.email);
-          setTel(data.tel);
-          setTelEmergency(data.telEmergency);
-          setAddress(data.address);
-          setDistrict(data.district);
-          setProvince(data.province);
-          setZipcode(data.zipcode);
-
+          setTel(decryptedTel);
+          setTelEmergency(decryptedTelEmergency);
+          setAddress(decryptedAddress);
+          setDistrict(decryptedDistrict);
+          setProvince(decryptedProvince);
+          setZipcode(decryptedZipcode);
+          } catch (error) {
+            console.error('Error decrypting data: ', error);
+          }
+          
         } else {
           console.log('No matching user data found');
         }
@@ -66,34 +81,74 @@ const ProfileDetail = ({ navigation }) => {
     fetchUserData();
   }, [user]);
 
+  // const handleSave = async () => {
+  //   if (user) {
+  //     const key = await KeymanagementInstance.retrievemasterkey();
+      
+  //     const userDoc = doc(firestore, 'Users', user.uid);
+  //     const updatedData = {
+  //       // firstname: firstname || null,
+  //       firstname : KeymanagementInstance.encryptData(firstname) || null,
+  //       lastname: lastname || null,
+  //       username: username || null,
+  //       email: email || null,
+  //       tel: tel || null,
+  //       telEmergency: telEmergency || null,
+  //       address: address || null,
+  //       district: district || null,
+  //       province: province || null,
+  //       zipcode: zipcode || null
+  //     };
+  //     console.log('Encrypted Firstname: ', firstname);
+  
+  //     try {
+  //       await updateDoc(userDoc, updatedData);
+  //       navigation.navigate('Profiles');
+  //     } catch (error) {
+  //       Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
+  //       console.error('Error updating document: ', error);
+  //     }
+  //   } else {
+  //     Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
+  //   }
+  // };
   const handleSave = async () => {
-    if (user) {
-      const userDoc = doc(firestore, 'Users', user.uid);
+  if (user) {
+    const userDoc = doc(firestore, 'Users', user.uid);
+    
+    try {
+      const encryptedFirstname = firstname ? await KeymanagementInstance.encryptData(firstname) : null;
+      const encryptedLastname = lastname ? await KeymanagementInstance.encryptData(lastname) : null;
+      const encryptedTel = tel ? await KeymanagementInstance.encryptData(tel) : null;
+      const encryptedTelEmergency = telEmergency ? await KeymanagementInstance.encryptData(telEmergency) : null;
+      const encryptedAddress = address ? await KeymanagementInstance.encryptData(address) : null;
+      const encryptedDistrict = district ? await KeymanagementInstance.encryptData(district) : null;
+      const encryptedProvince = province ? await KeymanagementInstance.encryptData(province) : null;
+      const encryptedZipcode = zipcode ? await KeymanagementInstance.encryptData(zipcode) : null;
+      
       const updatedData = {
-        firstname: firstname || null,
-        lastname: lastname || null,
+        firstname: encryptedFirstname,
+        lastname: encryptedLastname,
         username: username || null,
         email: email || null,
-        tel: tel || null,
-        telEmergency: telEmergency || null,
-        address: address || null,
-        district: district || null,
-        province: province || null,
-        zipcode: zipcode || null
+        tel: encryptedTel,
+        telEmergency: encryptedTelEmergency,
+        address: encryptedAddress,
+        district: encryptedDistrict,
+        province: encryptedProvince,
+        zipcode: encryptedZipcode
       };
-  
-      try {
-        await updateDoc(userDoc, updatedData);
-        navigation.navigate('Profiles');
-      } catch (error) {
-        Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
-        console.error('Error updating document: ', error);
-      }
-    } else {
+
+      await updateDoc(userDoc, updatedData);
+      navigation.navigate('Profiles');
+    } catch (error) {
       Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
+      console.error('Error updating document: ', error);
     }
-  };
-  
+  } else {
+    Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
+  }
+};
 
   const pickImage = () => {
     Alert.alert(

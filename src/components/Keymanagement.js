@@ -35,7 +35,7 @@ const Keymanagement = () => {
     try {
       const credentials = await Keychain.getGenericPassword();
       if (credentials) {
-        console.log('Credentials successfully loaded for' + credentials.username);
+        // console.log('Credentials successfully loaded for' + credentials.username);
         return credentials.password;
       } else {
         console.log('No credentials stored');
@@ -130,25 +130,30 @@ const Keymanagement = () => {
         console.error('Error updating masterkey: ', error);
     }
 }
-  async function encryptData(data) {
-    try{
-     const maskey =  await retrievemasterkey();
-     const encryptData = crypto.AES.encrypt(data, maskey).toString();
-     console.log('encryptData', encryptData);
-     return encryptData;
-    } catch (error) {
-      console.error('Could not encrypt data', error);
-      return "";
+async function encryptData(data) {
+  try {
+    const masterKey = await retrievemasterkey();
+    if (!masterKey) {
+      throw new Error('Missing master key');
     }
+    const encryptedData = crypto.AES.encrypt(data, masterKey).toString();
+    return encryptedData;
+  } catch (error) {
+    console.error('Could not encrypt data', error);
+    return '';
   }
+}
   async function decryptData(data) {
-    try{
-      const maskey =  await retrievemasterkey();
-      const decryptData = crypto.AES.decrypt(data, maskey).toString(crypto.enc.Utf8);
-      return decryptData;
+    try {
+      const masterKey = await retrievemasterkey();
+      if (!masterKey) {
+        throw new Error('Missing master key');
+      }
+      const decryptedData = crypto.AES.decrypt(data, masterKey).toString(crypto.enc.Utf8);
+      return decryptedData;
     } catch (error) {
       console.error('Could not decrypt data', error);
-      return "";
+       return '';
     }
   }
 

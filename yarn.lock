@@ -3445,6 +3445,11 @@ fs-extra@^8.1.0:
 fs.realpath@^1.0.0:
   version "1.0.0"
 
+fsevents@^2.3.2:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
+
 function-bind@^1.1.2:
   version "1.1.2"
 
@@ -3544,6 +3549,7 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.2.0,
   resolved "file:"
   dependencies:
     "@react-native-async-storage/async-storage" "^1.24.0"
+    "@react-native-community/checkbox" "^0.5.17"
     "@react-native-community/datetimepicker" "^8.2.0"
     "@react-native-community/geolocation" "^3.3.0"
     "@react-native-firebase/app" "^20.4.0"
