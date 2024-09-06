@@ -364,7 +364,7 @@ if (status === 'have_owner') {
         <MaterialCommunityIcons name="chevron-left" size={40} color="#E16539" />
         </TouchableOpacity>
         <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 18 }}>Add Pet</Text>
-        <Text>          </Text>
+        <Text> </Text>
       </View>
           <View style={styles.photoSec}>
             <View style={{borderRadius:100}}>

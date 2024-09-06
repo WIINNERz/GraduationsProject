@@ -25,7 +25,8 @@ const PetDetail = () => {
     const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
     const user = auth.currentUser;
     const { id } = route.params;
-    const KeymanagementInstance = new Keymanagement(); // Call Keymanagement properly
+    const navigation = useNavigation();
+    const KeymanagementInstance = new Keymanagement(); 
 
     const onChange = (event, selectedDate) => {
         setShow(false);
@@ -231,7 +232,13 @@ const PetDetail = () => {
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContent} 
         style={styles.container}>
-
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <MaterialCommunityIcons name="chevron-left" size={40} color="#E16539" />
+        </TouchableOpacity>
+        <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 18 }}>Edit Pet Profile</Text>
+        <Text></Text>
+      </View>
             {pet?.photoURL ? (
                 <Image source={{ uri: pet.photoURL }} style={styles.image} />
             ) : (
@@ -392,10 +399,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     scrollViewContent: {
-        flexGrow: 1,
+        //flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
+        //padding: 20,
     },
     subContainer: {
         width: '100%',
@@ -492,6 +499,14 @@ const styles = StyleSheet.create({
     adoptionDetailsContainer: {
         marginTop: 20,
     },
+    header: {
+        flexDirection: 'row',
+        position: 'relative',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: 'white'
+      },
 });
 
 export default PetDetail;
