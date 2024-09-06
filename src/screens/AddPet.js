@@ -103,7 +103,7 @@ const AddPet = () => {
       const id = name;
       const dateTime = new Timestamp.now();
       const username = await fetchUsername(user.uid);
-const key = await KeymanagementInstance.retrievemasterkey();
+      const key = await KeymanagementInstance.retrievemasterkey();
 
 if (!username) return;
 
@@ -115,47 +115,62 @@ if (!name.trim()) {
 let dataToStore = {};
 
 if (status === 'have_owner') {
-  dataToStore = {
-    age: CryptoJS.AES.encrypt(age, key).toString(),
-    breeds: CryptoJS.AES.encrypt(breeds, key).toString(),
-    weight: CryptoJS.AES.encrypt(weight, key).toString(),
-    height: CryptoJS.AES.encrypt(height, key).toString(),
-    characteristics: CryptoJS.AES.encrypt(characteristics, key).toString(),
-    chronic: CryptoJS.AES.encrypt(chronic, key).toString(),
-    location: CryptoJS.AES.encrypt(location, key).toString(),
-    conditions: CryptoJS.AES.encrypt(conditions, key).toString(),
-    color: CryptoJS.AES.encrypt(color, key).toString(),
-    gender: CryptoJS.AES.encrypt(gender, key).toString(),
-  };
-} else {
-  dataToStore = {
-    age,
-    breeds,
-    weight,
-    height,
-    characteristics,
-    chronic,
-    location,
-    conditions,
-    color,
-    gender,
-  };
-}
+  // Encrypt each field separately
+  const encryptedAge = CryptoJS.AES.encrypt(age, key).toString();
+  const encryptedBreeds = CryptoJS.AES.encrypt(breeds, key).toString();
+  const encryptedWeight = CryptoJS.AES.encrypt(weight, key).toString();
+  const encryptedHeight = CryptoJS.AES.encrypt(height, key).toString();
+  const encryptedCharacteristics = CryptoJS.AES.encrypt(characteristics, key).toString();
+  const encryptedChronic = CryptoJS.AES.encrypt(chronic, key).toString();
+  const encryptedLocation = CryptoJS.AES.encrypt(location, key).toString();
+  const encryptedConditions = CryptoJS.AES.encrypt(conditions, key).toString();
+  const encryptedColor = CryptoJS.AES.encrypt(color, key).toString();
+  const encryptedGender = CryptoJS.AES.encrypt(gender, key).toString();
 
-const petDocRef = doc(db, 'Pets', name);
-await setDoc(petDocRef, {
-  id,
-  uid: user.uid,
-  username,
-  name,
-  ...dataToStore,
-  type,
-  dateTime,
-  status,
-  createdAt: Timestamp.now(),
-  updatedAt: Timestamp.now(),
-  ...(isChecked ? { status: 'dont_have_owner' } : {}),
-});
+  const encryptField = (field) => CryptoJS.AES.encrypt(field, key).toString();
+
+  const dataToStore = status === 'have_owner'
+    ? {
+        age: encryptField(age),
+        breeds: encryptField(breeds),
+        weight: encryptField(weight),
+        height: encryptField(height),
+        characteristics: encryptField(characteristics),
+        chronic: encryptField(chronic),
+        location: encryptField(location),
+        conditions: encryptField(conditions),
+        color: encryptField(color),
+        gender: encryptField(gender),
+      }
+    : {
+        age,
+        breeds,
+        weight,
+        height,
+        characteristics,
+        chronic,
+        location,
+        conditions,
+        color,
+        gender,
+      };
+  
+  // Create or update the document in Firestore
+  const petDocRef = doc(db, 'Pets', name);
+  await setDoc(petDocRef, {
+    id,
+    uid: user.uid,
+    username,
+    name,
+    ...dataToStore,
+    type,
+    dateTime,
+    status,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+    ...(isChecked ? { status: 'dont_have_owner' } : {}),
+  });
+
       if (imageP) {
         await uploadImage(imageP, petDocRef);
       }
@@ -171,6 +186,7 @@ await setDoc(petDocRef, {
       }
 
       navigation.navigate('MyPets');
+    }
     } catch (error) {
       console.error('Error adding document: ', error);
     }

@@ -34,6 +34,21 @@ export default function PetProfile() {
                 const petDoc = await getDoc(doc(firestore, 'Pets', id));
                 if (petDoc.exists()) {
                     const petData = { id: petDoc.id, ...petDoc.data() };
+                    
+                    if (petData.status === 'have_owner') {
+                        const key = await KeymanagementInstance.retrievemasterkey();
+                        petData.age = CryptoJS.AES.decrypt(petData.age, key).toString(CryptoJS.enc.Utf8);
+                        petData.breeds = CryptoJS.AES.decrypt(petData.breeds, key).toString(CryptoJS.enc.Utf8);
+                        petData.weight = CryptoJS.AES.decrypt(petData.weight, key).toString(CryptoJS.enc.Utf8);
+                        petData.height = CryptoJS.AES.decrypt(petData.height, key).toString(CryptoJS.enc.Utf8);
+                        petData.characteristics = CryptoJS.AES.decrypt(petData.characteristics, key).toString(CryptoJS.enc.Utf8);
+                        petData.chronic = CryptoJS.AES.decrypt(petData.chronic, key).toString(CryptoJS.enc.Utf8);
+                        petData.location = CryptoJS.AES.decrypt(petData.location, key).toString(CryptoJS.enc.Utf8);
+                        petData.conditions = CryptoJS.AES.decrypt(petData.conditions, key).toString(CryptoJS.enc.Utf8);
+                        petData.color = CryptoJS.AES.decrypt(petData.color, key).toString(CryptoJS.enc.Utf8);
+                        petData.gender = CryptoJS.AES.decrypt(petData.gender, key).toString(CryptoJS.enc.Utf8);
+                    }
+    
                     setPet(petData);
                 } else {
                     setError('Pet not found');
@@ -44,7 +59,7 @@ export default function PetProfile() {
                 setLoading(false);
             }
         };
-
+    
         fetchPet();
     }, [id]);
     return (

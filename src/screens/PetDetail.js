@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, ActivityIndicator, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { auth, firestore, storage } from '../configs/firebaseConfig';
+import { auth, db, storage } from '../configs/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BackButton from '../components/backbutton';
+import Checkbox from '../components/checkbox';
+import CryptoJS from "rn-crypto-js";
+import Keymanagement from '../components/Keymanagement';
 
-const PetDetail = ({ navigation }) => {
+const PetDetail = () => {
     const [pet, setPet] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,8 +22,10 @@ const PetDetail = ({ navigation }) => {
     const [uploading, setUploading] = useState(false);
     const route = useRoute();
     const [image, setImage] = useState('');
+    const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
     const user = auth.currentUser;
     const { id } = route.params;
+    const KeymanagementInstance = new Keymanagement(); // Call Keymanagement properly
 
     const onChange = (event, selectedDate) => {
         setShow(false);
@@ -33,6 +38,11 @@ const PetDetail = ({ navigation }) => {
             calculateAge(selectedDate);
         }
     };
+
+    const onPress = () => {
+        setIsFindHomeChecked(!isFindHomeChecked);
+    };
+
     const calculateAge = (birthday) => {
         const today = new Date();
         const birthDate = new Date(birthday);
@@ -59,52 +69,50 @@ const PetDetail = ({ navigation }) => {
             setAge(`${days} day${days > 1 ? 's' : ''}`);
         }
     };
-    const formatAge = () => {
-        const today = new Date();
-        const birthDate = new Date(date);
-        let years = today.getFullYear() - birthDate.getFullYear();
-        let months = today.getMonth() - birthDate.getMonth();
-        let days = today.getDate() - birthDate.getDate();
 
-        if (days < 0) {
-            const daysInMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
-            days += daysInMonth;
-            months--;
-        }
-
-        if (months < 0) {
-            months += 12;
-            years--;
-        }
-
-        if (years > 0) {
-            return `${years} year${years > 1 ? 's' : ''}`;
-        } else if (months > 0) {
-            return `${months} month${months > 1 ? 's' : ''}`;
-        } else {
-            return `${days} day${days > 1 ? 's' : ''}`;
-        }
-    };
     useEffect(() => {
         const fetchPet = async () => {
+            const key = await KeymanagementInstance.retrievemasterkey();
             try {
-                const petDoc = await getDoc(doc(firestore, 'Pets', id));
+                const petDocRef = doc(db, 'Pets', id); // Use the correct document ID
+                console.log('Document Reference:', petDocRef.path);
+                const petDoc = await getDoc(petDocRef);
                 if (petDoc.exists()) {
-                    setPet({ id: petDoc.id, ...petDoc.data() });
-                    if (petDoc.data().birthday) {
-                        const birthDate = petDoc.data().birthday.toDate();
-                        setDate(birthDate);
-                        calculateAge(birthDate);
+                    let petData = petDoc.data();
+                    console.log('Fetched Pet Data:', petData);
+                    if (petData.status === 'have_owner') {
+                        petData = {
+                            ...petData,
+                            age: CryptoJS.AES.decrypt(petData.age, key).toString(CryptoJS.enc.Utf8),
+                            breeds: CryptoJS.AES.decrypt(petData.breeds, key).toString(CryptoJS.enc.Utf8),
+                            weight: CryptoJS.AES.decrypt(petData.weight, key).toString(CryptoJS.enc.Utf8),
+                            height: CryptoJS.AES.decrypt(petData.height, key).toString(CryptoJS.enc.Utf8),
+                            characteristics: CryptoJS.AES.decrypt(petData.characteristics, key).toString(CryptoJS.enc.Utf8),
+                            chronic: CryptoJS.AES.decrypt(petData.chronic, key).toString(CryptoJS.enc.Utf8),
+                            location: CryptoJS.AES.decrypt(petData.location, key).toString(CryptoJS.enc.Utf8),
+                            conditions: CryptoJS.AES.decrypt(petData.conditions, key).toString(CryptoJS.enc.Utf8),
+                            color: CryptoJS.AES.decrypt(petData.color, key).toString(CryptoJS.enc.Utf8),
+                            gender: CryptoJS.AES.decrypt(petData.gender, key).toString(CryptoJS.enc.Utf8),
+                        };
+                    try {
+                        // Add your decryption logic here
+                    } catch (decryptErr) {
+                        console.error('Decryption error:', decryptErr);
+                        setError('Failed to decrypt pet data.');
+                        return;
                     }
-                } else {
-                    setError('Pet not found');
                 }
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+                setPet(petData);
+            } else {
+                setError('Pet not found');
             }
-        };
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
         fetchPet();
     }, [id]);
@@ -113,12 +121,12 @@ const PetDetail = ({ navigation }) => {
         try {
             const newId = pet.name;
             // Delete the old document
-            await deleteDoc(doc(firestore, 'Pets', id));
+            await deleteDoc(doc(db, 'Pets', id));
             // Create a new document with the new ID
-            await setDoc(doc(firestore, 'Pets', newId), {
+            await setDoc(doc(db, 'Pets', newId), {
                 ...pet,
                 id: newId,
-                age: formatAge(),
+                age: age,
                 updatedAt: Timestamp.now(),
             });
             navigation.goBack();
@@ -136,8 +144,7 @@ const PetDetail = ({ navigation }) => {
                     text: 'Yes',
                     onPress: async () => {
                         try {
-                            // Delete the old document
-                            await deleteDoc(doc(firestore, 'Pets', pet.id));
+                            await deleteDoc(doc(db, 'Pets', pet.id));
                             navigation.goBack();
                         } catch (err) {
                             setError(err.message);
@@ -146,11 +153,9 @@ const PetDetail = ({ navigation }) => {
                 },
                 {
                     text: 'No',
-                    onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                 },
-            ],
-            { cancelable: false }
+            ]
         );
     };
 
@@ -168,7 +173,6 @@ const PetDetail = ({ navigation }) => {
 
     const openImageLibrary = async () => {
         const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
-
         if (!result.canceled) {
             setImage(result.assets[0].uri);
             uploadImage(result.assets[0].uri);
@@ -177,7 +181,6 @@ const PetDetail = ({ navigation }) => {
 
     const openCamera = async () => {
         const result = await launchCamera({ mediaType: 'photo', quality: 1 });
-
         if (!result.canceled) {
             setImage(result.assets[0].uri);
             uploadImage(result.assets[0].uri);
@@ -188,20 +191,15 @@ const PetDetail = ({ navigation }) => {
         if (!uri) return;
 
         setUploading(true);
-
         const storageRef = ref(storage, `images/${user.uid}/pets/${pet.name}/${Date.now()}`);
-
         try {
             const response = await fetch(uri);
             const blob = await response.blob();
 
             const snapshot = await uploadBytes(storageRef, blob);
-            console.log('Uploaded a blob or file!');
-
             const downloadURL = await getDownloadURL(snapshot.ref);
-            console.log('File available at', downloadURL);
 
-            const petDoc = doc(firestore, 'Pets', id);
+            const petDoc = doc(db, 'Pets', id);
             await updateDoc(petDoc, { photoURL: downloadURL });
 
             setPet(prevState => ({
@@ -245,6 +243,8 @@ const PetDetail = ({ navigation }) => {
                 </View>
             </TouchableOpacity>
             <View style={styles.subContainer}>
+            <View style={styles.whContainer}>
+            <View style={styles.containerwh}>
                 <Text>Name</Text>
                 <TextInput
                     style={styles.input}
@@ -252,14 +252,25 @@ const PetDetail = ({ navigation }) => {
                     value={pet?.name || ''}
                     onChangeText={(text) => setPet({ ...pet, name: text })}
                 />
+            </View>
+            <View style={styles.containerwh}>
+                <Text>Age</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Age"
+                    value={pet?.age || ''}
+                    onChangeText={(text) => setPet({ ...pet, age: text })}
+                />
+            </View>
+            </View>
                 <Text>Breeds</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Breeds"
+                    placeholder="Breed"
                     value={pet?.breeds || ''}
                     onChangeText={(text) => setPet({ ...pet, breeds: text })}
                 />
-                                <Text>Age (Birthday)</Text>
+                <Text> Birthday </Text>
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.inputDate}
@@ -293,17 +304,74 @@ const PetDetail = ({ navigation }) => {
                         />
                     </View>
                 </View>
-                
+                <View style={styles.whContainer}>
+                    <View style={styles.containerwh}>
+                        <Text>Color</Text>
+                        <TextInput
+                            style={styles.inputwh}
+                            placeholder="Color"
+                            value={pet?.color ? `${pet.color}` : ''}
+                            onChangeText={(text) => setPet({ ...pet, color: text })}
+                                />
+                    </View>
+                    <View style={styles.containerwh}>
+                        <Text>Gender</Text>
+                        <TextInput
+                            style={styles.inputwh}
+                            placeholder="Gender"
+                            value={pet?.gender ? `${pet.gender}` : ''}
+                            onChangeText={(text) => setPet({ ...pet, gender: text })}
+                        />
+                    </View>
+                </View>
+                <View style={styles.whContainer}>
+                    <View style={styles.container}>
+                        <Text>Characteristics</Text>
+                        <TextInput
+                            style={styles.inputwh}
+                            placeholder="Characteristics"
+                            value={pet?.characteristics? `${pet.characteristics}` : ''}
+                            onChangeText={(text) => setPet({ ...pet, characteristics: text })}
+                                />
+                    </View>
+                    </View>
+                    <View style={styles.whContainer}>
+                    <View style={styles.container}>
+                        <Text>Chronic</Text>
+                        <TextInput
+                            style={styles.inputwh}
+                            placeholder="Chronic"
+                            value={pet?.chronic? `${pet.chronic}` : ''}
+                            onChangeText={(text) => setPet({ ...pet, chronic: text })}
+                                />
+                    </View>
+                    </View>
+                        <Checkbox
+                            text="Find Home"
+                            onPress={onPress}
+                            isChecked={isFindHomeChecked}
+                        />
 
+                            {isFindHomeChecked && (
+                                <View style={styles.adoptionDetailsContainer}>
+                                <Text>Adopting Conditions</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Adopting Conditions"
+                                />
+                                </View>
+                            )}
             </View>
-            {show && (
-                <DateTimePicker
-                    mode="date"
-                    display="default"
-                    value={date || new Date()}
-                    onChange={onChange}
-                />
-            )}
+                    {show && (
+                        <DateTimePicker
+                            mode="date"
+                            display="default"
+                            value={date || new Date()}
+                            onChange={onChange}
+                        />
+                    )}
+
+            
             <View style={styles.buttonPanel}>
             <TouchableOpacity style={styles.buttonS} onPress={() => handleSave()}>
                 <Text>Save</Text>
@@ -420,6 +488,9 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         alignItems: 'center',
+    },
+    adoptionDetailsContainer: {
+        marginTop: 20,
     },
 });
 
