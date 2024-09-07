@@ -43,6 +43,7 @@ const AddPet = () => {
   const [location, setLocation] = useState('');
   const [conditions, setConditions] = useState('');
   const [date, setDate] = useState(new Date());
+  const [birthday, setBirthday] = useState(new Date());
   const [imageP, setImageP] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -128,6 +129,7 @@ const AddPet = () => {
           conditions: encryptField(conditions),
           color: encryptField(color),
           gender: encryptField(gender),
+          birthday: encryptField(birthday.toISOString()),
         };
       } else {
         dataToStore = {
@@ -141,6 +143,7 @@ const AddPet = () => {
           conditions,
           color,
           gender,
+          birthday: birthday.toISOString(),
         };
       }
 
@@ -156,7 +159,6 @@ const AddPet = () => {
         status,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
-        ...(isChecked ? { status: 'dont_have_owner' } : {}),
       });
 
       if (imageP) {
@@ -175,6 +177,7 @@ const AddPet = () => {
 
   const onDateChange = (selectedDate) => {
     setDate(selectedDate);
+    setBirthday(selectedDate);
     calculateAge(selectedDate);
   };
 
@@ -493,7 +496,10 @@ const AddPet = () => {
               <Checkbox
                 text="Find Owner"
                 isChecked={isChecked}
-                onPress={() => setIsChecked(!isChecked)}
+                onPress={() => {
+                  setIsChecked(!isChecked);
+                  setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
+                }}
               />
             </View>
             <View style={styles.subContainer}>

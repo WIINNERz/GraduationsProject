@@ -168,7 +168,7 @@ const PetDetail = () => {
       if (isFindHomeChecked) {
         dataToStore = {
           ...pet,
-          age: age, // Assuming age is a string representing the time already calculated
+          age: age,
           adoptingConditions: adoptingConditions,
           updatedAt: Timestamp.now(),
         };
@@ -289,10 +289,7 @@ const PetDetail = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        style={styles.container}>
-        <View style={styles.header}>
+                <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <MaterialCommunityIcons
               name="chevron-left"
@@ -305,6 +302,9 @@ const PetDetail = () => {
           </Text>
           <Text></Text>
         </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        style={styles.container}>
         {pet?.photoURL ? (
           <Image source={{uri: pet.photoURL}} style={styles.image} />
         ) : (
