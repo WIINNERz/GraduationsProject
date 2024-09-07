@@ -1,16 +1,32 @@
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
-import ChatRoomHeader from '../components/ChatRoomHeader';
-import MessageList from '../components/MessageList';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getRoomId } from '../utils/common';
-import { setDoc, doc, Timestamp, collection, getDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { auth, db, storage } from '../configs/firebaseConfig';
-import PlusBoxChatRoom from '../components/PlusBoxChatRoom';
-
-export default function ChatRoom1({ navigation }) {
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    TextInput,
+    TouchableOpacity,
+  } from 'react-native';
+  import React, { useCallback, useEffect, useRef, useState } from 'react';
+  import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+  import { useFocusEffect, useRoute } from '@react-navigation/native';
+  import ChatRoomHeader from '../components/ChatRoomHeader';
+  import MessageList from '../components/MessageList';
+  import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+  import { getRoomId } from '../utils/common';
+  import {
+    setDoc,
+    doc,
+    Timestamp,
+    collection,
+    getDoc,
+    query,
+    orderBy,
+    onSnapshot,
+  } from 'firebase/firestore';
+  import { auth, db, storage } from '../configs/firebaseConfig';
+  import PlusBoxChatRoom from '../components/PlusBoxChatRoom';
+  
+  export default function ChatRoom1({ navigation }) {
     const route = useRoute();
     const { uid, username, profileURL } = route.params;
     const user = auth.currentUser;
@@ -21,131 +37,159 @@ export default function ChatRoom1({ navigation }) {
     const [userProfile, setUserProfile] = useState({ profileURL: '', senderName: '' });
     const [header, setHeader] = useState({ username: '', photoURL: '' });
     const [isBoxed, setIsBoxed] = useState(false);
-
+    const [selectedPets, setSelectedPets] = useState({});
+  
     useFocusEffect(
-        useCallback(() => {
-            navigation.getParent()?.setOptions({
-                tabBarStyle: { display: 'none' }
-            });
-
-            return () => {
-                navigation.getParent()?.setOptions({
-                    tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], // Reset tabBarStyle to default
-                });
-            };
-        }, [navigation])
+      useCallback(() => {
+        navigation.getParent()?.setOptions({
+          tabBarStyle: { display: 'none' },
+        });
+  
+        return () => {
+          navigation.getParent()?.setOptions({
+            tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], // Reset tabBarStyle to default
+          });
+        };
+      }, [navigation])
     );
-
+  
     useEffect(() => {
-        if (user) {
-            createRoomIfNotExists();
-            fetchUserProfile();
-
-            let roomId = getRoomId(user.uid, uid);
-            const docRef = doc(db, 'Rooms', roomId);
-            const messageRef = collection(docRef, 'Messages');
-            const q = query(messageRef, orderBy('createdAt', 'asc'));
-
-            let unsubscribe = onSnapshot(q, (snapshot) => {
-                let allMessages = snapshot.docs.map(doc => {
-                    return doc.data();
-                });
-                setMessages([...allMessages]);
-            });
-            return unsubscribe;
-        } else {
-            console.error('User is not authenticated');
-        }
-    }, [user]);
-
-    const createRoomIfNotExists = async () => {
+      if (user) {
+        createRoomIfNotExists();
+        fetchUserProfile();
+  
         let roomId = getRoomId(user.uid, uid);
-        const roomRef = doc(db, 'Rooms', roomId);
-        
-        const roomDoc = await getDoc(roomRef);
-        if (!roomDoc.exists()) {
-            const createdAt = Timestamp.fromDate(new Date());
-            await setDoc(roomRef, {
-                roomId,
-                createdAt,
-            });
-        } else {
-            // console.log('Room already exists with ID:', roomId);
-        }
+        const docRef = doc(db, 'Rooms', roomId);
+        const messageRef = collection(docRef, 'Messages');
+        const q = query(messageRef, orderBy('createdAt', 'asc'));
+  
+        let unsubscribe = onSnapshot(q, (snapshot) => {
+          let allMessages = snapshot.docs.map((doc) => {
+            return doc.data();
+          });
+          setMessages([...allMessages]);
+        });
+        return unsubscribe;
+      } else {
+        console.error('User is not authenticated');
+      }
+    }, [user]);
+  
+    const createRoomIfNotExists = async () => {
+      let roomId = getRoomId(user.uid, uid);
+      const roomRef = doc(db, 'Rooms', roomId);
+  
+      const roomDoc = await getDoc(roomRef);
+      if (!roomDoc.exists()) {
+        const createdAt = Timestamp.fromDate(new Date());
+        await setDoc(roomRef, {
+          roomId,
+          createdAt,
+        });
+      } else {
+        // console.log('Room already exists with ID:', roomId);
+      }
     };
+  
     const fetchOtherUserProfile = async (otherUserId) => {
-        try {
-            const userDocRef = doc(db, 'Users', otherUserId);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                setHeader({ 
-                    username: userData.username || '',
-                    photoURL: userData.photoURL || ''
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching other user profile:', error);
+      try {
+        const userDocRef = doc(db, 'Users', otherUserId);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setHeader({
+            username: userData.username || '',
+            photoURL: userData.photoURL || '',
+          });
         }
+      } catch (error) {
+        console.error('Error fetching other user profile:', error);
+      }
     };
+  
     useEffect(() => {
-        const otherUserId = uid;
-        fetchOtherUserProfile(otherUserId);
+      const otherUserId = uid;
+      fetchOtherUserProfile(otherUserId);
     }, [uid]);
+  
     const fetchUserProfile = async () => {
-        try {
-            const userDocRef = doc(db, 'Users', user.uid);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                setUserProfile({
-                    profileURL: userData.photoURL || '',
-                    senderName: userData.username || '',
-                });
-            }
-
-        } catch (error) {
-            console.error('Error fetching user profile:', error);
+      try {
+        const userDocRef = doc(db, 'Users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserProfile({
+            profileURL: userData.photoURL || '',
+            senderName: userData.username || '',
+          });
         }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
     };
-
+  
     const handleSendMessage = async (message, type = 'text') => {
-        let trimmedMessage = message.trim();
-        if (!trimmedMessage) return;
-
-        try {
-            let roomId = getRoomId(user.uid, uid);
-            const docRef = doc(db, 'Rooms', roomId);
-            const messageRef = collection(docRef, 'Messages');
-            textRef.current = '';
-            let imageUrl = '';
-            if (type === 'image') {
-                const storageRef = ref(storage, `chat/${roomId}/${user.uid}/${Date.now()}`);
-                const response = await fetch(message);
-                const blob = await response.blob();
-                const snapshot = await uploadBytes(storageRef, blob);
-                imageUrl = await getDownloadURL(snapshot.ref);
-            }
-            await setDoc(doc(messageRef), {
-                userId: user?.uid,
-                text: type === 'text' ? trimmedMessage : '',
-                profileURL: userProfile.profileURL,
-                senderName: userProfile.senderName,
-                imageUrl: type === 'image' ? imageUrl : '' ,
-                createdAt: Timestamp.fromDate(new Date()),
-            });
-            setMessage('');
-        } catch (error) {
-            console.error('Error sending message:', error);
+      let trimmedMessage = message.trim();
+      if (!trimmedMessage && type === 'text') return;
+  
+      try {
+        let roomId = getRoomId(user.uid, uid);
+        const docRef = doc(db, 'Rooms', roomId);
+        const messageRef = collection(docRef, 'Messages');
+        textRef.current = '';
+        let imageUrl = '';
+        if (type === 'image') {
+          const storageRef = ref(storage, `chat/${roomId}/${user.uid}/${Date.now()}`);
+          const response = await fetch(message);
+          const blob = await response.blob();
+          const snapshot = await uploadBytes(storageRef, blob);
+          imageUrl = await getDownloadURL(snapshot.ref);
         }
+    
+        await setDoc(doc(messageRef), {
+          userId: user?.uid,
+          text: type === 'text' ? trimmedMessage : '',
+          profileURL: userProfile.profileURL,
+          senderName: userProfile.senderName,
+          imageUrl: type === 'image' ? imageUrl : '',
+          createdAt: Timestamp.fromDate(new Date()),
+        });
+        setMessage('');
+        setSelectedPets({});
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
     };
-
+  
     const handleImagePicked = (url) => {
-        const filename = url.split('/').pop();
-        textRef.current = filename;
-        if (inputRef) inputRef.current?.setNativeProps({ text: filename });
-        handleSendMessage(url, 'image');
+      const filename = url.split('/').pop();
+      textRef.current = filename;
+      if (inputRef) inputRef.current?.setNativeProps({ text: filename });
+      handleSendMessage(url, 'image');
     };
+  
+    const handleSendPets = async (selectedPetData) => {
+        if (selectedPetData.length === 0) return;
+    
+        try {
+          let roomId = getRoomId(user.uid, uid);
+          const docRef = doc(db, 'Rooms', roomId);
+          const messageRef = collection(docRef, 'Messages');
+    
+          await setDoc(doc(messageRef), {
+            userId: user?.uid,
+            text: '',
+            profileURL: userProfile.profileURL,
+            senderName: userProfile.senderName,
+            imageUrl: '',
+            createdAt: Timestamp.fromDate(new Date()),
+            selectedPets: selectedPetData,
+          });
+          setSelectedPets({});
+        } catch (error) {
+          console.error('Error sending pet data:', error);
+        }
+      };
 
     return (
         <View style={styles.container}>
@@ -155,7 +199,7 @@ export default function ChatRoom1({ navigation }) {
             </View>
             {isBoxed && (
                 <View style={styles.tabPlusBox}>
-                    <PlusBoxChatRoom onImagePicked={handleImagePicked} />
+                    <PlusBoxChatRoom onImagePicked={handleImagePicked} onSendPets={handleSendPets} />
                 </View>
             )}
             <View style={styles.chatInput}>
