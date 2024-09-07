@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import React, { useCallback } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -6,6 +6,7 @@ import { auth } from '../configs/firebaseConfig';
 
 const AdoptBar = ({ uid}) => {
     const navigation = useNavigation();
+    const currentUserUid = auth.currentUser?.uid;
     useFocusEffect(
         useCallback(() => {
             navigation.getParent()?.setOptions({
@@ -14,15 +15,21 @@ const AdoptBar = ({ uid}) => {
 
             return () => {
                 navigation.getParent()?.setOptions({
-                    tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], // Reset tabBarStyle to default
+                    tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
                 });
             };
         }, [navigation])
     );
 
     const handleContactPress = () => {
-        navigation.navigate('ChatRoom1', { uid });
-        console.log(uid);
+        if (currentUserUid === uid) {
+            Alert.alert('Notice', 'You cannot contact yourself.');
+        } else {
+            navigation.navigate('Chat', {
+                screen: 'ChatRoomScreen',
+                params: { uid }
+            });
+        }
     };
     return (
         <View style={styles.container}>
@@ -64,5 +71,12 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
     },
+    tabBar: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        height: "8%", 
+        position: 'absolute',
+        overflow: 'hidden',
+      },
 });
 export default AdoptBar;

@@ -15,7 +15,7 @@ const ChatItem = ({ item }) => {
 
     return (
         <TouchableOpacity onPress={handlePress}>
-            <View style={{ flexDirection: 'row', padding: 10 }}>
+            <View style={{ flexDirection: 'row', padding: 10,borderBottomWidth:1,borderColor:'rgba(0, 0, 0, 0.2)'}}>
                 <Image source={{ uri: item.photoURL }} style={{ width: 50, height: 50, borderRadius: 25 }} />
                 <View style={{ marginLeft: 10 }}>
                     <Text>{item.username}</Text>

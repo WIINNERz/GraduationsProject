@@ -92,7 +92,7 @@ export default function PetProfile() {
                     <Text style={{ fontSize: 18, color: 'black' }}> {pet?.age}</Text>
                 </View>
             </View>
-            <AdoptBar uid={pet?.uid} />
+            <AdoptBar style={styles.AdoptBar} uid={pet?.uid} />
         </ScrollView>
     );
 }
@@ -140,6 +140,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
         color: 'gray',
+    },
+    AdoptBar: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        height: "8%",
+        position: 'absolute',
+        overflow: 'hidden',
     },
     tabBar: {
         borderTopLeftRadius: 20,
