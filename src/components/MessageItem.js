@@ -4,6 +4,8 @@ import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 
 const MessageItem = ({ message, currentUser }) => {
   const [username, setUsername] = useState('');
+  const [adoptedPets, setAdoptedPets] = useState({});
+
   const {
     userId,
     profileURL = '',
@@ -26,7 +28,9 @@ const MessageItem = ({ message, currentUser }) => {
       const petDoc = doc(db, 'Pets', petId);
       await updateDoc(petDoc, {
         uid: currentUser.uid,
+        status:'have_owner',
       });
+      setAdoptedPets((prev) => ({ ...prev, [petId]: true }));
       console.log('Pet adopted successfully');
     } catch (error) {
       console.error('Error adopting pet: ', error);
@@ -53,11 +57,20 @@ const MessageItem = ({ message, currentUser }) => {
                     {senderName} wants to pass {pet.name} to you for further care.
                   </Text>
                   <View>
-              {!isCurrentUser && (
-                <TouchableOpacity style={styles.AdoptButton}  onPress={() => handleAdopt(pet.id)} >
-                  <Text style={styles.petName}>Adopt</Text>
-                </TouchableOpacity>
-              )}
+                  {!isCurrentUser && (
+                      <TouchableOpacity
+                        style={[
+                          styles.adoptButton,
+                          adoptedPets[pet.id] && styles.adoptedButton,
+                        ]}
+                        onPress={() => handleAdopt(pet.id, pet.uid)}
+                        disabled={adoptedPets[pet.id]}
+                      >
+                        <Text style={styles.buttonText}>
+                          {adoptedPets[pet.id] ? 'Adopted' : 'Adopt'}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
               </View>
                 </View>
                 
@@ -136,11 +149,19 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
-  AdoptButton: {
+  adoptButton: {
+    width: 200,
     padding: 10,
     backgroundColor: '#D27C2C',
     borderRadius: 5,
-    margin: 10
+    margin: 10,
+  },
+  adoptedButton: {
+    backgroundColor: 'gray',
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
 

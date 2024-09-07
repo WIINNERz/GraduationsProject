@@ -5,6 +5,8 @@ import {
     Image,
     TextInput,
     TouchableOpacity,
+    Alert,
+    Modal,
   } from 'react-native';
   import React, { useCallback, useEffect, useRef, useState } from 'react';
   import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -38,6 +40,8 @@ import {
     const [header, setHeader] = useState({ username: '', photoURL: '' });
     const [isBoxed, setIsBoxed] = useState(false);
     const [selectedPets, setSelectedPets] = useState({});
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedPetData, setSelectedPetData] = useState([]);
   
     useFocusEffect(
       useCallback(() => {
@@ -170,26 +174,33 @@ import {
   
     const handleSendPets = async (selectedPetData) => {
         if (selectedPetData.length === 0) return;
-    
+
+        setSelectedPetData(selectedPetData);
+        setModalVisible(true);
+        console.log('Selected pets:', selectedPetData);
+    };
+
+    const confirmSendPets = async () => {
         try {
-          let roomId = getRoomId(user.uid, uid);
-          const docRef = doc(db, 'Rooms', roomId);
-          const messageRef = collection(docRef, 'Messages');
-    
-          await setDoc(doc(messageRef), {
-            userId: user?.uid,
-            text: '',
-            profileURL: userProfile.profileURL,
-            senderName: userProfile.senderName,
-            imageUrl: '',
-            createdAt: Timestamp.fromDate(new Date()),
-            selectedPets: selectedPetData,
-          });
-          setSelectedPets({});
+            let roomId = getRoomId(user.uid, uid);
+            const docRef = doc(db, 'Rooms', roomId);
+            const messageRef = collection(docRef, 'Messages');
+
+            await setDoc(doc(messageRef), {
+                userId: user?.uid,
+                text: '',
+                profileURL: userProfile.profileURL,
+                senderName: userProfile.senderName,
+                imageUrl: '',
+                createdAt: Timestamp.fromDate(new Date()),
+                selectedPets: selectedPetData,
+            });
+            setSelectedPets({});
+            setModalVisible(false);
         } catch (error) {
-          console.error('Error sending pet data:', error);
+            console.error('Error sending pet data:', error);
         }
-      };
+    };
 
     return (
         <View style={styles.container}>
@@ -217,6 +228,43 @@ import {
                     <MaterialCommunityIcons name="send-circle" size={30} color="#007bff" />
                 </TouchableOpacity>
             </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.title}>Warning</Text>
+                    <Text style={styles.modalText}>
+                            Do you want to send 
+                        </Text>
+                        {selectedPetData.map((pet, index) => (
+                            <Text key={index} style={styles.petText}>
+                                {pet.name || pet.id}
+                            </Text>
+                        ))}
+                        <Text style={styles.modalText}>to the new owner?</Text>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.buttonCancel,{borderColor:'#EA4335'}]}
+                                onPress={() => setModalVisible(!modalVisible)}
+                            >
+                               <Text style={[styles.textStyle, { color: '#EA4335' }]}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.button, styles.buttonConfirm,{borderColor:'#34A853'}]}
+                                onPress={confirmSendPets}
+                            >
+                                <Text style={[styles.textStyle, { color: '#34A853' }]}>Send</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -258,5 +306,57 @@ const styles = StyleSheet.create({
         height: "8%",
         position: 'absolute',
         overflow: 'hidden',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: '#F0DFC8',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        width: '100%',
+    },
+    button: {
+        width:100,
+        borderRadius: 10,
+        padding: 10,
+        marginHorizontal: 20,
+        borderWidth:1,
+    },
+    buttonCancel: {
+        backgroundColor: '#FFFFFF',
+    },
+    buttonConfirm: {
+        backgroundColor: '#FFFFFF',
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
     },
 });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TextInput } from 'react-native';
-import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { getFirestore, collection, onSnapshot, query, where } from 'firebase/firestore';
 import { petsRef } from '../configs/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,10 +18,9 @@ const FindPet = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const fetchDogs = async () => {
-      try {
-        const q = query(petsRef, where('status', '==', 'dont_have_owner'));
-        const querySnapshot = await getDocs(q);
+    const fetchDogs = () => {
+      const q = query(petsRef, where('status', '==', 'dont_have_owner'));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
         let data = [];
         querySnapshot.forEach(doc => {
           data.push({ ...doc.data() });
@@ -30,20 +29,24 @@ const FindPet = () => {
           setPets(data);
           setLoading(false);
         }
-      } catch (error) {
+      }, (error) => {
         console.error("Error fetching pets: ", error);
         if (isMounted) {
           setError('Failed to fetch pets. Please try again later.');
           setLoading(false);
         }
-      }
+      });
+
+      return unsubscribe;
     };
 
     if (user?.uid) {
-      fetchDogs();
-    } return () => {
-      isMounted = false;  // cleanup function to prevent setting state on unmounted component
-    };
+      const unsubscribe = fetchDogs();
+      return () => {
+        isMounted = false;
+        unsubscribe();  // cleanup function to unsubscribe from real-time updates
+      };
+    }
   }, [user?.uid]);
 
   return (
@@ -61,7 +64,6 @@ const FindPet = () => {
         <View style={styles.petList}>
           <PetList style={styles.petList} pets={pets} />
         </View>
-
       ) : (
         <View style={styles.noPetsContainer}>
           <Text style={styles.noPetsText}>No Pets Available</Text>
@@ -110,7 +112,6 @@ const styles = StyleSheet.create({
   },
   petList: {
     marginBottom: 150,
-
   },
 });
 
