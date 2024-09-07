@@ -23,6 +23,7 @@ const PetDetail = () => {
     const route = useRoute();
     const [image, setImage] = useState('');
     const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
+    const [adoptingConditions, setAdoptingConditions] = useState('');
     const user = auth.currentUser;
     const { id } = route.params;
     const navigation = useNavigation();
@@ -95,41 +96,55 @@ const PetDetail = () => {
                             color: CryptoJS.AES.decrypt(petData.color, key).toString(CryptoJS.enc.Utf8),
                             gender: CryptoJS.AES.decrypt(petData.gender, key).toString(CryptoJS.enc.Utf8),
                         };
-                    try {
-                        // Add your decryption logic here
-                    } catch (decryptErr) {
-                        console.error('Decryption error:', decryptErr);
-                        setError('Failed to decrypt pet data.');
-                        return;
                     }
+                    setPet(petData);
+                } else {
+                    setError('Pet not found');
                 }
-                setPet(petData);
-            } else {
-                setError('Pet not found');
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+        };
 
         fetchPet();
     }, [id]);
 
     const handleSave = async () => {
         try {
-            const newId = pet.name;
-            // Delete the old document
-            await deleteDoc(doc(db, 'Pets', id));
-            // Create a new document with the new ID
-            await setDoc(doc(db, 'Pets', newId), {
-                ...pet,
-                id: newId,
-                age: age,
-                updatedAt: Timestamp.now(),
-            });
+            if (!pet) {
+                throw new Error('Pet data is not loaded');
+            }
+    
+            const key = await KeymanagementInstance.retrievemasterkey();
+            let dataToStore;
+    
+            if (isFindHomeChecked) {
+                dataToStore = {
+                    ...pet,
+                    age: age, // Assuming age is a string representing the time already calculated
+                    adoptingConditions: adoptingConditions,
+                    updatedAt: Timestamp.now(),
+                };
+            } else {
+                dataToStore = {
+                    ...pet,
+                    age: CryptoJS.AES.encrypt(age, key).toString(),
+                    breeds: CryptoJS.AES.encrypt(pet.breeds, key).toString(),
+                    weight: CryptoJS.AES.encrypt(pet.weight, key).toString(),
+                    height: CryptoJS.AES.encrypt(pet.height, key).toString(),
+                    characteristics: CryptoJS.AES.encrypt(pet.characteristics, key).toString(),
+                    chronic: CryptoJS.AES.encrypt(pet.chronic, key).toString(),
+                    location: CryptoJS.AES.encrypt(pet.location, key).toString(),
+                    conditions: CryptoJS.AES.encrypt(pet.conditions, key).toString(),
+                    color: CryptoJS.AES.encrypt(pet.color, key).toString(),
+                    gender: CryptoJS.AES.encrypt(pet.gender, key).toString(),
+                    updatedAt: Timestamp.now(),
+                };
+            }
+    
+            await updateDoc(doc(db, 'Pets', id), dataToStore);
             navigation.goBack();
         } catch (err) {
             setError(err.message);
@@ -265,9 +280,10 @@ const PetDetail = () => {
                 <TextInput
                     style={styles.input}
                     placeholder="Age"
-                    value={pet?.age || ''}
-                    onChangeText={(text) => setPet({ ...pet, age: text })}
-                />
+                    placeholderTextColor={"gray"}
+                    value={age}
+                    editable={false}
+            />
             </View>
             </View>
                 <Text>Breeds</Text>
@@ -283,6 +299,7 @@ const PetDetail = () => {
                         style={styles.inputDate}
                         value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
                         editable={false}
+                        onChangeText={(text) => setPet({ ...pet, age: text })}
                     />
                     <TouchableOpacity onPress={() => setShow(true)} style={styles.iconContainer}>
                         <MaterialCommunityIcons name="calendar" size={24} color="black" />
@@ -296,7 +313,7 @@ const PetDetail = () => {
                             style={styles.inputwh}
                             placeholder="Weight"
                             keyboardType="numeric"
-                            value={pet?.weight ? `${pet.weight} kg` : ''}
+                            value={pet?.weight ? `${pet.weight}` : ''}
                             onChangeText={(text) => setPet({ ...pet, weight: parseFloat(text) }) }
                                 />
                     </View>
@@ -306,7 +323,7 @@ const PetDetail = () => {
                             style={styles.inputwh}
                             placeholder="Height"
                             keyboardType="numeric"
-                            value={pet?.height ? `${pet.height} cm` : ''}
+                            value={pet?.height ? `${pet.height}` : ''}
                             onChangeText={(text) => setPet({ ...pet, height: parseFloat(text) }) }
                         />
                     </View>
@@ -365,6 +382,8 @@ const PetDetail = () => {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Adopting Conditions"
+                                    value={adoptingConditions}
+                                    onChangeText={setAdoptingConditions}
                                 />
                                 </View>
                             )}

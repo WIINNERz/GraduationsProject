@@ -47,7 +47,7 @@ const AddPet = () => {
   const [additionalImages, setAdditionalImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState('have_owner');
   const [isFocus, setIsFocus] = useState(false);
   const KeymanagementInstance = Keymanagement();
   
@@ -105,71 +105,59 @@ const AddPet = () => {
       const username = await fetchUsername(user.uid);
       const key = await KeymanagementInstance.retrievemasterkey();
 
-if (!username) return;
+      if (!username) return;
 
-if (!name.trim()) {
-  Alert.alert('Error', 'Pet name cannot be empty.');
-  return;
-}
-
-let dataToStore = {};
-
-if (status === 'have_owner') {
-  // Encrypt each field separately
-  const encryptedAge = CryptoJS.AES.encrypt(age, key).toString();
-  const encryptedBreeds = CryptoJS.AES.encrypt(breeds, key).toString();
-  const encryptedWeight = CryptoJS.AES.encrypt(weight, key).toString();
-  const encryptedHeight = CryptoJS.AES.encrypt(height, key).toString();
-  const encryptedCharacteristics = CryptoJS.AES.encrypt(characteristics, key).toString();
-  const encryptedChronic = CryptoJS.AES.encrypt(chronic, key).toString();
-  const encryptedLocation = CryptoJS.AES.encrypt(location, key).toString();
-  const encryptedConditions = CryptoJS.AES.encrypt(conditions, key).toString();
-  const encryptedColor = CryptoJS.AES.encrypt(color, key).toString();
-  const encryptedGender = CryptoJS.AES.encrypt(gender, key).toString();
-
-  const encryptField = (field) => CryptoJS.AES.encrypt(field, key).toString();
-
-  const dataToStore = status === 'have_owner'
-    ? {
-        age: encryptField(age),
-        breeds: encryptField(breeds),
-        weight: encryptField(weight),
-        height: encryptField(height),
-        characteristics: encryptField(characteristics),
-        chronic: encryptField(chronic),
-        location: encryptField(location),
-        conditions: encryptField(conditions),
-        color: encryptField(color),
-        gender: encryptField(gender),
+      if (!name.trim()) {
+        Alert.alert('Error', 'Pet name cannot be empty.');
+        return;
       }
-    : {
-        age,
-        breeds,
-        weight,
-        height,
-        characteristics,
-        chronic,
-        location,
-        conditions,
-        color,
-        gender,
-      };
-  
-  // Create or update the document in Firestore
-  const petDocRef = doc(db, 'Pets', name);
-  await setDoc(petDocRef, {
-    id,
-    uid: user.uid,
-    username,
-    name,
-    ...dataToStore,
-    type,
-    dateTime,
-    status,
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
-    ...(isChecked ? { status: 'dont_have_owner' } : {}),
-  });
+
+      let dataToStore = {};
+
+      if (status === 'have_owner') {
+        const encryptField = (field) => CryptoJS.AES.encrypt(field, key).toString();
+
+        dataToStore = {
+          age: encryptField(age),
+          breeds: encryptField(breeds),
+          weight: encryptField(weight),
+          height: encryptField(height),
+          characteristics: encryptField(characteristics),
+          chronic: encryptField(chronic),
+          location: encryptField(location),
+          conditions: encryptField(conditions),
+          color: encryptField(color),
+          gender: encryptField(gender),
+        };
+      } else {
+        dataToStore = {
+          age,
+          breeds,
+          weight,
+          height,
+          characteristics,
+          chronic,
+          location,
+          conditions,
+          color,
+          gender,
+        };
+      }
+
+      const petDocRef = doc(db, 'Pets', name);
+      await setDoc(petDocRef, {
+        id,
+        uid: user.uid,
+        username,
+        name,
+        ...dataToStore,
+        type,
+        dateTime,
+        status,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+        ...(isChecked ? { status: 'dont_have_owner' } : {}),
+      });
 
       if (imageP) {
         await uploadImage(imageP, petDocRef);
@@ -179,14 +167,7 @@ if (status === 'have_owner') {
         await uploadAdditionalImages(petDocRef);
       }
 
-      if (imageP || additionalImages.length > 0) {
-        await updateDoc(petDocRef, {
-          updatedAt: Timestamp.now(),
-        });
-      }
-
       navigation.navigate('MyPets');
-    }
     } catch (error) {
       console.error('Error adding document: ', error);
     }
@@ -257,7 +238,7 @@ if (status === 'have_owner') {
 
     setUploading(true);
 
-    const storageRef = ref(storage, `images/${user.uid}/pets/${name}/${Date.now()}`);
+    const storageRef = ref(storage, `imageP/${user.uid}/pets/${name}/${Date.now()}`);
 
     try {
       const response = await fetch(uri);
@@ -313,7 +294,7 @@ if (status === 'have_owner') {
       for (const uri of additionalImages) {
         if (!uri) continue;
 
-        const storageRef = ref(storage, `images/${user.uid}/pets/${name}/additional/${Date.now()}`);
+        const storageRef = ref(storage, `imageP/${user.uid}/pets/${name}/additional/${Date.now()}`);
         const response = await fetch(uri);
         const blob = await response.blob();
 
@@ -390,11 +371,10 @@ if (status === 'have_owner') {
             />
             <TextInput
               style={styles.input}
-              placeholder='Age'
+              placeholder="Age"
               placeholderTextColor={"gray"}
-              value={age}  
-              onChangeText={setAge}
-              keyboardType='numeric'
+              value={age}
+              editable={false}
             />
           </View>
           <View style={styles.box2}>
@@ -427,8 +407,8 @@ if (status === 'have_owner') {
             value={color}
             onChangeText={setColor}
           />
-          
           </View>
+
           <Dropdown
         style={[styles.inputwh, isFocus && { borderColor: 'blue' }]}
         placeholderStyle={styles.placeholderStyle}
@@ -496,26 +476,18 @@ if (status === 'have_owner') {
             value={chronic}
             onChangeText={setChronic}
           />
-        <Dropdown
-          style={[styles.dropdown, isFocus ]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          itemTextStyle={styles.itemTextStyle} 
-          data={data}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? 'Status' : '...'}
-          value={status}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            setStatus(item.value);
-            setIsFocus(false);
-          }}
-        />
-        </View>
-        {userData?.verify ? (
+          {/* <View style={styles.checkboxContainer}>
+            <Checkbox
+              text="Don't have owner"
+              isChecked={isChecked}
+              onPress={() => {
+                setIsChecked(!isChecked);
+                setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
+              }}
+            />
+          </View> */}
+
+          {userData?.verify ? (
           <>
             <View style={styles.checkboxContainer}>
               <Checkbox
@@ -559,9 +531,12 @@ if (status === 'have_owner') {
           <SavePButton onPress={handleSubmit} />
         </View>
       </View>
+    </View>
     </ScrollView>
+
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -778,7 +753,7 @@ const styles = StyleSheet.create({
 
   },
   itemTextStyle: {
-    color: 'gray', // Change this to your desired item text color
+    color: 'gray',
   },
 });
 
