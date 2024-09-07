@@ -166,7 +166,7 @@ export default function PetProfile() {
             </View>
             <View style={styles.rightcolum}>
               <Text style={styles.categoryPet}>Birthday</Text>
-              <Text style={styles.valuePet}>Birthday</Text>
+              <Text style={styles.valuePet}>{pet?.brithday}</Text>
             </View>
           </View>
 
