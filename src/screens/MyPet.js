@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     flatListContent: {
-        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+
     },
 });

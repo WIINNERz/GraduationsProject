@@ -15,7 +15,11 @@ export default function PetCard({ item }) {
   return (
     <TouchableOpacity style={styles.card} onPress={openPetProfile}>
        <View>
+        {item?.photoURL ? ( 
         <Image source={{ uri: item?.photoURL }} style={styles.image} />
+        ) : (
+        <MaterialCommunityIcons name="cat" size={80} style={styles.dogicon} color="#E16539" />
+        )}
         <View style={styles.genderIcon}>
           {item?.gender === 'Male' && (
             <MaterialCommunityIcons name="gender-male" size={30} color="#D27C2C" />
@@ -85,5 +89,11 @@ const styles = StyleSheet.create({
     bottom: 5,
     borderRadius:10,
     backgroundColor: 'white',
+  },
+  dogicon: {
+    width: '100%',
+    height: 200,
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
 });

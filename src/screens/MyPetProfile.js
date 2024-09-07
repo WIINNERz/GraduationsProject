@@ -53,7 +53,6 @@ export default function PetProfile() {
         const petDoc = await getDoc(doc(firestore, 'Pets', id));
         if (petDoc.exists()) {
           const petData = {id: petDoc.id, ...petDoc.data()};
-
           try {
             const decryptedPetData = {
               id: petDoc.id,
@@ -61,6 +60,9 @@ export default function PetProfile() {
               photoURL: petData.photoURL,
               gender: petData.gender
                 ? KeymanagementInstance.decryptData(petData.gender)
+                : null,
+              birthday: petData.birthday
+                ? KeymanagementInstance.decryptData(petData.birthday)
                 : null,
               height: petData.height
                 ? KeymanagementInstance.decryptData(petData.height)
@@ -166,7 +168,7 @@ export default function PetProfile() {
             </View>
             <View style={styles.rightcolum}>
               <Text style={styles.categoryPet}>Birthday</Text>
-              <Text style={styles.valuePet}>{pet?.brithday}</Text>
+              <Text style={styles.valuePet}>{pet?.birthday}</Text>
             </View>
           </View>
 

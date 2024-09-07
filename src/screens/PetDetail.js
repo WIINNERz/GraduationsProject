@@ -26,7 +26,6 @@ import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import BackButton from '../components/backbutton';
 import Checkbox from '../components/checkbox';
 import CryptoJS from 'rn-crypto-js';
 import Keymanagement from '../components/Keymanagement';
