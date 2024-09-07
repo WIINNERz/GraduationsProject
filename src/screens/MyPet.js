@@ -45,7 +45,8 @@ export default function MyPet() {
     );
 
     const renderDogItem = ({ item }) => (
-        <TouchableOpacity key={item.id} style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: item.id })}>
+        // <TouchableOpacity key={item.id} style={styles.dogContainer} onPress={() => navigation.navigate('PetDetail', { id: item.id })}>
+        <TouchableOpacity key={item.id} style={styles.dogContainer} onPress={() => navigation.navigate('MyPetProfile', { id: item.id })}>
             {item.photoURL ? (
                 <Image source={{ uri: item.photoURL }} style={styles.petPic} />
             ) : (
