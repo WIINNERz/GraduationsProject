@@ -9,6 +9,7 @@ import MyPet from '../screens/MyPet';
 import Verify from '../components/Verify';
 import Settings from '../screens/Settings';
 import ChangePassword from '../screens/ChangePassword';
+import Policy from '../screens/Policy';
 
 
 const Stack = createNativeStackNavigator();
@@ -46,6 +47,11 @@ export default function ProfileStack() {
           name="Settings"
           component={Settings}
           options={{ headerShown: false }}/>
+        <Stack.Screen
+          name="Policy"
+          component={Policy}
+          options={{ headerShown: false }}/>
+          
       </Stack.Group>
       <Stack.Group screenOptions={{ animation:'slide_from_bottom'}}>
         <Stack.Screen

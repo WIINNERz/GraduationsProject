@@ -39,7 +39,6 @@ const Profiles = () => {
           const encfn = docSnap.data().firstname;
           const encln = docSnap.data().lastname;
 
-
           try {
             const decryptedFirstname = encfn
               ? await KeymanagementInstance.decryptData(encfn)
@@ -47,9 +46,6 @@ const Profiles = () => {
             const decryptedLastname = encln
               ? await KeymanagementInstance.decryptData(encln)
               : '';
-
-
-
             setFirstname(decryptedFirstname ?? '');
             setLastname(decryptedLastname ?? '');
           } catch (error) {
@@ -259,7 +255,7 @@ const Profiles = () => {
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Policy')}>
         <View style={styles.panel}>
           <View style={styles.leftContent}>
             <View style={styles.iconContainer}>
