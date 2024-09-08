@@ -173,8 +173,8 @@ const styles = StyleSheet.create({
 // Credit https://medium.com/@peatiscoding/validate-thai-citizen-id-7c980454c444
 export default Verify;
 // Alert.alert(
-//   'ID Already Used',
-//   'This ID card number has already been used',
+//    'Your account has not been verified',
+//    'Please verify your account to ',
 //   [
 //     {
 //       text: 'Cancel',
@@ -182,7 +182,7 @@ export default Verify;
 //     },
 //     {
 //       text: 'Go Verify',
-//       onPress: () => navigate.navigate('MyPets'),
+//       onPress: () => navigate.navigate('Verify'),
 //     },
 //   ],
 //   { cancelable: false }

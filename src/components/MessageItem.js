@@ -1,10 +1,11 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import React, { memo, useEffect, useState, useMemo } from 'react';
-import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
-
-const MessageItem = ({ message, currentUser,roomId,messageId }) => {
+import {View, Text, StyleSheet, Image, TouchableOpacity , Alert} from 'react-native';
+import React, {memo, useEffect, useState, useMemo} from 'react';
+import {getFirestore , doc, updateDoc, getDoc} from 'firebase/firestore';
+import {auth, firestore} from '../configs/firebaseConfig';
+import {useNavigation} from '@react-navigation/native';
+const MessageItem = ({message, currentUser, roomId, messageId}) => {
   const [adoptedPets, setAdoptedPets] = useState({});
-
+  const navigate = useNavigation();
   const {
     userId,
     profileURL = '',
@@ -15,66 +16,111 @@ const MessageItem = ({ message, currentUser,roomId,messageId }) => {
     selectedPets = [],
     adopted = false,
   } = message || {};
-  
 
   const isCurrentUser = userId === currentUser?.uid;
-  const formattedCreatedAt = useMemo(() => createdAt?.toDate().toLocaleTimeString() || '', [createdAt]);
+  const formattedCreatedAt = useMemo(
+    () => createdAt?.toDate().toLocaleTimeString() || '',
+    [createdAt],
+  );
+  
+
+  const isVerified = async () => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      const userRef = doc(firestore, 'Users', currentUser.uid);
+      const userDoc = await getDoc(userRef);
+      const verified = userDoc.data().verify;
+      if (verified === true) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   const handleAdopt = async (petId, petUid, messageId, roomId) => {
     if (!petId || !petUid || !messageId || !roomId) {
-      console.error('Missing required parameters:', { petId, petUid, messageId, roomId });
+      console.error('Missing required parameters:', {
+        petId,
+        petUid,
+        messageId,
+        roomId,
+      });
       return;
     }
-    
+
     if (petUid === currentUser.uid) {
       console.log('uid same');
       return;
     }
-  
+
+    const userVerify = await isVerified();
+    if (!userVerify)  {
+      Alert.alert(
+        'Your account has not been verified',
+        'Please verify your account to adopt this pet',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Go Verify',
+            onPress: () => navigate.navigate('Verify'),
+          },
+        ],
+        {cancelable: false},
+      );
+      console.log('User not verified');
+      return;
+    }
+
     try {
       const db = getFirestore();
       const petDoc = doc(db, 'Pets', petId);
       const messageDoc = doc(db, 'Rooms', roomId, 'Messages', messageId);
-  
+
       // Check if the pet is already adopted
       const messageSnapshot = await getDoc(messageDoc);
       if (!messageSnapshot.exists()) {
         console.log('Message document does not exist');
         return;
       }
-  
+
       const messageData = messageSnapshot.data();
       if (messageData && messageData.adopted) {
         console.log('Pet already adopted');
         return;
       }
-  
+
       await updateDoc(petDoc, {
         uid: currentUser.uid,
         status: 'have_owner',
       });
-  
+
       await updateDoc(messageDoc, {
         adopted: true,
       });
-  
-      setAdoptedPets((prev) => ({ ...prev, [petId]: true }));
+
+      setAdoptedPets(prev => ({...prev, [petId]: true}));
       console.log('Pet adopted successfully');
     } catch (error) {
       console.error('Error adopting pet: ', error);
     }
   };
-  
 
   return (
     <View style={styles.container}>
-      <View style={[styles.messageContainer, isCurrentUser ? styles.currentUser : styles.otherUser]}>
+      <View
+        style={[
+          styles.messageContainer,
+          isCurrentUser ? styles.currentUser : styles.otherUser,
+        ]}>
         {!isCurrentUser && profileURL && (
-          <Image source={{ uri: profileURL }} style={styles.profileImage} />
+          <Image source={{uri: profileURL}} style={styles.profileImage} />
         )}
         <View style={styles.messageContent}>
           {imageUrl ? (
-            <Image source={{ uri: imageUrl }} style={styles.messageImage} />
+            <Image source={{uri: imageUrl}} style={styles.messageImage} />
           ) : (
             <Text style={styles.messageText}>{text}</Text>
           )}
@@ -82,19 +128,22 @@ const MessageItem = ({ message, currentUser,roomId,messageId }) => {
             <View style={styles.petsContainer}>
               {selectedPets.map((pet, index) => (
                 <View key={index} style={styles.petItem}>
-                  <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
+                  <Image source={{uri: pet.photoURL}} style={styles.petImage} />
                   <Text style={styles.petName}>
-                    {senderName} wants to pass {pet.name} to you for further care.
+                    {senderName} wants to pass {pet.name} to you for further
+                    care.
                   </Text>
                   {!isCurrentUser && (
                     <TouchableOpacity
                       style={[
                         styles.adoptButton,
-                        (adoptedPets[pet.id] || adopted) && styles.adoptedButton,
+                        (adoptedPets[pet.id] || adopted) &&
+                          styles.adoptedButton,
                       ]}
-                      onPress={() => handleAdopt(pet.id, pet.uid, messageId, roomId)}
-                      disabled={adoptedPets[pet.id] || adopted}
-                    >
+                      onPress={() =>
+                        handleAdopt(pet.id, pet.uid, messageId, roomId)
+                      }
+                      disabled={adoptedPets[pet.id] || adopted}>
                       <Text style={styles.buttonText}>
                         {adoptedPets[pet.id] || adopted ? 'Adopted' : 'Adopt'}
                       </Text>
