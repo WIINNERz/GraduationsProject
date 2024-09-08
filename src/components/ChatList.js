@@ -25,6 +25,7 @@ export default function ChatList({ rooms, users, currentUserId }) {
                     return (
                         <ChatItem
                             item={otherUser}
+                            latestMessage={item.latestMessage}
                             navigation={navigation}
                         />
                     );

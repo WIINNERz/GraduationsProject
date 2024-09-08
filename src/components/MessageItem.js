@@ -21,22 +21,12 @@ const MessageItem = ({ message, currentUser,roomId,messageId }) => {
   const formattedCreatedAt = useMemo(() => createdAt?.toDate().toLocaleTimeString() || '', [createdAt]);
 
   const handleAdopt = async (petId, petUid, messageId, roomId) => {
-    if (!petId || !petUid || !messageId || !roomId) {
-      console.error('Missing required parameters:', { petId, petUid, messageId, roomId });
-      return;
-    }
     
-    if (petUid === currentUser.uid) {
-      console.log('uid same');
-      return;
-    }
-  
     try {
       const db = getFirestore();
       const petDoc = doc(db, 'Pets', petId);
       const messageDoc = doc(db, 'Rooms', roomId, 'Messages', messageId);
-  
-      // Check if the pet is already adopted
+
       const messageSnapshot = await getDoc(messageDoc);
       if (!messageSnapshot.exists()) {
         console.log('Message document does not exist');
