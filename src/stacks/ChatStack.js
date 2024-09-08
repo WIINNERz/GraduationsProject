@@ -6,6 +6,7 @@ import ChatRoom from '../screens/ChatRoom';
 import ChatList from '../components/ChatList';
 import ChatItem from '../components/ChatItem';
 import ChatRoom1 from '../screens/ChatRoom1';
+import Verify from '../components/Verify';
 
 export default function ChatStack() {
   const Stack = createNativeStackNavigator();
@@ -16,6 +17,7 @@ export default function ChatStack() {
       <Stack.Screen name="ChatRoomScreen" component={ChatRoom1} options={{ tabBarStyle: { display: 'none' } }}  />
       <Stack.Screen name="ChatListScreen" component={ChatList} />
       <Stack.Screen name="ChatItemScreen" component={ChatItem} /> 
+      <Stack.Screen name="Verify" component={Verify} />
     </Stack.Navigator>
   )
 }
