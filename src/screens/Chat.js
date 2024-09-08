@@ -2,7 +2,7 @@ import { View, Text, ActivityIndicator } from "react-native";
 import ChatHeader from "../components/ChatHeader";
 import ChatList from "../components/ChatList";
 import { useEffect, useState } from "react";
-import { getDocs, collection, doc, getDoc } from 'firebase/firestore';
+import { getDocs, collection, doc, getDoc, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from "../configs/firebaseConfig";
 import useAuth from "../hooks/useAuth";
 
@@ -14,47 +14,56 @@ const Chat = () => {
 
     useEffect(() => {
         if (user?.uid) {
-            fetchChatRooms();
+            const unsubscribe = fetchChatRooms();
+            return () => unsubscribe && unsubscribe();
         }
     }, [user?.uid]);
 
-    const fetchChatRooms = async () => {
+    const fetchChatRooms = () => {
         try {
             const roomsRef = collection(db, 'Rooms');
-            const querySnapshot = await getDocs(roomsRef);
-            let rooms = [];
-            let userIds = new Set();
+            const unsubscribe = onSnapshot(roomsRef, async (querySnapshot) => {
+                let rooms = [];
+                let userIds = new Set();
 
-            querySnapshot.forEach(doc => {
-                const roomData = { id: doc.id, ...doc.data() };
-                const { roomId } = roomData;
-                const [userId1, userId2] = roomId.split('_');
+                for (const doc of querySnapshot.docs) {
+                    const roomData = { id: doc.id, ...doc.data() };
+                    const { roomId } = roomData;
+                    const [userId1, userId2] = roomId.split('_');
 
-                if (userId1 === user.uid || userId2 === user.uid) {
-                    rooms.push(roomData);
-                    userIds.add(userId1 === user.uid ? userId2 : userId1);
-                }
-            });
+                    if (userId1 === user.uid || userId2 === user.uid) {
+                        // Fetch the latest message for the room
+                        const messagesRef = collection(db, 'Rooms', doc.id, 'Messages');
+                        const latestMessageQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
+                        const latestMessageSnapshot = await getDocs(latestMessageQuery);
+                        const latestMessage = latestMessageSnapshot.docs[0]?.data() || null;
 
-
-            if (userIds.size > 0) {
-                const usersData = [];
-                for (const uid of userIds) {
-                    const userDocRef = doc(db, 'Users', uid);
-                    const userDoc = await getDoc(userDocRef);
-                    if (userDoc.exists()) {
-                        usersData.push(userDoc.data());
-                    } else {
-                        console.log(`User with UID ${uid} does not exist.`);
+                        rooms.push({ ...roomData, latestMessage });
+                        userIds.add(userId1 === user.uid ? userId2 : userId1);
                     }
                 }
-                setUsers(usersData);
-            } else {
-                console.log("No additional users found.");
-            }
 
-            setChatRooms(rooms);
-            setLoading(false);
+                if (userIds.size > 0) {
+                    const usersData = [];
+                    for (const uid of userIds) {
+                        const userDocRef = doc(db, 'Users', uid);
+                        const userDoc = await getDoc(userDocRef);
+                        if (userDoc.exists()) {
+                            usersData.push(userDoc.data());
+                        } else {
+                            console.log(`User with UID ${uid} does not exist.`);
+                        }
+                    }
+                    setUsers(usersData);
+                } else {
+                    console.log("No additional users found.");
+                }
+
+                setChatRooms(rooms);
+                setLoading(false);
+            });
+
+            return unsubscribe;
         } catch (error) {
             console.error("Error fetching chat rooms: ", error);
             setLoading(false);
