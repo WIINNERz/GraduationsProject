@@ -34,6 +34,7 @@ import {
     const user = auth.currentUser;
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
+    const [roomId, setRoomId] = useState('');
     const textRef = useRef('');
     const inputRef = useRef(null);
     const [userProfile, setUserProfile] = useState({ profileURL: '', senderName: '' });
@@ -69,10 +70,11 @@ import {
   
         let unsubscribe = onSnapshot(q, (snapshot) => {
           let allMessages = snapshot.docs.map((doc) => {
-            return doc.data();
+            return { id: doc.id, ...doc.data() };
           });
           setMessages([...allMessages]);
         });
+        setRoomId(roomId);
         return unsubscribe;
       } else {
         console.error('User is not authenticated');
@@ -206,7 +208,7 @@ import {
         <View style={styles.container}>
             <View style={styles.chatContainer}>
                 <ChatRoomHeader user={header} />
-                <MessageList messages={messages} currentUser={user} />
+                <MessageList  messages={messages} currentUser={user} roomId={roomId} />
             </View>
             {isBoxed && (
                 <View style={styles.tabPlusBox}>

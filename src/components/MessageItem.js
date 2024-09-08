@@ -1,9 +1,8 @@
-import { View, Text, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
-import React, { memo, useEffect, useState } from 'react';
-import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { memo, useEffect, useState, useMemo } from 'react';
+import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
 
-const MessageItem = ({ message, currentUser }) => {
-  const [username, setUsername] = useState('');
+const MessageItem = ({ message, currentUser,roomId,messageId }) => {
   const [adoptedPets, setAdoptedPets] = useState({});
 
   const {
@@ -12,30 +11,61 @@ const MessageItem = ({ message, currentUser }) => {
     text = '',
     imageUrl = '',
     createdAt,
-    senderName='',
+    senderName = '',
     selectedPets = [],
+    adopted = false,
   } = message || {};
-  const isCurrentUser = userId === currentUser?.uid;
-  const formattedCreatedAt = createdAt?.toDate().toLocaleTimeString() || '';
   
-  const handleAdopt = async (petId,petUid) => {
+
+  const isCurrentUser = userId === currentUser?.uid;
+  const formattedCreatedAt = useMemo(() => createdAt?.toDate().toLocaleTimeString() || '', [createdAt]);
+
+  const handleAdopt = async (petId, petUid, messageId, roomId) => {
+    if (!petId || !petUid || !messageId || !roomId) {
+      console.error('Missing required parameters:', { petId, petUid, messageId, roomId });
+      return;
+    }
+    
     if (petUid === currentUser.uid) {
       console.log('uid same');
       return;
     }
+  
     try {
-      const db = getFirestore(); 
+      const db = getFirestore();
       const petDoc = doc(db, 'Pets', petId);
+      const messageDoc = doc(db, 'Rooms', roomId, 'Messages', messageId);
+  
+      // Check if the pet is already adopted
+      const messageSnapshot = await getDoc(messageDoc);
+      if (!messageSnapshot.exists()) {
+        console.log('Message document does not exist');
+        return;
+      }
+  
+      const messageData = messageSnapshot.data();
+      if (messageData && messageData.adopted) {
+        console.log('Pet already adopted');
+        return;
+      }
+  
       await updateDoc(petDoc, {
         uid: currentUser.uid,
-        status:'have_owner',
+        status: 'have_owner',
       });
+  
+      await updateDoc(messageDoc, {
+        adopted: true,
+      });
+  
       setAdoptedPets((prev) => ({ ...prev, [petId]: true }));
       console.log('Pet adopted successfully');
     } catch (error) {
       console.error('Error adopting pet: ', error);
     }
   };
+  
+
   return (
     <View style={styles.container}>
       <View style={[styles.messageContainer, isCurrentUser ? styles.currentUser : styles.otherUser]}>
@@ -48,7 +78,7 @@ const MessageItem = ({ message, currentUser }) => {
           ) : (
             <Text style={styles.messageText}>{text}</Text>
           )}
-             {selectedPets.length > 0 && (
+          {selectedPets.length > 0 && (
             <View style={styles.petsContainer}>
               {selectedPets.map((pet, index) => (
                 <View key={index} style={styles.petItem}>
@@ -56,30 +86,25 @@ const MessageItem = ({ message, currentUser }) => {
                   <Text style={styles.petName}>
                     {senderName} wants to pass {pet.name} to you for further care.
                   </Text>
-                  <View>
                   {!isCurrentUser && (
-                      <TouchableOpacity
-                        style={[
-                          styles.adoptButton,
-                          adoptedPets[pet.id] && styles.adoptedButton,
-                        ]}
-                        onPress={() => handleAdopt(pet.id, pet.uid)}
-                        disabled={adoptedPets[pet.id]}
-                      >
-                        <Text style={styles.buttonText}>
-                          {adoptedPets[pet.id] ? 'Adopted' : 'Adopt'}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-              </View>
+                    <TouchableOpacity
+                      style={[
+                        styles.adoptButton,
+                        (adoptedPets[pet.id] || adopted) && styles.adoptedButton,
+                      ]}
+                      onPress={() => handleAdopt(pet.id, pet.uid, messageId, roomId)}
+                      disabled={adoptedPets[pet.id] || adopted}
+                    >
+                      <Text style={styles.buttonText}>
+                        {adoptedPets[pet.id] || adopted ? 'Adopted' : 'Adopt'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-                
               ))}
-              
             </View>
           )}
           <Text style={styles.timestamp}>{formattedCreatedAt}</Text>
-       
         </View>
       </View>
     </View>
@@ -130,7 +155,7 @@ const styles = StyleSheet.create({
   petsContainer: {
     width: '100%',
     backgroundColor: '#D9D9D9',
-    borderRadius:20
+    borderRadius: 20,
   },
   petItem: {
     width: '100%',
