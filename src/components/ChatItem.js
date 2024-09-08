@@ -18,10 +18,6 @@ const ChatItem = ({ item, latestMessage }) => {
         });
     };
     const renderLatestMessage = () => {
-        console.log("latestMessage.text:", latestMessage.text);
-        console.log("latestMessage.imageURL:", latestMessage.imageURL);
-        console.log("latestMessage.selectedPets:", latestMessage.selectedPets);
-
         if (latestMessage.text === "") {
             if (Array.isArray(latestMessage.selectedPets) && latestMessage.selectedPets.length > 0) {
                 return `Send Pet : ${latestMessage.selectedPets.map(pet => pet.name).join(', ')}`;
