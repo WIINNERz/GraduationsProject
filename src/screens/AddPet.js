@@ -44,6 +44,7 @@ const AddPet = () => {
   const [conditions, setConditions] = useState('');
   const [date, setDate] = useState(new Date());
   const [birthday, setBirthday] = useState(new Date());
+  const [adoptingConditions, setAdoptingConditions] = useState('');
   const [imageP, setImageP] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -129,7 +130,7 @@ const AddPet = () => {
           conditions: encryptField(conditions),
           color: encryptField(color),
           gender: encryptField(gender),
-          birthday: encryptField(birthday.toISOString()),
+          birthday: encryptField(birthday.toISOString().substring(0, 10)),
         };
       } else {
         dataToStore = {
@@ -143,7 +144,10 @@ const AddPet = () => {
           conditions,
           color,
           gender,
-          birthday: birthday.toISOString(),
+          birthday: birthday.toISOString().substring(0, 10),
+          adoptingConditions,
+          additionalImages,
+          location,
         };
       }
 
