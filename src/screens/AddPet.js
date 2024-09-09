@@ -27,10 +27,9 @@ import Keymanagement from '../components/Keymanagement';
 const AddPet = () => {
   const db = getFirestore();
   const user = auth.currentUser;
-  const navigation = useNavigation();
-
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [type, setType] = useState('');
@@ -52,9 +51,8 @@ const AddPet = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [status, setStatus] = useState('have_owner');
   const [isFocus, setIsFocus] = useState(false);
-
   const KeymanagementInstance = Keymanagement();
-
+  
 
   const data = [
     { label: "Don't have owner", value: "dont_have_owner" },
@@ -66,17 +64,21 @@ const AddPet = () => {
 
     const userDoc = doc(firestore, 'Users', user.uid);
 
-    const unsubscribe = onSnapshot(userDoc, (docSnap) => {
-      if (docSnap.exists() && docSnap.data().email === user.email) {
-        setUserData(docSnap.data());
-      } else {
-        console.log('No matching user data found');
+    const unsubscribe = onSnapshot(
+      userDoc,
+      (docSnap) => {
+        if (docSnap.exists() && docSnap.data().email === user.email) {
+          setUserData(docSnap.data());
+        } else {
+          console.log('No matching user data found');
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching user data:', error);
+        setLoading(false);
       }
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching user data:', error);
-      setLoading(false);
-    });
+    );
 
     return () => unsubscribe();
   }, [user]);
@@ -92,9 +94,9 @@ const AddPet = () => {
     }
   };
 
-
- const handleSubmit = async () => {
+  const handleSubmit = async () => {
     try {
+      const user = auth.currentUser;
       if (!user) {
         console.error('No user is currently logged in.');
         return;
@@ -106,26 +108,48 @@ const AddPet = () => {
       const key = await KeymanagementInstance.retrievemasterkey();
 
       if (!username) return;
+
       if (!name.trim()) {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
 
-      const dataToStore = status === 'have_owner'
-        ? encryptPetData()
-        : {
-            age,
-            breeds,
-            weight,
-            height,
-            characteristics,
-            chronic,
-            location,
-            conditions,
-            color,
-            gender,
-            birthday: birthday.toISOString().substring(0, 10),
-          };
+      let dataToStore = {};
+
+      if (status === 'have_owner') {
+        const encryptField = (field) => CryptoJS.AES.encrypt(field, key).toString();
+
+        dataToStore = {
+          age: encryptField(age),
+          breeds: encryptField(breeds),
+          weight: encryptField(weight),
+          height: encryptField(height),
+          characteristics: encryptField(characteristics),
+          chronic: encryptField(chronic),
+          location: encryptField(location),
+          conditions: encryptField(conditions),
+          color: encryptField(color),
+          gender: encryptField(gender),
+          birthday: encryptField(birthday.toISOString().substring(0, 10)),
+        };
+      } else {
+        dataToStore = {
+          age,
+          breeds,
+          weight,
+          height,
+          characteristics,
+          chronic,
+          location,
+          conditions,
+          color,
+          gender,
+          birthday: birthday.toISOString().substring(0, 10),
+          adoptingConditions,
+          additionalImages,
+          location,
+        };
+      }
 
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
@@ -141,31 +165,18 @@ const AddPet = () => {
         updatedAt: Timestamp.now(),
       });
 
-      if (imageP) await uploadImage(imageP, petDocRef);
-      if (additionalImages.length > 0) await uploadAdditionalImages(petDocRef);
+      if (imageP) {
+        await uploadImage(imageP, petDocRef);
+      }
+
+      if (additionalImages.length > 0) {
+        await uploadAdditionalImages(petDocRef);
+      }
 
       navigation.navigate('MyPets');
     } catch (error) {
       console.error('Error adding document: ', error);
     }
-  };
-
-  const encryptPetData = () => {
-    const encryptField = (field) => field ? CryptoJS.AES.encrypt(field, key).toString() : null;
-
-    return {
-      age: encryptField(age),
-      breeds: encryptField(breeds),
-      weight: encryptField(weight),
-      height: encryptField(height),
-      characteristics: encryptField(characteristics),
-      chronic: encryptField(chronic),
-      location: encryptField(location),
-      conditions: encryptField(conditions),
-      color: encryptField(color),
-      gender: encryptField(gender),
-      birthday: encryptField(birthday.toISOString().substring(0, 10)),
-    };
   };
 
   const onDateChange = (selectedDate) => {

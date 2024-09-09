@@ -32,13 +32,17 @@ const Chat = () => {
                     const [userId1, userId2] = roomId.split('_');
 
                     if (userId1 === user.uid || userId2 === user.uid) {
-                        // Fetch the latest message for the room
+                        // Fetch the latest message for the room in real-time
                         const messagesRef = collection(db, 'Rooms', doc.id, 'Messages');
                         const latestMessageQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
-                        const latestMessageSnapshot = await getDocs(latestMessageQuery);
-                        const latestMessage = latestMessageSnapshot.docs[0]?.data() || null;
+                        const latestMessageUnsubscribe = onSnapshot(latestMessageQuery, (latestMessageSnapshot) => {
+                            const latestMessage = latestMessageSnapshot.docs[0]?.data() || null;
 
-                        rooms.push({ ...roomData, latestMessage });
+                            rooms = rooms.map(room => room.id === doc.id ? { ...room, latestMessage } : room);
+                            setChatRooms(rooms);
+                        });
+
+                        rooms.push({ ...roomData, latestMessage: null });
                         userIds.add(userId1 === user.uid ? userId2 : userId1);
                     }
                 }
@@ -59,7 +63,6 @@ const Chat = () => {
                     console.log("No additional users found.");
                 }
 
-                setChatRooms(rooms);
                 setLoading(false);
             });
 

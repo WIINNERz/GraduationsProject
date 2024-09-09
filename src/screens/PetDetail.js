@@ -12,7 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, onSnapshot, arrayUnion, Timestamp } from 'firebase/firestore';
+import { getFirestore, setDoc, doc, getDoc, updateDoc, onSnapshot, arrayUnion, Timestamp,deleteDoc } from 'firebase/firestore';
 
 import {auth, db, storage, firestore} from '../configs/firebaseConfig';
 import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
@@ -259,7 +259,7 @@ const handleSave = async () => {
         onPress: async () => {
           try {
             await deleteDoc(doc(db, 'Pets', pet.id));
-            navigation.goBack();
+            navigation.navigate("MyPets");
           } catch (err) {
             setError(err.message);
           }
