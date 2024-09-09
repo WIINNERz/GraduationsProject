@@ -203,6 +203,9 @@ import {
             console.error('Error sending pet data:', error);
         }
     };
+    const handleSendTelephone = (telephoneNumber) => {
+      handleSendMessage(telephoneNumber);
+    };
 
     return (
         <View style={styles.container}>
@@ -212,7 +215,7 @@ import {
             </View>
             {isBoxed && (
                 <View style={styles.tabPlusBox}>
-                    <PlusBoxChatRoom onImagePicked={handleImagePicked} onSendPets={handleSendPets} />
+                    <PlusBoxChatRoom onImagePicked={handleImagePicked} onSendPets={handleSendPets} onSendTelephone={handleSendTelephone} />
                 </View>
             )}
             <View style={styles.chatInput}>

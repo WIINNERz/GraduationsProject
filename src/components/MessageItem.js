@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D27C2C',
     borderRadius: 5,
     margin: 10,
+    marginBottom:0,
   },
   adoptedButton: {
     backgroundColor: 'gray',

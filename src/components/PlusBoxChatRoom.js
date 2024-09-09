@@ -3,24 +3,27 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Linking,
   Alert,
-  PermissionsAndroid,
   Image,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Geolocation from '@react-native-community/geolocation';
-import { auth, firestore, storage } from '../configs/firebaseConfig';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { auth } from '../configs/firebaseConfig';
+import Keymanagement from './Keymanagement';
 
-export default function PlusBoxChatRoom({ onImagePicked, onSendPets }) {
-  const [isPetPanelVisible, setPetPanelVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [petData, setPetData] = useState(null);
-  const [selectedPets, setSelectedPets] = useState({});
+export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelephone }) {
+  const [state, setState] = useState({
+    isPetPanelVisible: false,
+    loading: true,
+    error: null,
+    petData: null,
+    selectedPets: {},
+    telephoneNumber: '',
+  });
+
+  const KeymanagementInstance = Keymanagement();
   const user = auth.currentUser;
 
   const pickImage = async () => {
@@ -39,8 +42,8 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets }) {
     }
   };
 
-  const fetchPetData = async () => {
-    setLoading(true);
+  const fetchPetData = useCallback(async () => {
+    setState(prevState => ({ ...prevState, loading: true }));
     if (user) {
       try {
         const db = getFirestore();
@@ -53,51 +56,75 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets }) {
           ...doc.data()
         }));
 
-        setPetData(petList);
+        setState(prevState => ({ ...prevState, petData: petList, loading: false }));
       } catch (err) {
-        setError(err.message);
+        setState(prevState => ({ ...prevState, error: err.message, loading: false }));
         console.log('Error fetching pet data:', err.message);
-      } finally {
-        setLoading(false);
       }
     } else {
-      setLoading(false);
-      setError('User is not authenticated');
+      setState(prevState => ({ ...prevState, loading: false, error: 'User is not authenticated' }));
       console.log('User is not authenticated');
     }
-  };
+  }, [user]);
 
   const pickPet = () => {
-    setPetPanelVisible(!isPetPanelVisible);
-    if (!isPetPanelVisible) {
+    setState(prevState => ({ ...prevState, isPetPanelVisible: !prevState.isPetPanelVisible }));
+    if (!state.isPetPanelVisible) {
       fetchPetData();
     }
   };
 
   const togglePetSelection = (petId) => {
-    setSelectedPets(prevState => ({
+    setState(prevState => ({
       ...prevState,
-      [petId]: !prevState[petId]
+      selectedPets: {
+        ...prevState.selectedPets,
+        [petId]: !prevState.selectedPets[petId]
+      }
     }));
   };
 
   const handleSendPets = () => {
-    const selectedPetData = petData.filter(pet => selectedPets[pet.id]);
+    const selectedPetData = state.petData.filter(pet => state.selectedPets[pet.id]);
     onSendPets(selectedPetData);
-    setPetPanelVisible(false);
+    setState(prevState => ({ ...prevState, isPetPanelVisible: false }));
   };
+
+  const fetchTelephoneNumber = useCallback(async () => {
+    if (user) {
+      try {
+        const db = getFirestore();
+        const userDocRef = doc(db, 'Users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const decryptedTel = userData.tel ? await KeymanagementInstance.decryptData(userData.tel) : null;
+          setState(prevState => ({
+            ...prevState,
+            telephoneNumber: decryptedTel || 'No telephone number found'
+          }));
+          Alert.alert('Telephone Number', decryptedTel || 'No telephone number found');
+          if (onSendTelephone) {
+            onSendTelephone(decryptedTel || 'No telephone number found');
+          }
+        } else {
+          setState(prevState => ({ ...prevState, telephoneNumber: 'No telephone number found' }));
+          Alert.alert('Telephone Number', 'No telephone number found');
+        }
+      } catch (err) {
+        console.log('Error fetching telephone number:', err.message);
+      }
+    } else {
+      console.log('User is not authenticated');
+    }
+  }, [user, KeymanagementInstance, onSendTelephone]);
 
   return (
     <View style={styles.container}>
       <View style={styles.button}>
-        <TouchableOpacity
-          style={styles.buttonStyle}
-        >
-          <MaterialCommunityIcons
-            name="map-marker"
-            size={30}
-            color="#E16539"
-          />
+        <TouchableOpacity style={styles.buttonStyle}>
+          <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
         </TouchableOpacity>
         <Text>Location</Text>
       </View>
@@ -108,7 +135,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets }) {
         <Text>Photo</Text>
       </View>
       <View style={styles.button}>
-        <TouchableOpacity style={styles.buttonStyle}>
+        <TouchableOpacity style={styles.buttonStyle} onPress={fetchTelephoneNumber}>
           <MaterialCommunityIcons name="phone" size={30} color="#E16539" />
         </TouchableOpacity>
         <Text>Telephone</Text>
@@ -120,20 +147,20 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets }) {
         </TouchableOpacity>
         <Text>Transfer Pet Profile</Text>
       </View>
-      {isPetPanelVisible && (
+      {state.isPetPanelVisible && (
         <View style={styles.petPanel}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setPetPanelVisible(false)}>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setState(prevState => ({ ...prevState, isPetPanelVisible: false }))}>
             <Text>Close</Text>
           </TouchableOpacity>
-          {loading ? (
+          {state.loading ? (
             <Text>Loading...</Text>
           ) : (
-            petData ? (
-              petData.map((pet, index) => (
+            state.petData ? (
+              state.petData.map((pet, index) => (
                 <TouchableOpacity key={index} style={styles.petItem} onPress={() => togglePetSelection(pet.id)}>
                   <View style={styles.petImageContainer}>
                     <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
-                    {selectedPets[pet.id] && (
+                    {state.selectedPets[pet.id] && (
                       <MaterialCommunityIcons
                         name="check-circle"
                         size={24}
