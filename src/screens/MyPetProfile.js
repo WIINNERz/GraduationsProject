@@ -46,18 +46,24 @@ export default function PetProfile() {
       };
     }, [navigate]),
   );
-
-  useEffect(() => {
-    const fetchPet = async () => {
-      try {
-        const petDoc = await getDoc(doc(firestore, 'Pets', id));
-        if (petDoc.exists()) {
-          const petData = {id: petDoc.id, ...petDoc.data()};
+  useFocusEffect(
+    useCallback(() => {
+      fetchPet();
+    }, [id])
+  );
+  const fetchPet = async () => {
+    try {
+      const petDoc = await getDoc(doc(firestore, 'Pets', id));
+      if (petDoc.exists()) {
+        const petData = {id: petDoc.id, ...petDoc.data()};
+        if (petData.status === 'have_owner') {
           try {
             const decryptedPetData = {
               id: petDoc.id,
               name: petData.name,
               photoURL: petData.photoURL,
+              type: petData.type,
+              status: petData.status,
               gender: petData.gender
                 ? KeymanagementInstance.decryptData(petData.gender)
                 : null,
@@ -85,25 +91,86 @@ export default function PetProfile() {
               weight: petData.weight
                 ? KeymanagementInstance.decryptData(petData.weight)
                 : null,
-              type: petData.type,
+              
             };
-
             setPet(decryptedPetData);
           } catch (err) {
             console.log(err);
           }
         } else {
-          setError('Pet not found');
+          setPet(petData);
         }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      } else {
+        setError('Pet not found');
       }
-    };
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchPet();
-  }, [id]);
+  // useEffect(() => {
+  //   const fetchPet = async () => {
+  //     try {
+  //       const petDoc = await getDoc(doc(firestore, 'Pets', id));
+  //       if (petDoc.exists()) {
+  //         const petData = {id: petDoc.id, ...petDoc.data()};
+  //         if (petData.status === 'have_owner') {
+  //           try {
+  //             const decryptedPetData = {
+  //               id: petDoc.id,
+  //               name: petData.name,
+  //               photoURL: petData.photoURL,
+  //               type: petData.type,
+  //               status: petData.status,
+  //               gender: petData.gender
+  //                 ? KeymanagementInstance.decryptData(petData.gender)
+  //                 : null,
+  //               birthday: petData.birthday
+  //                 ? KeymanagementInstance.decryptData(petData.birthday)
+  //                 : null,
+  //               height: petData.height
+  //                 ? KeymanagementInstance.decryptData(petData.height)
+  //                 : null,
+  //               age: petData.age
+  //                 ? KeymanagementInstance.decryptData(petData.age)
+  //                 : null,
+  //               breeds: petData.breeds
+  //                 ? KeymanagementInstance.decryptData(petData.breeds)
+  //                 : null,
+  //               characteristics: petData.characteristics
+  //                 ? KeymanagementInstance.decryptData(petData.characteristics)
+  //                 : null,
+  //               chronic: petData.chronic
+  //                 ? KeymanagementInstance.decryptData(petData.chronic)
+  //                 : null,
+  //               color: petData.color
+  //                 ? KeymanagementInstance.decryptData(petData.color)
+  //                 : null,
+  //               weight: petData.weight
+  //                 ? KeymanagementInstance.decryptData(petData.weight)
+  //                 : null,
+                
+  //             };
+  //             setPet(decryptedPetData);
+  //           } catch (err) {
+  //             console.log(err);
+  //           }
+  //         } else {
+  //           setPet(petData);
+  //         }
+  //       } else {
+  //         setError('Pet not found');
+  //       }
+  //     } catch (err) {
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchPet();
+  // }, [id]);
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -190,7 +257,7 @@ export default function PetProfile() {
             </View>
             <View style={styles.rightcolum}>
               <Text style={styles.categoryPet}>Status</Text>
-              <Text style={styles.valuePet}>wait for update</Text>
+              <Text style={styles.valuePet}>{pet?.status}</Text>
             </View>
           </View>
         </View>
