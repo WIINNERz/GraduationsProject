@@ -104,8 +104,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
             ...prevState,
             telephoneNumber: decryptedTel || 'No telephone number found'
           }));
-          Alert.alert('Telephone Number', decryptedTel || 'No telephone number found');
-          if (onSendTelephone) {
+                if (onSendTelephone) {
             onSendTelephone(decryptedTel || 'No telephone number found');
           }
         } else {

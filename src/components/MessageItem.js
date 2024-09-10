@@ -1,9 +1,10 @@
-import {View, Text, StyleSheet, Image, TouchableOpacity , Alert} from 'react-native';
-import React, {memo, useEffect, useState, useMemo} from 'react';
-import {getFirestore , doc, updateDoc, getDoc} from 'firebase/firestore';
-import {auth, firestore} from '../configs/firebaseConfig';
-import {useNavigation} from '@react-navigation/native';
-const MessageItem = ({message, currentUser, roomId, messageId}) => {
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Linking } from 'react-native';
+import React, { memo, useEffect, useState, useMemo } from 'react';
+import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '../configs/firebaseConfig';
+import { useNavigation } from '@react-navigation/native';
+
+const MessageItem = ({ message, currentUser, roomId, messageId }) => {
   const [adoptedPets, setAdoptedPets] = useState({});
   const navigate = useNavigation();
   const {
@@ -15,6 +16,7 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
     senderName = '',
     selectedPets = [],
     adopted = false,
+    telephoneNumber = '',
   } = message || {};
 
   const isCurrentUser = userId === currentUser?.uid;
@@ -22,7 +24,6 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
     () => createdAt?.toDate().toLocaleTimeString() || '',
     [createdAt],
   );
-  
 
   const isVerified = async () => {
     const currentUser = auth.currentUser;
@@ -54,7 +55,7 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
     }
 
     const userVerify = await isVerified();
-    if (!userVerify)  {
+    if (!userVerify) {
       Alert.alert(
         'Your account has not been verified',
         'Please verify your account to adopt this pet',
@@ -68,7 +69,7 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
             onPress: () => navigate.navigate('Verify'),
           },
         ],
-        {cancelable: false},
+        { cancelable: false },
       );
       console.log('User not verified');
       return;
@@ -101,11 +102,15 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
         adopted: true,
       });
 
-      setAdoptedPets(prev => ({...prev, [petId]: true}));
+      setAdoptedPets(prev => ({ ...prev, [petId]: true }));
       console.log('Pet adopted successfully');
     } catch (error) {
       console.error('Error adopting pet: ', error);
     }
+  };
+
+  const handleCall = (telephoneNumber) => {
+    Linking.openURL(`tel:${telephoneNumber}`);
   };
 
   return (
@@ -116,11 +121,11 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
           isCurrentUser ? styles.currentUser : styles.otherUser,
         ]}>
         {!isCurrentUser && profileURL && (
-          <Image source={{uri: profileURL}} style={styles.profileImage} />
+          <Image source={{ uri: profileURL }} style={styles.profileImage} />
         )}
         <View style={styles.messageContent}>
           {imageUrl ? (
-            <Image source={{uri: imageUrl}} style={styles.messageImage} />
+            <Image source={{ uri: imageUrl }} style={styles.messageImage} />
           ) : (
             <Text style={styles.messageText}>{text}</Text>
           )}
@@ -128,7 +133,7 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
             <View style={styles.petsContainer}>
               {selectedPets.map((pet, index) => (
                 <View key={index} style={styles.petItem}>
-                  <Image source={{uri: pet.photoURL}} style={styles.petImage} />
+                  <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
                   <Text style={styles.petName}>
                     {senderName} wants to pass {pet.name} to you for further
                     care.
@@ -138,7 +143,7 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
                       style={[
                         styles.adoptButton,
                         (adoptedPets[pet.id] || adopted) &&
-                          styles.adoptedButton,
+                        styles.adoptedButton,
                       ]}
                       onPress={() =>
                         handleAdopt(pet.id, pet.uid, messageId, roomId)
@@ -149,8 +154,17 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
                       </Text>
                     </TouchableOpacity>
                   )}
+
                 </View>
               ))}
+            </View>
+          )}
+          {!isCurrentUser&&telephoneNumber && (
+            <View style={styles.telsContainer}>
+              <Text style={styles.telstyle}>{telephoneNumber}</Text>
+              <TouchableOpacity style={styles.callButton} onPress={() => handleCall(telephoneNumber)}>
+                <Text style={styles.buttonText}>Call</Text>
+              </TouchableOpacity>
             </View>
           )}
           <Text style={styles.timestamp}>{formattedCreatedAt}</Text>
@@ -229,14 +243,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#D27C2C',
     borderRadius: 5,
     margin: 10,
-    marginBottom:0,
+    marginBottom: 0,
   },
   adoptedButton: {
     backgroundColor: 'gray',
   },
+  callButton: {
+    width: 200,
+    padding: 10,
+    backgroundColor: '#007bff',
+    borderRadius: 5,
+    margin: 10,
+    marginBottom: 0,
+  },
   buttonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  telstyle: {
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  telsContainer: {
+    width: '100%',
+    backgroundColor: '#D9D9D9',
+    borderRadius: 20,
+    padding:10
   },
 });
 
