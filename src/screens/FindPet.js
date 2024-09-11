@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { getFirestore, collection, onSnapshot, query, where } from 'firebase/firestore';
 import { petsRef } from '../configs/firebaseConfig';
@@ -7,6 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import HomeHeader from '../components/HomeHeader';
 import PetList from '../components/PetList';
 import useAuth from '../hooks/useAuth';
+import PetFilter from '../components/PetFilter';
 
 const FindPet = () => {
   const { user } = useAuth();
@@ -14,21 +15,30 @@ const FindPet = () => {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+
+  const petQuery = useMemo(() => {
+    let q = query(petsRef, where('status', '==', 'dont_have_owner'));
+    if (filter !== 'all') {
+      q = query(q, where('type', '==', filter));
+    }
+    if (searchQuery) {
+      q = query(q, where('name', '>=', searchQuery), where('name', '<=', searchQuery + '\uf8ff'));
+    }
+    return q;
+  }, [filter, searchQuery]);
 
   useEffect(() => {
     let isMounted = true;
 
-    const fetchDogs = () => {
-      const q = query(petsRef, where('status', '==', 'dont_have_owner'));
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        let data = [];
-        querySnapshot.forEach(doc => {
-          data.push({ ...doc.data() });
-        });
-        if (isMounted) {
-          setPets(data);
-          setLoading(false);
-        }
+    const fetchPets = () => {
+      const unsubscribe = onSnapshot(petQuery, (querySnapshot) => {
+        if (!isMounted) return;
+        const data = querySnapshot.docs.map(doc => doc.data());
+        setPets(data);
+        setLoading(false);
       }, (error) => {
         console.error("Error fetching pets: ", error);
         if (isMounted) {
@@ -41,13 +51,13 @@ const FindPet = () => {
     };
 
     if (user?.uid) {
-      const unsubscribe = fetchDogs();
+      const unsubscribe = fetchPets();
       return () => {
         isMounted = false;
-        unsubscribe();  // cleanup function to unsubscribe from real-time updates
+        unsubscribe();
       };
     }
-  }, [user?.uid]);
+  }, [user?.uid, petQuery]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -55,7 +65,7 @@ const FindPet = () => {
         <Text style={{ color: 'white', fontFamily: 'InterSemiBold', fontSize: 26 }}>Looking for Owner</Text>
         <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
       </View>
-
+      <PetFilter filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : error ? (
@@ -111,7 +121,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   petList: {
-    marginBottom: 150,
+    marginBottom: 300,
   },
 });
 
