@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { getFirestore, collection, onSnapshot, query, where } from 'firebase/firestore';
 import { petsRef } from '../configs/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
@@ -17,7 +17,6 @@ const FindPet = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-
 
   const petQuery = useMemo(() => {
     let q = query(petsRef, where('status', '==', 'dont_have_owner'));
@@ -60,26 +59,31 @@ const FindPet = () => {
   }, [user?.uid, petQuery]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <Text style={{ color: 'white', fontFamily: 'InterSemiBold', fontSize: 26 }}>Looking for Owner</Text>
-        <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
-      </View>
-      <PetFilter filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : pets.length > 0 ? (
-        <View style={styles.petList}>
-          <PetList style={styles.petList} pets={pets} />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <Text style={{ color: 'white', fontFamily: 'InterSemiBold', fontSize: 26 }}>Looking for Owner</Text>
+          <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
         </View>
-      ) : (
-        <View style={styles.noPetsContainer}>
-          <Text style={styles.noPetsText}>No Pets Available</Text>
-        </View>
-      )}
-    </ScrollView>
+        <PetFilter filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : pets.length > 0 ? (
+          <View style={styles.petList}>
+            <PetList style={styles.petList} pets={pets} />
+          </View>
+        ) : (
+          <View style={styles.noPetsContainer}>
+            <Text style={styles.noPetsText}>No Pets Available</Text>
+          </View>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -92,7 +96,7 @@ const styles = StyleSheet.create({
   },
   header: {
     width: '100%',
-    height: "8%",
+    height: 74,
     padding: 20,
     flexDirection: 'row',
     backgroundColor: '#D27C2C',

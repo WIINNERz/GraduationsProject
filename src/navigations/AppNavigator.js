@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, View, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -64,12 +64,33 @@ const ProfileTabIcon = () => {
 };
 
 const AppNavigator = () => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
   return (
     <Tab.Navigator
       initialRouteName='HomeStack'
       screenOptions={{
-        
-        tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],
+        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8', display: isKeyboardVisible ? 'none' : 'flex' }],
         tabBarActiveTintColor: '#E16539',
         tabBarLabelStyle: { fontSize: 16 }
       }}
@@ -126,20 +147,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 50,
-  },
-  customTabBarButton: {
-    top: 0,
-    margin: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabButtonContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 35,
-    backgroundColor: '#E16539',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   tabBar: {
     borderTopLeftRadius: 20,
