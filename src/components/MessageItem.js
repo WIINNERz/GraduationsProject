@@ -30,10 +30,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
     if (currentUser) {
       const userRef = doc(firestore, 'Users', currentUser.uid);
       const userDoc = await getDoc(userRef);
-      const verified = userDoc.data().verify;
-      if (verified === true) {
-        return true;
-      }
+      return userDoc.data().verify === true;
     }
     return false;
   };
@@ -60,14 +57,8 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
         'Your account has not been verified',
         'Please verify your account to adopt this pet',
         [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Go Verify',
-            onPress: () => navigate.navigate('Verify'),
-          },
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Go Verify', onPress: () => navigate.navigate('Verify') },
         ],
         { cancelable: false },
       );
@@ -80,16 +71,9 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
       const petDoc = doc(db, 'Pets', petId);
       const messageDoc = doc(db, 'Rooms', roomId, 'Messages', messageId);
 
-      // Check if the pet is already adopted
       const messageSnapshot = await getDoc(messageDoc);
-      if (!messageSnapshot.exists()) {
-        console.log('Message document does not exist');
-        return;
-      }
-
-      const messageData = messageSnapshot.data();
-      if (messageData && messageData.adopted) {
-        console.log('Pet already adopted');
+      if (!messageSnapshot.exists() || messageSnapshot.data().adopted) {
+        console.log('Pet already adopted or message does not exist');
         return;
       }
 
@@ -111,7 +95,45 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
 
   const handleCall = (telephoneNumber) => {
     Linking.openURL(`tel:${telephoneNumber}`);
+    console.log('Calling', telephoneNumber);
   };
+
+  const PetItem = ({ pet }) => (
+    <View style={styles.petItem}>
+      <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
+      <Text style={styles.petName}>
+        {senderName} wants to pass {pet.name} to you for further care.
+      </Text>
+      {!isCurrentUser && (
+        <TouchableOpacity
+          style={[
+            styles.adoptButton,
+            (adoptedPets[pet.id] || adopted) && styles.adoptedButton,
+          ]}
+          onPress={() => handleAdopt(pet.id, pet.uid, messageId, roomId)}
+          disabled={adoptedPets[pet.id] || adopted}>
+          <Text style={styles.buttonText}>
+            {adoptedPets[pet.id] || adopted ? 'Adopted' : 'Adopt'}
+          </Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  const TelephoneInfo = ({ telephoneNumber, isCurrentUser }) => (
+    <View style={styles.telsContainer}>
+      <Text style={styles.telstyle}>
+        {isCurrentUser
+          ? `You sent ${telephoneNumber} `
+          : telephoneNumber}
+      </Text>
+      {!isCurrentUser && (
+        <TouchableOpacity style={styles.callButton} onPress={() => handleCall(telephoneNumber)}>
+          <Text style={styles.buttonText}>Call</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -132,40 +154,12 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
           {selectedPets.length > 0 && (
             <View style={styles.petsContainer}>
               {selectedPets.map((pet, index) => (
-                <View key={index} style={styles.petItem}>
-                  <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
-                  <Text style={styles.petName}>
-                    {senderName} wants to pass {pet.name} to you for further
-                    care.
-                  </Text>
-                  {!isCurrentUser && (
-                    <TouchableOpacity
-                      style={[
-                        styles.adoptButton,
-                        (adoptedPets[pet.id] || adopted) &&
-                        styles.adoptedButton,
-                      ]}
-                      onPress={() =>
-                        handleAdopt(pet.id, pet.uid, messageId, roomId)
-                      }
-                      disabled={adoptedPets[pet.id] || adopted}>
-                      <Text style={styles.buttonText}>
-                        {adoptedPets[pet.id] || adopted ? 'Adopted' : 'Adopt'}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                </View>
+                <PetItem key={index} pet={pet} />
               ))}
             </View>
           )}
-          {!isCurrentUser&&telephoneNumber && (
-            <View style={styles.telsContainer}>
-              <Text style={styles.telstyle}>{telephoneNumber}</Text>
-              <TouchableOpacity style={styles.callButton} onPress={() => handleCall(telephoneNumber)}>
-                <Text style={styles.buttonText}>Call</Text>
-              </TouchableOpacity>
-            </View>
+          {telephoneNumber && (
+            <TelephoneInfo telephoneNumber={telephoneNumber} isCurrentUser={isCurrentUser} />
           )}
           <Text style={styles.timestamp}>{formattedCreatedAt}</Text>
         </View>
@@ -269,7 +263,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#D9D9D9',
     borderRadius: 20,
-    padding:10
+    padding: 10,
   },
 });
 
