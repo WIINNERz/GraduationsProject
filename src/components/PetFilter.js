@@ -10,7 +10,7 @@ const PetFilter = ({ filter, setFilter, searchQuery, setSearchQuery }) => {
     { label: 'Snake', value: 'Snake', icon: 'snake' },
     { label: 'Fish', value: 'Fish', icon: 'fish' },
     { label: 'Sheep', value: 'Sheep', icon: 'sheep' },
-    { label: 'Others', value: 'Other', icon: 'paw' },
+    { label: 'Others', value: 'Other', icon: 'dots-horizontal-circle' },
   ], []);
 
   return (

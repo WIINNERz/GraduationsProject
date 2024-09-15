@@ -66,7 +66,7 @@ const FindPet = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text style={{ color: 'white', fontFamily: 'InterSemiBold', fontSize: 26 }}>Looking for Owner</Text>
-          <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={30} color="black" />
+         
         </View>
         <PetFilter filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         {loading ? (
