@@ -3,12 +3,10 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
 
-
 const ChatItem = ({ item, latestMessage }) => {
     const navigation = useNavigation();
     const auth = getAuth();
     const currentUser = auth.currentUser;
-
 
     const handlePress = () => {
         navigation.navigate('ChatRoomScreen', {
@@ -17,6 +15,7 @@ const ChatItem = ({ item, latestMessage }) => {
             photoURL: item.photoURL,
         });
     };
+
     const renderLatestMessage = () => {
         if (latestMessage.text === "") {
             if (Array.isArray(latestMessage.selectedPets) && latestMessage.selectedPets.length > 0) {
@@ -30,6 +29,11 @@ const ChatItem = ({ item, latestMessage }) => {
             return latestMessage.text;
         }
     };
+
+    if (!item || !item.photoURL) {
+        return null; 
+    }
+
     return (
         <TouchableOpacity onPress={handlePress}>
             <View style={{ flexDirection: 'row', padding: 10, borderBottomWidth: 1, borderColor: 'rgba(0, 0, 0, 0.2)' }}>
@@ -47,4 +51,5 @@ const ChatItem = ({ item, latestMessage }) => {
         </TouchableOpacity>
     );
 };
+
 export default ChatItem;
