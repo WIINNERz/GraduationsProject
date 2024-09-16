@@ -54,7 +54,6 @@ const Verify = () => {
     }
     try {
       const hash = await Aes.sha256(thaiIdInput);
-      console.log('hash=', hash);
       const usersSnapshot = await getDocs(collection(firestore, 'Users'));
       let hashExists = false;
 
@@ -75,14 +74,14 @@ const Verify = () => {
             verify: true,
             hashedID: hash,
           });
-          Alert('Your account has been verified.');
-          console.log(`Updated user ${currentUser.uid}`);
+          Alert.alert('Your account has been verified.');
+          setVerified(true);
         } else {
           Alert.alert('No user is currently signed in.');
         }
       }
     } catch (error) {
-      Alert.alert(error.message);
+     console.error('Error verifying Thai ID:', error);  
     }
   };
   if (verified) {
