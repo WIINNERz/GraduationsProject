@@ -43,12 +43,12 @@ const AuthStack = () => {
       setError('');
       try {
         await signInWithEmailAndPassword(auth, emailLog, passwordLog);
-        // add if statement to check if user is verified
         const KeymanagementInstance = Keymanagement();
-        const passkey = await KeymanagementInstance.getpasskey(passwordLog);
-        let decmasterkey =  await KeymanagementInstance.getmasterkey(passkey);
-        await KeymanagementInstance.storeKey(decmasterkey);
-        decmasterkey = null;
+        await KeymanagementInstance.retrieveandstorekey(passwordLog);
+        // const passkey = await KeymanagementInstance.getpasskey(passwordLog);
+        // let decmasterkey =  await KeymanagementInstance.getmasterkey(passkey);
+        // await KeymanagementInstance.storeKey(decmasterkey);
+        // decmasterkey = null;
         navigation.navigate('MyPets');
         setEmailLog('');
         setPasswordLog('');
