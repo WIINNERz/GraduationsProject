@@ -12,9 +12,12 @@ import {
 } from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
+import Keymanagement from './Keymanagement';
+
 
 
 const Verify = () => {
+  const KeymanagementInstance = Keymanagement();
   const [id, setId] = useState('');
   const navigate = useNavigation();
   const [verified, setVerified] = useState(false);
@@ -33,6 +36,11 @@ const Verify = () => {
     };
     isVerified();
   }, []);
+
+  // const test = async () => {
+
+  // };
+
 
   const validateThaiId = async id => {
     const thaiIdInput = id;
@@ -53,6 +61,7 @@ const Verify = () => {
       return;
     }
     try {
+      const recoverykey = await KeymanagementInstance.createRecoverykey(thaiIdInput);
       const hash = await Aes.sha256(thaiIdInput);
       const usersSnapshot = await getDocs(collection(firestore, 'Users'));
       let hashExists = false;
@@ -73,6 +82,7 @@ const Verify = () => {
           await updateDoc(userRef, {
             verify: true,
             hashedID: hash,
+            maskeyforrecovery: recoverykey,
           });
           Alert.alert('Your account has been verified.');
           setVerified(true);
@@ -126,6 +136,7 @@ const Verify = () => {
           style={{borderBottomWidth: 1, marginTop: 5, marginBottom: 20}}
         />
         <Button title="Verify" onPress={() => validateThaiId(id)} />
+        {/* <Button title="test" onPress={() => test()} /> */}
       </View>
     </View>
   );
@@ -168,21 +179,5 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
 });
-
-// Credit https://medium.com/@peatiscoding/validate-thai-citizen-id-7c980454c444
 export default Verify;
-// Alert.alert(
-//    'Your account has not been verified',
-//    'Please verify your account to ',
-//   [
-//     {
-//       text: 'Cancel',
-//       style: 'cancel',
-//     },
-//     {
-//       text: 'Go Verify',
-//       onPress: () => navigate.navigate('Verify'),
-//     },
-//   ],
-//   { cancelable: false }
-// );
+// Credit https://medium.com/@peatiscoding/validate-thai-citizen-id-7c980454c444
