@@ -235,26 +235,6 @@ const Profiles = () => {
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('ChangePassword')}>
-        <View style={styles.panel}>
-          <View style={styles.leftContent}>
-            <View style={styles.iconContainer}>
-              <MaterialCommunityIcons
-                name="lock-reset"
-                size={30}
-                color="#D27C2C"
-              />
-            </View>
-            <View style={styles.myaccount}>
-              <Text style={styles.topic}>Change Password</Text>
-              <Text style={{opacity: 0.5}}>
-                Send reset password link via your email
-              </Text>
-            </View>
-          </View>
-          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
-        </View>
-      </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Policy')}>
         <View style={styles.panel}>
           <View style={styles.leftContent}>
@@ -267,26 +247,6 @@ const Profiles = () => {
             </View>
             <View style={styles.myaccount}>
               <Text style={styles.topic}>Privacy Policy</Text>
-              <Text style={{opacity: 0.5}}>
-                Further secure your account for safety
-              </Text>
-            </View>
-          </View>
-          <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('MyAccount')}>
-        <View style={styles.panel}>
-          <View style={styles.leftContent}>
-            <View style={styles.iconContainer}>
-              <MaterialCommunityIcons
-                name="account"
-                size={30}
-                color="#D27C2C"
-              />
-            </View>
-            <View style={styles.myaccount}>
-              <Text style={styles.topic}>sth</Text>
               <Text style={{opacity: 0.5}}>
                 Further secure your account for safety
               </Text>

@@ -1,8 +1,10 @@
-import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Text, ActivityIndicator , ScrollView } from "react-native";
 import { auth, firestore } from "../configs/firebaseConfig";
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 
 const AccountInfo = () => {
     const navigation = useNavigation();
@@ -43,15 +45,27 @@ const AccountInfo = () => {
 
     return (
         <View style={styles.container}>
+        <ScrollView>
+        <MaterialCommunityIcons
+          style={styles.back}
+          name="arrow-left"
+          size={35}
+          color="#D27C2C"
+          onPress={() => navigation.goBack()}
+        />
+            <View style={styles.content}>
+            <Text style={styles.headerText}>Account Information</Text>
             {userData ? (
                 <View>
-                    <Text>Username: {userData.username}</Text>
-                    <Text>Email: {userData.email}</Text>
-                    <Text>Type: {userData.type}</Text>
+                    <Text style={styles.info}>Username: {userData.username}</Text>
+                    <Text style={styles.info}>Email: {userData.email}</Text>
+                    <Text style={styles.info}>Type: {userData.type}</Text>
                 </View>
             ) : (
                 <Text>No user data available</Text>
             )}
+            </View>
+            </ScrollView>
         </View>
     );
 };
@@ -59,10 +73,33 @@ const AccountInfo = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff',
+        fontFamily : 'InterRegular',
+    },
+    content: {
+        marginTop: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
+        padding: 20,
     },
+    headerText: {
+        fontSize: 24,
+        fontFamily:'InterBold',
+        marginBottom: 10,
+    },
+    info: {
+        fontSize: 20,
+        fontFamily:'InterRegular',
+        marginBottom: 5,
+    },
+    back: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        backgroundColor: 'white',
+        borderRadius: 100,
+        zIndex: 1,
+      },
 });
 
 export default AccountInfo;

@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Profiles from '../screens/Profiles';
 import SignIn from '../screens/SignIn';
 import ProfileDetail from '../screens/ProfileDetail';
-import MyAccount from '../screens/MyAccount';
 import AccountInfo from '../screens/AccountInfo';
 import MyPet from '../screens/MyPet';
 import Verify from '../components/Verify';
@@ -26,11 +25,6 @@ export default function ProfileStack() {
         <Stack.Screen
           name="SignIn"
           component={SignIn}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="MyAccount"
-          component={MyAccount}
           options={{ headerShown: false }}
         />
         <Stack.Screen

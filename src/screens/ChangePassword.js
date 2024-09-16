@@ -3,8 +3,6 @@ import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { auth, firestore } from '../configs/firebaseConfig';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import Aes from 'react-native-aes-crypto';
 import Keymanagement from '../components/Keymanagement';    
 
 const ChangePassword = ({ navigation }) => {
@@ -80,10 +78,9 @@ const ChangePassword = ({ navigation }) => {
         try {
             await reauthenticateWithCredential(user, credential);
             await updatePassword(user, newPassword);
-            // await Reencrpytmaseky(oldPassword, newPassword);
             await KeymanagementInstance.Reencrpytmaseky(oldPassword, newPassword);
             Alert.alert('Success', 'Password updated successfully!', [{ text: 'OK' }]);
-            navigation.navigate('Profiles');
+            navigation.navigate('Settings');
         } catch (error) {
             Alert.alert('Error', error.message, [{ text: 'OK' }]);
             console.log(error);
@@ -91,10 +88,10 @@ const ChangePassword = ({ navigation }) => {
     };
 
     return (
-        <View style={{ backgroundColor: 'rgba(210, 124, 44, 0.5)', }}>
+        <View>
             <View style={styles.container}>
                 <View style={styles.headerContainer}>
-                    <TouchableOpacity style={styles.topic} onPress={() => navigation.navigate('Profiles')}>
+                    <TouchableOpacity style={styles.topic} onPress={() => navigation.navigate('Settings')}>
                         <Text style={styles.topic}>Cancel</Text>
                     </TouchableOpacity>
                     <Text style={styles.topic}>Password Change</Text>
