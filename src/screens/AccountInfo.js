@@ -21,6 +21,7 @@ const AccountInfo = () => {
         const unsubscribe = onSnapshot(userDoc, (docSnap) => {
             if (docSnap.exists()) {
                 setUserData(docSnap.data());
+                console.log('User data found:', docSnap.data());
             } else {
                 console.log('No matching user data found');
                 setUserData(null);
@@ -59,7 +60,7 @@ const AccountInfo = () => {
                 <View>
                     <Text style={styles.info}>Username: {userData.username}</Text>
                     <Text style={styles.info}>Email: {userData.email}</Text>
-                    <Text style={styles.info}>Type: {userData.type}</Text>
+                    <Text style={styles.info}>Veriyfy status: {String(userData.verify)}</Text>
                 </View>
             ) : (
                 <Text>No user data available</Text>

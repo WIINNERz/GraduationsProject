@@ -1,53 +1,78 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { getFirestore, collection, onSnapshot, query, where } from 'firebase/firestore';
-import { petsRef } from '../configs/firebaseConfig';
-import { useNavigation } from '@react-navigation/native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import HomeHeader from '../components/HomeHeader';
+import React, {useEffect, useState, useMemo} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore';
+import {petsRef} from '../configs/firebaseConfig';
+import {useNavigation} from '@react-navigation/native';
 import PetList from '../components/PetList';
 import useAuth from '../hooks/useAuth';
 import PetFilter from '../components/PetFilter';
 
 const FindPet = () => {
-  const { user } = useAuth();
+  const {user} = useAuth();
   const navigation = useNavigation();
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedField, setSelectedField] = useState('name'); // Default to 'name'
 
   const petQuery = useMemo(() => {
     let q = query(petsRef, where('status', '==', 'dont_have_owner'));
-    if (filter !== 'all') {
+    if (filter !== 'all' && searchQuery === '') {
       q = query(q, where('type', '==', filter));
-    }
-    if (searchQuery) {
-      q = query(q, where('name', '>=', searchQuery), where('name', '<=', searchQuery + '\uf8ff'));
+    } else if (filter !== 'all' && searchQuery) {
+      q = query(
+        q,
+        where('type', '==', filter),
+        where(selectedField, '>=', searchQuery),
+        where(selectedField, '<=', searchQuery + '\uf8ff'),
+      );
+    } else if (filter === 'all' && searchQuery) {
+      q = query(
+        q,
+        where(selectedField, '>=', searchQuery),
+        where(selectedField, '<=', searchQuery + '\uf8ff'),
+      );
     }
     return q;
-  }, [filter, searchQuery]);
+  }, [filter, searchQuery, selectedField]);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchPets = () => {
-      const unsubscribe = onSnapshot(petQuery, (querySnapshot) => {
-        if (!isMounted) return;
+  const fetchPets = () => {
+    setLoading(true);
+    setError(null);
+    const unsubscribe = onSnapshot(
+      petQuery,
+      querySnapshot => {
         const data = querySnapshot.docs.map(doc => doc.data());
         setPets(data);
         setLoading(false);
-      }, (error) => {
-        console.error("Error fetching pets: ", error);
-        if (isMounted) {
-          setError('Failed to fetch pets. Please try again later.');
-          setLoading(false);
-        }
-      });
+      },
+      error => {
+        setError('Failed to fetch pets. Please try again later.');
+        setLoading(false);
+      },
+    );
 
-      return unsubscribe;
-    };
+    return unsubscribe;
+  };
+
+  useEffect(() => {
+    let isMounted = true;
 
     if (user?.uid) {
       const unsubscribe = fetchPets();
@@ -60,15 +85,23 @@ const FindPet = () => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <Text style={{ color: 'white', fontFamily: 'InterSemiBold', fontSize: 26 }}>Looking for Owner</Text>
-         
+          <Text
+            style={{color: 'white', fontFamily: 'InterSemiBold', fontSize: 26}}>
+            Looking for Owner
+          </Text>
         </View>
-        <PetFilter filter={filter} setFilter={setFilter} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <PetFilter
+          filter={filter}
+          setFilter={setFilter}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedField={selectedField}
+          setSelectedField={setSelectedField}
+        />
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : error ? (
@@ -130,3 +163,46 @@ const styles = StyleSheet.create({
 });
 
 export default FindPet;
+
+// useEffect(() => {
+//   let isMounted = true;
+// const fetchPets = () => {
+//   const unsubscribe = onSnapshot(
+//     petQuery,
+//     querySnapshot => {
+//       if (!isMounted) return;
+//       const data = querySnapshot.docs.map(doc => doc.data());
+//       setPets(data);
+//       setLoading(false);
+//     },
+//     error => {
+//       console.error('Error fetching pets: ', error);
+//       if (isMounted) {
+//         setError('Failed to fetch pets. Please try again later.');
+//         setLoading(false);
+//       }
+//     },
+//   );
+
+//   return unsubscribe;
+// };
+//   if (user?.uid) {
+//     const unsubscribe = fetchPets();
+//     return () => {
+//       isMounted = false;
+//       unsubscribe();
+//     };
+//   }
+// }, [user?.uid, petQuery]);
+
+// const petQuery = useMemo(() => {
+//   let q = query(petsRef, where('status', '==', 'dont_have_owner'));
+//   if (filter !== 'all') {
+//     q = query(q, where('type', '==', filter));
+//   }
+//   if (searchQuery) {
+//     q = query(q, where(selectedField, '>=', searchQuery), where(selectedField, '<=', searchQuery + '\uf8ff'));
+
+//   }
+//   return q;
+// }, [filter, searchQuery, selectedField]);
