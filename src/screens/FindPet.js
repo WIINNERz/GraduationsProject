@@ -33,24 +33,18 @@ const FindPet = () => {
 
   const petQuery = useMemo(() => {
     let q = query(petsRef, where('status', '==', 'dont_have_owner'));
-    if (filter !== 'all' && searchQuery === '') {
+    if (filter !== 'all') {
       q = query(q, where('type', '==', filter));
-    } else if (filter !== 'all' && searchQuery) {
-      q = query(
-        q,
-        where('type', '==', filter),
-        where(selectedField, '>=', searchQuery),
-        where(selectedField, '<=', searchQuery + '\uf8ff'),
-      );
-    } else if (filter === 'all' && searchQuery) {
+    }
+    if (searchQuery) {
       q = query(
         q,
         where(selectedField, '>=', searchQuery),
-        where(selectedField, '<=', searchQuery + '\uf8ff'),
+        where(selectedField, '<=', searchQuery + '\uf8ff')
       );
     }
-    return q;
-  }, [filter, searchQuery, selectedField]);
+      return q;
+    }, [filter, searchQuery, selectedField]); 
 
   const fetchPets = () => {
     setLoading(true);
@@ -63,6 +57,7 @@ const FindPet = () => {
         setLoading(false);
       },
       error => {
+        console.error('Error fetching pets: ', error);
         setError('Failed to fetch pets. Please try again later.');
         setLoading(false);
       },

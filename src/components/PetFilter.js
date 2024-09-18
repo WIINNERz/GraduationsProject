@@ -15,13 +15,16 @@ const PetFilter = ({ filter, setFilter, searchQuery, setSearchQuery, selectedFie
     { label: 'Others', value: 'Other', icon: 'dots-horizontal-circle' },
   ], []);
   const sort = [
+    
     { label: 'Name', value: 'name' },
-    { label: 'Breeds', value: 'breeds' },
+    { label: 'Breeds', value: 'breeds' },    
     { label: 'Color', value: 'color' },
-    { label: 'Location', value: 'location' },
-    { label: 'Characteristics', value: 'characteristics' },
-    { label : 'Age', value: 'age' },
-    { label: 'Gender', value: 'gender'},
+    { label: 'Gender', value:'gender'},
+    { label: 'Age', value:'age' },
+    { label: 'Location', value:'location' },
+    { label: 'Characteristics', value:'characteristics' },
+    { label:'Conditions', value:'conditions' },
+    { label: 'Chronic', value:'chronic' },
   ];
 
   return (
