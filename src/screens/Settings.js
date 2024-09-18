@@ -81,6 +81,23 @@ export default function Settings() {
         </TouchableOpacity>
       </View>
       <View style={styles.tabButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Recovery')}>
+          <View style={styles.tabContent}>
+            <MaterialCommunityIcons
+              name="account-reactivate"
+              size={30}
+              color="#D27C2C"
+            />
+            <View style={styles.tabText}>
+              <Text style={styles.titleText}>Recovery your data</Text>
+              <Text style={styles.descriptionText}>
+                Recovery your data after you forget your password
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.tabButton}>
         <TouchableOpacity
           onPress={() => {
             Alert.alert(

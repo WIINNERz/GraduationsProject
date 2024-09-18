@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import CryptoJS from "rn-crypto-js";
+import React, {useEffect, useState} from 'react';
+import CryptoJS from 'rn-crypto-js';
 import {
   View,
   TextInput,
@@ -12,15 +12,24 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Dropdown } from 'react-native-element-dropdown';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, onSnapshot, arrayUnion, Timestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth, firestore, storage } from '../configs/firebaseConfig';
+import {Dropdown} from 'react-native-element-dropdown';
+import {
+  getFirestore,
+  setDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+  arrayUnion,
+  Timestamp,
+} from 'firebase/firestore';
+import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {auth, firestore, storage} from '../configs/firebaseConfig';
 import Checkbox from '../components/checkbox';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import { CancelPButton, SavePButton } from '../components/Button';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import {CancelPButton, SavePButton} from '../components/Button';
 import Calendar from '../components/calendar';
 import Keymanagement from '../components/Keymanagement';
 
@@ -52,11 +61,10 @@ const AddPet = () => {
   const [status, setStatus] = useState('have_owner');
   const [isFocus, setIsFocus] = useState(false);
   const KeymanagementInstance = Keymanagement();
-  
 
   const data = [
-    { label: "Don't have owner", value: "dont_have_owner" },
-    { label: "Have owner", value: "have_owner" },
+    {label: "Don't have owner", value: 'dont_have_owner'},
+    {label: 'Have owner', value: 'have_owner'},
   ];
 
   useEffect(() => {
@@ -66,7 +74,7 @@ const AddPet = () => {
 
     const unsubscribe = onSnapshot(
       userDoc,
-      (docSnap) => {
+      docSnap => {
         if (docSnap.exists() && docSnap.data().email === user.email) {
           setUserData(docSnap.data());
         } else {
@@ -74,23 +82,23 @@ const AddPet = () => {
         }
         setLoading(false);
       },
-      (error) => {
+      error => {
         console.error('Error fetching user data:', error);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
   }, [user]);
 
-  const fetchUsername = async (uid) => {
+  const fetchUsername = async uid => {
     const userDocRef = doc(db, 'Users', uid);
     const userDoc = await getDoc(userDocRef);
     if (userDoc.exists()) {
       return userDoc.data().username;
     } else {
       console.error('No such user document!');
-      return "";
+      return '';
     }
   };
 
@@ -117,7 +125,8 @@ const AddPet = () => {
       let dataToStore = {};
 
       if (status === 'have_owner') {
-        const encryptField = (field) => CryptoJS.AES.encrypt(field, key).toString();
+        const encryptField = field =>
+          CryptoJS.AES.encrypt(field, key).toString();
 
         dataToStore = {
           age: encryptField(age),
@@ -179,13 +188,13 @@ const AddPet = () => {
     }
   };
 
-  const onDateChange = (selectedDate) => {
+  const onDateChange = selectedDate => {
     setDate(selectedDate);
     setBirthday(selectedDate);
     calculateAge(selectedDate);
   };
 
-  const calculateAge = (birthday) => {
+  const calculateAge = birthday => {
     const today = new Date();
     const birthDate = new Date(birthday);
     let years = today.getFullYear() - birthDate.getFullYear();
@@ -193,7 +202,11 @@ const AddPet = () => {
     let days = today.getDate() - birthDate.getDate();
 
     if (days < 0) {
-      const daysInMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+      const daysInMonth = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        0,
+      ).getDate();
       days += daysInMonth;
       months--;
     }
@@ -213,19 +226,15 @@ const AddPet = () => {
   };
 
   const pickImage = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose an option',
-      [
-        { text: 'Camera', onPress: () => openCamera() },
-        { text: 'Gallery', onPress: () => openImageLibrary() },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
+    Alert.alert('Select Image', 'Choose an option', [
+      {text: 'Camera', onPress: () => openCamera()},
+      {text: 'Gallery', onPress: () => openImageLibrary()},
+      {text: 'Cancel', style: 'cancel'},
+    ]);
   };
 
   const openImageLibrary = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
+    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
 
     if (!result.canceled) {
       setImageP(result.assets[0].uri);
@@ -233,7 +242,7 @@ const AddPet = () => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+    const result = await launchCamera({mediaType: 'photo', quality: 1});
 
     if (!result.canceled) {
       setImageP(result.assets[0].uri);
@@ -245,7 +254,10 @@ const AddPet = () => {
 
     setUploading(true);
 
-    const storageRef = ref(storage, `imageP/${user.uid}/pets/${name}/${Date.now()}`);
+    const storageRef = ref(
+      storage,
+      `imageP/${user.uid}/pets/${name}/${Date.now()}`,
+    );
 
     try {
       const response = await fetch(uri);
@@ -257,7 +269,7 @@ const AddPet = () => {
       const downloadURL = await getDownloadURL(snapshot.ref);
       console.log('File available at', downloadURL);
 
-      await updateDoc(petDocRef, { photoURL: downloadURL });
+      await updateDoc(petDocRef, {photoURL: downloadURL});
     } catch (error) {
       Alert.alert('Error', 'Failed to upload image. Please try again.');
       console.error('Error uploading image: ', error);
@@ -267,41 +279,47 @@ const AddPet = () => {
   };
 
   const pickAdditionalImages = () => {
-    Alert.alert(
-      'Select Additional Images',
-      'Choose an option',
-      [
-        { text: 'Camera', onPress: () => openAdditionalCamera() },
-        { text: 'Gallery', onPress: () => openAdditionalImageLibrary() },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
+    Alert.alert('Select Additional Images', 'Choose an option', [
+      {text: 'Camera', onPress: () => openAdditionalCamera()},
+      {text: 'Gallery', onPress: () => openAdditionalImageLibrary()},
+      {text: 'Cancel', style: 'cancel'},
+    ]);
   };
 
   const openAdditionalImageLibrary = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1, selectionLimit: 0 });
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 1,
+      selectionLimit: 0,
+    });
 
     if (!result.canceled) {
-      setAdditionalImages(prevImages => [...prevImages, ...result.assets.map(asset => asset.uri)]);
+      setAdditionalImages(prevImages => [
+        ...prevImages,
+        ...result.assets.map(asset => asset.uri),
+      ]);
       Alert.alert('Success', 'Additional images uploaded successfully.');
     }
   };
 
   const openAdditionalCamera = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+    const result = await launchCamera({mediaType: 'photo', quality: 1});
 
     if (!result.canceled) {
       setAdditionalImages(prevImages => [...prevImages, result.assets[0].uri]);
     }
   };
 
-  const uploadAdditionalImages = async (petDocRef) => {
+  const uploadAdditionalImages = async petDocRef => {
     setUploading(true);
     try {
       for (const uri of additionalImages) {
         if (!uri) continue;
 
-        const storageRef = ref(storage, `imageP/${user.uid}/pets/${name}/additional/${Date.now()}`);
+        const storageRef = ref(
+          storage,
+          `imageP/${user.uid}/pets/${name}/additional/${Date.now()}`,
+        );
         const response = await fetch(uri);
         const blob = await response.blob();
 
@@ -309,7 +327,7 @@ const AddPet = () => {
         const downloadURL = await getDownloadURL(snapshot.ref);
 
         await updateDoc(petDocRef, {
-          additionalImages: arrayUnion(downloadURL)
+          additionalImages: arrayUnion(downloadURL),
         });
       }
     } catch (error) {
@@ -321,21 +339,19 @@ const AddPet = () => {
   };
 
   const genderData = [
-    { label: 'Male', value: 'Male' },
-    { label: 'Female', value: 'Female' },
-    { label: 'Others', value: 'Others' },
+    {label: 'Male', value: 'Male'},
+    {label: 'Female', value: 'Female'},
+    {label: 'Others', value: 'Others'},
   ];
 
   const typeData = [
-    { label: 'Cat', value: 'Cat' }, 
-    { label: 'Dog', value: 'Dog' },
-    { label: 'Snake', value: 'Snake' },
-    { label: 'Fish', value: 'Fish' },
-    { label: 'Sheep', value: 'Sheep' },
-    { label: 'Others', value: 'Other' }, //do we need to input/specify the others?
+    {label: 'Cat', value: 'Cat'},
+    {label: 'Dog', value: 'Dog'},
+    {label: 'Snake', value: 'Snake'},
+    {label: 'Fish', value: 'Fish'},
+    {label: 'Sheep', value: 'Sheep'},
+    {label: 'Others', value: 'Other'}, //do we need to input/specify the others?
   ];
-
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -343,28 +359,37 @@ const AddPet = () => {
       </View>
     );
   }
-  
-
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-        <MaterialCommunityIcons name="chevron-left" size={40} color="#E16539" />
+          <MaterialCommunityIcons
+            name="chevron-left"
+            size={40}
+            color="#E16539"
+          />
         </TouchableOpacity>
-        <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 18 }}>Add Pet</Text>
+        <Text style={{color: 'black', fontWeight: 'bold', fontSize: 18}}>
+          Add Pet
+        </Text>
         <Text> </Text>
       </View>
-          <View style={styles.photoSec}>
-            <View style={{borderRadius:100}}>
-            {imageP ? (
-              <Image source={{ uri: imageP }} style={styles.image} />
-            ) : (
-              <MaterialCommunityIcons name="dog" size={120} color="#E16539" />
-            )}
-            </View>
-            <TouchableOpacity onPress={pickImage}>
-              <MaterialCommunityIcons style={styles.camera} name="camera-plus" size={30} color="#000" />
-            </TouchableOpacity>
+      <View style={styles.photoSec}>
+        <View style={{borderRadius: 100}}>
+          {imageP ? (
+            <Image source={{uri: imageP}} style={styles.image} />
+          ) : (
+            <MaterialCommunityIcons name="dog" size={120} color="#E16539" />
+          )}
+        </View>
+        <TouchableOpacity onPress={pickImage}>
+          <MaterialCommunityIcons
+            style={styles.camera}
+            name="camera-plus"
+            size={30}
+            color="#000"
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.subContainer}>
@@ -372,74 +397,73 @@ const AddPet = () => {
             <TextInput
               style={styles.input}
               placeholder="Name"
-              placeholderTextColor={"gray"}
+              placeholderTextColor={'gray'}
               value={name}
               onChangeText={setName}
             />
             <TextInput
               style={styles.input}
               placeholder="Age"
-              placeholderTextColor={"gray"}
+              placeholderTextColor={'gray'}
               value={age}
               editable={false}
             />
           </View>
           <View style={styles.box2}>
-          <Dropdown
-            style={[styles.input, isFocus && { borderColor: 'blue' }]}
-            placeholderStyle={styles.placeholderStyle}
-            itemTextStyle={styles.itemTextStyle} 
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            data={genderData}
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus ? 'Gender' : '...'}
-            
-            value={gender}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={item => {
-              setGender(item.value);
-              setIsFocus(false);
-            }}
-          />
+            <Dropdown
+              style={[styles.input, isFocus && {borderColor: 'blue'}]}
+              placeholderStyle={styles.placeholderStyle}
+              itemTextStyle={styles.itemTextStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={genderData}
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isFocus ? 'Gender' : '...'}
+              value={gender}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={item => {
+                setGender(item.value);
+                setIsFocus(false);
+              }}
+            />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Color"
-            placeholderTextColor={"gray"}
-            value={color}
-            onChangeText={setColor}
-          />
+            <TextInput
+              style={styles.input}
+              placeholder="Color"
+              placeholderTextColor={'gray'}
+              value={color}
+              onChangeText={setColor}
+            />
           </View>
 
           <Dropdown
-        style={[styles.inputwh, isFocus && { borderColor: 'blue' }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
-        itemTextStyle={styles.itemTextStyle} 
-        data={typeData}
-        maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder={!isFocus ? 'Type' : '...'}
-        value={type}
-        onFocus={() => setIsFocus(true)}
-        onBlur={() => setIsFocus(false)}
-        onChange={item => {
-          setType(item.value);
-          setIsFocus(false);
-        }}
-      />
+            style={[styles.inputwh, isFocus && {borderColor: 'blue'}]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            itemTextStyle={styles.itemTextStyle}
+            data={typeData}
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocus ? 'Type' : '...'}
+            value={type}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={item => {
+              setType(item.value);
+              setIsFocus(false);
+            }}
+          />
           <TextInput
             style={styles.inputwh}
             placeholder="Breed"
-            placeholderTextColor={"gray"}
+            placeholderTextColor={'gray'}
             value={breeds}
             onChangeText={setBreeds}
           />
@@ -452,34 +476,34 @@ const AddPet = () => {
             <Calendar date={date} onChange={onDateChange} />
           </View>
           <View style={styles.box2}>
-          <TextInput
-            style={styles.input}
-            placeholder="Weight"
-            placeholderTextColor={"gray"}
-            value={weight}
-            onChangeText={setWeight}
-            keyboardType='numeric'
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Height"
-            placeholderTextColor={"gray"}
-            value={height}
-            onChangeText={setHeight}
-            keyboardType='numeric'
-          />
+            <TextInput
+              style={styles.input}
+              placeholder="Weight"
+              placeholderTextColor={'gray'}
+              value={weight}
+              onChangeText={setWeight}
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Height"
+              placeholderTextColor={'gray'}
+              value={height}
+              onChangeText={setHeight}
+              keyboardType="numeric"
+            />
           </View>
           <TextInput
             style={styles.inputwh}
             placeholder="Characteristics"
-            placeholderTextColor={"gray"}
+            placeholderTextColor={'gray'}
             value={characteristics}
             onChangeText={setCharacteristics}
           />
           <TextInput
             style={styles.inputwh}
             placeholder="Chronic Diseases"
-            placeholderTextColor={"gray"}
+            placeholderTextColor={'gray'}
             value={chronic}
             onChangeText={setChronic}
           />
@@ -495,64 +519,69 @@ const AddPet = () => {
           </View> */}
 
           {userData?.verify ? (
-          <>
-            <View style={styles.checkboxContainer}>
-              <Checkbox
-                text="Find Owner"
-                isChecked={isChecked}
-                onPress={() => {
-                  setIsChecked(!isChecked);
-                  setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
-                }}
-              />
-            </View>
-            <View style={styles.subContainer}>
-              {isChecked && (
-                <>
-                  <TextInput
-                    style={styles.inputwh}
-                    placeholder="Location"
-                    placeholderTextColor={"gray"}
-                    value={location}
-                    onChangeText={setLocation}
-                  />
-                  <TextInput
-                    style={styles.inputwh}
-                    placeholder="Conditions"
-                    placeholderTextColor={"gray"}
-                    value={conditions}
-                    onChangeText={setConditions}
-                  />
-                  <TouchableOpacity style={styles.additionalImagePicker} onPress={pickAdditionalImages}>
-                    <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
-                  </TouchableOpacity>
-                  <View style={styles.additionalImagesContainer}>
-                    {additionalImages.map((uri, index) => (
-                      <Image key={index} source={{ uri }} style={styles.additionalImage} />
-                    ))}
-                  </View>
-                </>
-              )}
-            </View>
-          </>
-        ) : null}
-        <View style={[styles.buttonContainer,{marginBottom:50}]}>
-          <CancelPButton onPress={() => navigation.navigate('MyPet')} />
-          <SavePButton onPress={handleSubmit} />
+            <>
+              <View style={styles.checkboxContainer}>
+                <Checkbox
+                  text="Find Owner"
+                  isChecked={isChecked}
+                  onPress={() => {
+                    setIsChecked(!isChecked);
+                    setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
+                  }}
+                />
+              </View>
+              <View style={styles.subContainer}>
+                {isChecked && (
+                  <>
+                    <TextInput
+                      style={styles.inputwh}
+                      placeholder="Location"
+                      placeholderTextColor={'gray'}
+                      value={location}
+                      onChangeText={setLocation}
+                    />
+                    <TextInput
+                      style={styles.inputwh}
+                      placeholder="Conditions"
+                      placeholderTextColor={'gray'}
+                      value={conditions}
+                      onChangeText={setConditions}
+                    />
+                    <TouchableOpacity
+                      style={styles.additionalImagePicker}
+                      onPress={pickAdditionalImages}>
+                      <Text style={styles.additionalImagePickerText}>
+                        Pick Additional Images
+                      </Text>
+                    </TouchableOpacity>
+                    <View style={styles.additionalImagesContainer}>
+                      {additionalImages.map((uri, index) => (
+                        <Image
+                          key={index}
+                          source={{uri}}
+                          style={styles.additionalImage}
+                        />
+                      ))}
+                    </View>
+                  </>
+                )}
+              </View>
+            </>
+          ) : null}
+          <View style={[styles.buttonContainer, {marginBottom: 50}]}>
+            <CancelPButton onPress={() => navigation.navigate('MyPet')} />
+            <SavePButton onPress={handleSubmit} />
+          </View>
         </View>
       </View>
-    </View>
     </ScrollView>
-
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     alignItems: 'center',
-   
   },
   subContainer: {
     width: '100%',
@@ -582,7 +611,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   box1: {
     width: '100%',
@@ -597,13 +626,12 @@ const styles = StyleSheet.create({
   input: {
     width: '49%',
     padding: 10,
-    margin:5,
+    margin: 5,
     marginBottom: 5,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
     color: 'black',
-    
   },
   inputC: {
     width: '100%',
@@ -623,7 +651,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
-    color : 'black',
+    color: 'black',
   },
   inputDate: {
     width: '90%',
@@ -644,15 +672,14 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 100,
     borderWidth: 2,
-
   },
   camera: {
     padding: 5,
     backgroundColor: 'white',
     borderRadius: 50,
     position: 'absolute',
-    top:10,
-    left: -50
+    top: 10,
+    left: -50,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -728,8 +755,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.2,
     borderRadius: 5,
     paddingHorizontal: 8,
-  
-    
   },
   icon: {
     marginRight: 5,
@@ -746,7 +771,6 @@ const styles = StyleSheet.create({
   placeholderStyle: {
     fontSize: 14,
     color: 'gray',
-    
   },
   selectedTextStyle: {
     fontSize: 16,
@@ -760,12 +784,10 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
     color: 'black',
-
   },
   itemTextStyle: {
     color: 'gray',
   },
 });
-
 
 export default AddPet;

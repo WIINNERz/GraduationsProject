@@ -159,45 +159,4 @@ const styles = StyleSheet.create({
 
 export default FindPet;
 
-// useEffect(() => {
-//   let isMounted = true;
-// const fetchPets = () => {
-//   const unsubscribe = onSnapshot(
-//     petQuery,
-//     querySnapshot => {
-//       if (!isMounted) return;
-//       const data = querySnapshot.docs.map(doc => doc.data());
-//       setPets(data);
-//       setLoading(false);
-//     },
-//     error => {
-//       console.error('Error fetching pets: ', error);
-//       if (isMounted) {
-//         setError('Failed to fetch pets. Please try again later.');
-//         setLoading(false);
-//       }
-//     },
-//   );
 
-//   return unsubscribe;
-// };
-//   if (user?.uid) {
-//     const unsubscribe = fetchPets();
-//     return () => {
-//       isMounted = false;
-//       unsubscribe();
-//     };
-//   }
-// }, [user?.uid, petQuery]);
-
-// const petQuery = useMemo(() => {
-//   let q = query(petsRef, where('status', '==', 'dont_have_owner'));
-//   if (filter !== 'all') {
-//     q = query(q, where('type', '==', filter));
-//   }
-//   if (searchQuery) {
-//     q = query(q, where(selectedField, '>=', searchQuery), where(selectedField, '<=', searchQuery + '\uf8ff'));
-
-//   }
-//   return q;
-// }, [filter, searchQuery, selectedField]);

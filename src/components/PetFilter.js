@@ -1,30 +1,39 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
+import React, {useMemo, useState} from 'react';
+import {View, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import {Dropdown} from 'react-native-element-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const PetFilter = ({ filter, setFilter, searchQuery, setSearchQuery, selectedField, setSelectedField }) => {
+const PetFilter = ({
+  filter,
+  setFilter,
+  searchQuery,
+  setSearchQuery,
+  selectedField,
+  setSelectedField,
+}) => {
   const [isFocus, setIsFocus] = useState(false);
-  const typeData = useMemo(() => [
-    { label: 'All', value: 'all', icon: 'paw' },
-    { label: 'Cat', value: 'Cat', icon: 'cat' },
-    { label: 'Dog', value: 'Dog', icon: 'dog' },
-    { label: 'Snake', value: 'Snake', icon: 'snake' },
-    { label: 'Fish', value: 'Fish', icon: 'fish' },
-    { label: 'Sheep', value: 'Sheep', icon: 'sheep' },
-    { label: 'Others', value: 'Other', icon: 'dots-horizontal-circle' },
-  ], []);
+  const typeData = useMemo(
+    () => [
+      {label: 'All', value: 'all', icon: 'paw'},
+      {label: 'Cat', value: 'Cat', icon: 'cat'},
+      {label: 'Dog', value: 'Dog', icon: 'dog'},
+      {label: 'Snake', value: 'Snake', icon: 'snake'},
+      {label: 'Fish', value: 'Fish', icon: 'fish'},
+      {label: 'Sheep', value: 'Sheep', icon: 'sheep'},
+      {label: 'Others', value: 'Other', icon: 'dots-horizontal-circle'},
+    ],
+    [],
+  );
   const sort = [
-    
-    { label: 'Name', value: 'name' },
-    { label: 'Breeds', value: 'breeds' },    
-    { label: 'Color', value: 'color' },
-    { label: 'Gender', value:'gender'},
-    { label: 'Age', value:'age' },
-    { label: 'Location', value:'location' },
-    { label: 'Characteristics', value:'characteristics' },
-    { label:'Conditions', value:'conditions' },
-    { label: 'Chronic', value:'chronic' },
+    {label: 'Name', value: 'name'},
+    {label: 'Breeds', value: 'breeds'},
+    {label: 'Color', value: 'color'},
+    {label: 'Gender', value: 'gender'},
+    {label: 'Age', value: 'age'},
+    {label: 'Location', value: 'location'},
+    {label: 'Characteristics', value: 'characteristics'},
+    {label: 'Conditions', value: 'conditions'},
+    {label: 'Chronic', value: 'chronic'},
   ];
 
   return (
@@ -61,29 +70,27 @@ const PetFilter = ({ filter, setFilter, searchQuery, setSearchQuery, selectedFie
           />
         </View>
       </View>
-      {typeData.map((type) => (
-        <TouchableOpacity
-          key={type.value}
-          style={[
-            styles.card,
-            filter === type.value && styles.selectedCard,
-          ]}
-          onPress={() => setFilter(type.value)}
-        >
-          <MaterialCommunityIcons
-            name={type.icon}
-            size={30}
-            color={filter === type.value ? 'white' : '#333'}
-          />
-        </TouchableOpacity>
-      ))}
+      <View style={styles.CardContainer}>
+        {typeData.map(type => (
+          <TouchableOpacity
+            key={type.value}
+            style={[styles.card, filter === type.value && styles.selectedCard]}
+            onPress={() => setFilter(type.value)}>
+            <MaterialCommunityIcons
+              name={type.icon}
+              size={30}
+              color={filter === type.value ? 'white' : '#333'}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   filterContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     flexWrap: 'wrap',
     justifyContent: 'center',
     marginVertical: 10,
@@ -92,6 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '90%',
+    height: 50,
     paddingHorizontal: 10,
     marginBottom: 10,
     borderRadius: 20,
@@ -99,14 +107,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   sortBoxContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     width: '90%',
-    paddingHorizontal: 10,
+    height: 50,
+    justifyContent: 'center',
     marginBottom: 10,
     borderRadius: 20,
     borderColor: '#ccc',
     borderWidth: 1,
+  },
+  picker: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
   },
   searchBox: {
     flex: 1,
@@ -122,11 +135,10 @@ const styles = StyleSheet.create({
   selectedCard: {
     backgroundColor: '#d27c2c',
   },
-  picker: {
-    width: '90%',
+  CardContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   searchContainer: {
     width: '100%',
@@ -139,7 +151,7 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
-    color: 'black',
+    color: 'gray',
   },
   iconStyle: {
     width: 20,
