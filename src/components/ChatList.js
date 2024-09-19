@@ -27,6 +27,7 @@ export default function ChatList({ rooms, users, currentUserId }) {
                             item={otherUser}
                             latestMessage={item.latestMessage}
                             navigation={navigation}
+                            roomId={item.roomId}
                         />
                     );
                 }}

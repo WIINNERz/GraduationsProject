@@ -92,6 +92,7 @@ export default function ChatRoom({navigation}) {
             const messageRef = collection(docRef, 'Messages');
             textRef.current = '';
             let imageUrl = '';
+            let readed = false;
             if (type === 'image') {
                 const storageRef = ref(storage, `chat/${roomId}/${user.uid}/${Date.now()}`);
                 const response = await fetch(message);
@@ -99,14 +100,17 @@ export default function ChatRoom({navigation}) {
                 const snapshot = await uploadBytes(storageRef, blob);
                 imageUrl = await getDownloadURL(snapshot.ref);
             }
-            await setDoc(doc(messageRef), {
+            const messageData = {
                 userId: user?.uid,
                 text: type === 'text' ? trimmedMessage : '',
                 profileURL: userProfile.profileURL,
                 senderName: userProfile.senderName,
                 imageUrl: type === 'image' ? imageUrl : '',
                 createdAt: Timestamp.fromDate(new Date()),
-            });
+                readed: false // Add this line
+            };
+            console.log('Message Data:', messageData); // Log the message data
+            await setDoc(doc(messageRef), messageData);
             setMessage(''); 
         } catch (error) {
             console.error('Error sending message:', error);
