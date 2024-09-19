@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator, TextInput, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { sendPasswordResetEmail } from '@react-native-firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../configs/firebaseConfig';
 
 const Forgot = ({ navigation }) => {
