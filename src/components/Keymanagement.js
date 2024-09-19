@@ -10,53 +10,85 @@ const Keymanagement = () => {
     keyLength = 256,
     hash = 'sha256';
 
+  const currentUser = auth.currentUser;
+  // used for get user key things
   async function getuserkey() {
     const currentUser = auth.currentUser;
     try {
       const userRef = doc(firestore, 'Users', currentUser.uid);
       const userDoc = await getDoc(userRef); // Use getDoc to fetch a single document
       const userData = userDoc.data();
-      const {masterKey, iv, salt} = userData;
-      return {masterKey, iv, salt};
+      const {masterKey, iv, salt, maskeyforrecovery} = userData;
+      return {masterKey, iv, salt, maskeyforrecovery};
     } catch (error) {
       console.error('Could not get key', error);
       return {};
     }
   }
-
+  // used for store key
   async function storeKey(key) {
+    if (!key) {
+      return;
+    }
     try {
       await Keychain.setGenericPassword('maskey', key);
+      console.log(key);
       console.log('Key stored successfully');
     } catch (error) {
-      console.error('Could not store key', error);
+      console.log('Could not store key', error);
     }
   }
-
+  // used for clear key
+  async function clearKey() {
+    try {
+      await Keychain.resetGenericPassword();
+      console.log('Key cleared successfully');
+    } catch (error) {
+      console.error('Could not clear key', error);
+    }
+  }
+  // used for retrieve master key from keychain
   async function retrievemasterkey() {
     try {
       const credentials = await Keychain.getGenericPassword();
       if (credentials) {
         return credentials.password;
       } else {
-        console.log('No credentials stored');
         return '';
       }
     } catch (error) {
-      console.error('Could not load credentials. ', error);
+      console.log('Could not load credentials. ', error);
       return '';
     }
   }
-   async function retrieveandstorekey (password) {
+  // used for retrieve master key from firebase ,decrypt it and store it
+  async function retrieveandstorekey(password) {
     try {
       const passkey = await getpasskey(password);
       const decmaster = await getmasterkey(passkey);
+      console.log('masterkey ', decmaster);
       await storeKey(decmaster);
     } catch (error) {
       console.error('Could not retrieve and store key', error);
     }
   }
-
+  // used for get master key from firebase and decrypt it
+  async function getmasterkey(passkey) {
+    try {
+      const {iv, masterKey} = await getuserkey();
+      const decryptMasterKey = await Aes.decrypt(
+        masterKey,
+        passkey,
+        iv,
+        'aes-256-cbc',
+      );
+      return decryptMasterKey;
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
+  }
+  // used for get passkey from password and id
   async function getpasskey(password) {
     try {
       const {salt} = await getuserkey();
@@ -73,11 +105,11 @@ const Keymanagement = () => {
       return '';
     }
   }
-
-  async function createRecoverykey(password) {
+  // used for create recovery key from id
+  async function createRecoverykey(id) {
     try {
       const {iv} = await getuserkey();
-      const recoverykey = await getpasskey(password);
+      const recoverykey = await getpasskey(id);
       const masterKey = await retrievemasterkey();
       console.log('masterkey ', masterKey);
       const encryptedMasterKeyforRecovery = await Aes.encrypt(
@@ -92,23 +124,7 @@ const Keymanagement = () => {
       return null;
     }
   }
-
-  async function getmasterkey(passkey) {
-    try {
-      const {iv, masterKey} = await getuserkey();
-      const decryptMasterKey = await Aes.decrypt(
-        masterKey,
-        passkey,
-        iv,
-        'aes-256-cbc',
-      );
-      return decryptMasterKey;
-    } catch (error) {
-      console.error(error);
-      return '';
-    }
-  }
-
+  // used for create master key and pass keyfrom password and store it in firebase use once when user register
   async function createAndEncryptMasterKey(passwordReg, uid) {
     try {
       const masterKey = await Aes.randomKey(32);
@@ -139,7 +155,7 @@ const Keymanagement = () => {
       throw error;
     }
   }
-
+  // used for reencrypt master key when user change password in app
   async function Reencrpytmaseky(oldPassword, newPassword) {
     const currentUser = auth.currentUser;
 
@@ -200,11 +216,57 @@ const Keymanagement = () => {
     }
   }
 
+  // used for update master key by id and password when user forget password
+  async function recoveryMaskeyByID(id, password) {
+    if (!currentUser) {
+      Alert.alert('Error', 'No user found. Please sign in again.', [
+        {text: 'OK'},
+      ]);
+      return;
+    }
+    const userRef = doc(firestore, 'Users', currentUser.uid);
+    try {
+      const decryptMasterKey = await getRecoverykey(id);
+      storeKey(decryptMasterKey);
+      const passkey = await getpasskey(password);
+      const {iv} = await getuserkey();
+      const reencryptMaskey = await Aes.encrypt(
+        decryptMasterKey,
+        passkey,
+        iv,
+        'aes-256-cbc',
+      );
+      await updateDoc(userRef, {
+        masterKey: reencryptMaskey,
+      });
+      console.log('Master key updated successfully!');
+    } catch (error) {
+      console.error('Error updating masterkey: ', error);
+    }
+  }
+  // used for get recoverymasterkey key by id
+  async function getRecoverykey(id) {
+    try {
+      const {iv, maskeyforrecovery} = await getuserkey();
+      const recoverykey = await getpasskey(id);
+      const decryptMasterKey = await Aes.decrypt(
+        maskeyforrecovery,
+        recoverykey,
+        iv,
+        'aes-256-cbc',
+      );
+      return decryptMasterKey;
+    } catch (error) {
+      console.error('Could not get recovery key', error);
+      return '';
+    }
+  }
+  
   async function encryptData(data) {
     try {
       const masterKey = await retrievemasterkey();
       if (!masterKey) {
-        throw new Error('Missing master key');
+        // throw new Error('Missing master key');
       }
       const encryptedData = crypto.AES.encrypt(data, masterKey).toString();
       return encryptedData;
@@ -218,7 +280,7 @@ const Keymanagement = () => {
     try {
       const masterKey = await retrievemasterkey();
       if (!masterKey) {
-        throw new Error('Missing master key');
+        // throw new Error('Missing master key');
       }
       const decryptedData = crypto.AES.decrypt(data, masterKey).toString(
         crypto.enc.Utf8,
@@ -241,6 +303,9 @@ const Keymanagement = () => {
     decryptData,
     createRecoverykey,
     retrieveandstorekey,
+    recoveryMaskeyByID,
+    clearKey,
+    getRecoverykey,
   };
 };
 

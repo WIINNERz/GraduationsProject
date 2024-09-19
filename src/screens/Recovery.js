@@ -7,19 +7,55 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
-import {useState, useEffect} from 'react';
-import {auth, firestore} from '../configs/firebaseConfig';
-import {getDocs, getDoc, doc, updateDoc, collection} from 'firebase/firestore';
+import React, { useState } from 'react';
+import { auth, firestore } from '../configs/firebaseConfig';
+import { getDoc, doc } from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import Keymanagement from '../components/Keymanagement';
+import Aes from 'react-native-aes-crypto';
 const Recovery = () => {
   const navigate = useNavigation();
   const [passwordLog, setPasswordLog] = useState('');
   const [id, setId] = useState('');
-
+  const test = async (id) => {
+    const keyinstance = Keymanagement();
+    const t = await  keyinstance.createRecoverykey(id);
+    console.log(t);
+  }
   const recovery = async (id, passwordLog) => {
-    Alert.alert('Success', id + ' ' + passwordLog);
+    const thaiIdInput = id;
+    const m = thaiIdInput.match(/(\d{12})(\d)/);
+    if (!m) {
+      Alert.alert('Error', 'Thai ID must be 13 digits');
+      return;
+    }
+    const digits = m[1].split('');
+    const sum = digits.reduce((total, digit, i) => {
+      return total + (13 - i) * +digit;
+    }, 0);
+    const lastDigit = `${(11 - (sum % 11)) % 10}`;
+    const inputLastDigit = m[2];
+    if (lastDigit !== inputLastDigit) {
+      Alert.alert('Error', 'Thai ID is invalid');
+      return;
+    }
+    try {
+      const keyinstance = Keymanagement();
+      const currentUser = auth.currentUser;
+      const hash = await Aes.sha256(id);
+      const userRef = doc(firestore, 'Users', currentUser.uid);
+      const userDoc = await getDoc(userRef);
+      const userData = userDoc.data();
+      if (userData.hashedID === hash) {
+
+      await keyinstance.recoveryMaskeyByID(id , passwordLog);
+      }
+      // Alert.alert('Success', 'Key recovered successfully', [{ text: 'OK' }]);
+    } catch (error) {
+      console.error('Could not recover key', error);
+      // Alert.alert('Error', 'Could not recover key. Please try again.', [{ text: 'OK' }]);
+    }
   };
 
   return (
@@ -35,13 +71,13 @@ const Recovery = () => {
         <MaterialCommunityIcons
           name="account-reactivate"
           size={80}
-          style={{marginTop: 10}}
+          style={{ marginTop: 10 }}
           color="#D27C2C"
         />
         <Text style={styles.title}>Recovery encrypted data</Text>
         <Text style={styles.description}>
           If you have forgotten your password,{'\n'}
-          After you reset password use this function to recovery your encrypted
+          After you reset password use this function to recover your encrypted
           data.
         </Text>
       </View>
@@ -49,10 +85,11 @@ const Recovery = () => {
         <TextInput
           style={styles.input}
           autoCorrect={false}
-          placeholder="Latest password"
+          placeholder="Current password"
           placeholderTextColor={'gray'}
           autoCapitalize="none"
           secureTextEntry={true}
+          required={true}
           value={passwordLog}
           onChangeText={value => setPasswordLog(value)}
         />
@@ -62,21 +99,32 @@ const Recovery = () => {
           placeholderTextColor={'gray'}
           keyboardType="numeric"
           value={id}
+          required={true}
           onChangeText={value => setId(value)}
         />
         <TouchableOpacity
           style={styles.Button}
           onPress={() => recovery(id, passwordLog)}>
           <View>
-            <Text style={{color: 'white', fontSize: 20, textAlign: 'center'}}>
+            <Text style={{ color: 'white', fontSize: 20, textAlign: 'center' }}>
               Recovery
             </Text>
           </View>
         </TouchableOpacity>
       </View>
+      <TouchableOpacity
+          style={styles.Button}
+          onPress={() => test(id)}>
+          <View>
+            <Text style={{ color: 'white', fontSize: 20, textAlign: 'center' }}>
+              test
+            </Text>
+          </View>
+        </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -119,7 +167,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     paddingTop: 20,
-    // justifyContent: 'center',
   },
   input: {
     width: '90%',
@@ -139,4 +186,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
 export default Recovery;

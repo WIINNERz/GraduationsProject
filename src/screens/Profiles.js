@@ -76,6 +76,7 @@ const Profiles = () => {
       .catch(error => {
         console.error('Error signing out:', error);
       });
+      KeymanagementInstance.clearKey();
   };
 
   const pickImage = () => {

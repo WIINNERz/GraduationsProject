@@ -45,10 +45,6 @@ const AuthStack = () => {
         await signInWithEmailAndPassword(auth, emailLog, passwordLog);
         const KeymanagementInstance = Keymanagement();
         await KeymanagementInstance.retrieveandstorekey(passwordLog);
-        // const passkey = await KeymanagementInstance.getpasskey(passwordLog);
-        // let decmasterkey =  await KeymanagementInstance.getmasterkey(passkey);
-        // await KeymanagementInstance.storeKey(decmasterkey);
-        // decmasterkey = null;
         navigation.navigate('MyPets');
         setEmailLog('');
         setPasswordLog('');
