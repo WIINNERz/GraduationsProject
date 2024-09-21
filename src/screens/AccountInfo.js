@@ -1,106 +1,159 @@
-import { StyleSheet, View, Text, ActivityIndicator , ScrollView } from "react-native";
-import { auth, firestore } from "../configs/firebaseConfig";
-import { doc, onSnapshot } from 'firebase/firestore';
-import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
+import {
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+} from 'react-native';
+import {auth, firestore} from '../configs/firebaseConfig';
+import {doc, onSnapshot} from 'firebase/firestore';
+import {useNavigation} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AccountInfo = () => {
-    const navigation = useNavigation();
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const user = auth.currentUser;
-  
-    useEffect(() => {
-        if (!user) return;
+  const navigate = useNavigation();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const user = auth.currentUser;
 
-        const userDoc = doc(firestore, 'Users', user.uid);
+  useEffect(() => {
+    if (!user) return;
 
-        // Set up Firestore listener
-        const unsubscribe = onSnapshot(userDoc, (docSnap) => {
-            if (docSnap.exists()) {
-                setUserData(docSnap.data());
-                console.log('User data found:', docSnap.data());
-            } else {
-                console.log('No matching user data found');
-                setUserData(null);
-            }
-            setLoading(false);
-        }, (error) => {
-            console.error('Error fetching user data:', error);
-            setLoading(false);
-        });
+    const userDoc = doc(firestore, 'Users', user.uid);
 
-        // Clean up the listener on component unmount
-        return () => unsubscribe();
-    }, [user]);
+    // Set up Firestore listener
+    const unsubscribe = onSnapshot(
+      userDoc,
+      docSnap => {
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+          console.log('User data found:', docSnap.data());
+        } else {
+          console.log('No matching user data found');
+          setUserData(null);
+        }
+        setLoading(false);
+      },
+      error => {
+        console.error('Error fetching user data:', error);
+        setLoading(false);
+      },
+    );
 
-    if (loading) {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
-    }
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
+  }, [user]);
 
+  if (loading) {
     return (
-        <View style={styles.container}>
-        <ScrollView>
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.screen}>
+ 
         <MaterialCommunityIcons
           style={styles.back}
           name="arrow-left"
           size={35}
           color="#D27C2C"
-          onPress={() => navigation.goBack()}
+          onPress={() => navigate.goBack()}
         />
-            <View style={styles.content}>
-            <Text style={styles.headerText}>Account Information</Text>
-            {userData ? (
-                <View>
-                    <Text style={styles.info}>Username: {userData.username}</Text>
-                    <Text style={styles.info}>Email: {userData.email}</Text>
-                    <Text style={styles.info}>Veriyfy status: {String(userData.verify)}</Text>
-                </View>
-            ) : (
-                <Text>No user data available</Text>
-            )}
-            </View>
-            </ScrollView>
+        <View style={styles.info}>
+          <MaterialCommunityIcons
+            name="account-circle"
+            size={80}
+            style={{marginTop: 10}}
+            color="#D27C2C"
+          />
+          <Text style={styles.title}>Account Information</Text>
+          {/* <Text style={styles.description}>
+                
+              </Text> */}
         </View>
-    );
+        <View style={styles.inputzone}>
+          <Text style={styles.title}>Account Information</Text>
+          {userData ? (
+            <View>
+              <Text style={styles.data}>Username: {userData.username}</Text>
+              <Text style={styles.data}>Email: {userData.email}</Text>
+              <Text style={styles.data}>
+                Veriyfy status: {String(userData.verify)}
+              </Text>
+            </View>
+          ) : (
+            <Text>No user data available</Text>
+          )}
+        </View>
+     
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    screen: {
         flex: 1,
-        backgroundColor: '#fff',
-        fontFamily : 'InterRegular',
-    },
-    content: {
-        marginTop: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    headerText: {
-        fontSize: 24,
-        fontFamily:'InterBold',
-        marginBottom: 10,
-    },
-    info: {
-        fontSize: 20,
-        fontFamily:'InterRegular',
-        marginBottom: 5,
-    },
-    back: {
-        position: 'absolute',
-        top: 20,
-        left: 20,
         backgroundColor: 'white',
-        borderRadius: 100,
-        zIndex: 1,
+        alignItems: 'center',
       },
+      back: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+      },
+      title: {
+        fontSize: 28,
+        color: '#D27C2C',
+        fontFamily: 'InterBold',
+      },
+      description: {
+        marginTop: 20,
+        fontSize: 20,
+        color: 'black',
+        fontFamily: 'InterRegular',
+        textAlign: 'center',
+        paddingHorizontal: 20,
+      },
+      info: {
+        marginTop: '15%',
+        width: '90%',
+        height: '20%',
+        borderRadius: 20,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        alignItems: 'center',
+      },
+      inputzone: {
+        marginTop: '5%',
+        width: '90%',
+        height: '25%',
+        borderRadius: 20,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        alignItems: 'center',
+        paddingTop: 20,
+       
+      },
+      input: {
+        width: '90%',
+        height: '25%',
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingLeft: 10,
+        marginVertical: 5,
+      },
+        data: {
+            fontSize: 20,
+            color: 'black',
+            fontFamily: 'InterRegular',
+            paddingHorizontal: 20,
+            
+        },
 });
 
 export default AccountInfo;

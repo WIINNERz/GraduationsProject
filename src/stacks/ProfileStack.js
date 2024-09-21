@@ -5,7 +5,7 @@ import SignIn from '../screens/SignIn';
 import ProfileDetail from '../screens/ProfileDetail';
 import AccountInfo from '../screens/AccountInfo';
 import MyPet from '../screens/MyPet';
-import Verify from '../components/Verify';
+import Verify from '../screens/Verify';
 import Settings from '../screens/Settings';
 import ChangePassword from '../screens/ChangePassword';
 import Policy from '../screens/Policy';
