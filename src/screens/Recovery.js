@@ -18,11 +18,7 @@ const Recovery = () => {
   const navigate = useNavigation();
   const [passwordLog, setPasswordLog] = useState('');
   const [id, setId] = useState('');
-  const test = async (id) => {
-    const keyinstance = Keymanagement();
-    const t = await  keyinstance.createRecoverykey(id);
-    console.log(t);
-  }
+
   const recovery = async (id, passwordLog) => {
     const thaiIdInput = id;
     const m = thaiIdInput.match(/(\d{12})(\d)/);
@@ -112,15 +108,6 @@ const Recovery = () => {
           </View>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity
-          style={styles.Button}
-          onPress={() => test(id)}>
-          <View>
-            <Text style={{ color: 'white', fontSize: 20, textAlign: 'center' }}>
-              test
-            </Text>
-          </View>
-        </TouchableOpacity>
     </View>
   );
 };

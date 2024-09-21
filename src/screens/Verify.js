@@ -1,20 +1,19 @@
-import {View, Text, StyleSheet, TextInput, Button, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import React from 'react';
 import Aes from 'react-native-aes-crypto';
 import {useState, useEffect} from 'react';
 import {auth, firestore} from '../configs/firebaseConfig';
-import {
-  getDocs,
-  getDoc,
-  doc,
-  updateDoc,
-  collection,
-} from 'firebase/firestore';
+import {getDocs, getDoc, doc, updateDoc, collection} from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
-import Keymanagement from './Keymanagement';
-
-
+import Keymanagement from '../components/Keymanagement';
 
 const Verify = () => {
   const KeymanagementInstance = Keymanagement();
@@ -37,17 +36,12 @@ const Verify = () => {
     isVerified();
   }, []);
 
-  // const test = async () => {
-
-  // };
-
-
   const validateThaiId = async id => {
     const thaiIdInput = id;
     const m = thaiIdInput.match(/(\d{12})(\d)/);
     if (!m) {
       Alert.alert('Thai ID must be 13 digits');
-      
+
       return;
     }
     const digits = m[1].split('');
@@ -61,7 +55,9 @@ const Verify = () => {
       return;
     }
     try {
-      const recoverykey = await KeymanagementInstance.createRecoverykey(thaiIdInput);
+      const recoverykey = await KeymanagementInstance.createRecoverykey(
+        thaiIdInput,
+      );
       const hash = await Aes.sha256(thaiIdInput);
       const usersSnapshot = await getDocs(collection(firestore, 'Users'));
       let hashExists = false;
@@ -91,7 +87,7 @@ const Verify = () => {
         }
       }
     } catch (error) {
-     console.error('Error verifying Thai ID:', error);  
+      console.error('Error verifying Thai ID:', error);
     }
   };
   if (verified) {
@@ -104,10 +100,26 @@ const Verify = () => {
           color="#D27C2C"
           onPress={() => navigate.goBack()}
         />
-        <View style={styles.verifiedscreen}>
-          <Text style={styles.verifiedtitle}>
-            Your account has been verified.
+        <View style={styles.info}>
+          <MaterialCommunityIcons
+            name="account-check"
+            size={80}
+            style={{marginTop: 10}}
+            color="#D27C2C"
+          />
+          <Text style={styles.title}>Verify Account</Text>
+          <Text style={styles.description}>
+            Verify account for unlock adoption and recovery account feature,
+            {'\n'}
+            Use your Thai ID card number to verify.
           </Text>
+        </View>
+        <View style={styles.verified}>
+          <View style={styles.verifiedscreen}>
+            <Text style={styles.verifiedtitle}>
+              Your account has been verified.
+            </Text>
+          </View>
         </View>
       </View>
     );
@@ -122,21 +134,39 @@ const Verify = () => {
         color="#D27C2C"
         onPress={() => navigate.goBack()}
       />
-
-      <View style={styles.content}>
-        <Text style={styles.title}>Verify Your Account</Text>
-
+      <View style={styles.info}>
+        <MaterialCommunityIcons
+          name="account-check"
+          size={80}
+          style={{marginTop: 10}}
+          color="#D27C2C"
+        />
+        <Text style={styles.title}>Verify Account</Text>
+        <Text style={styles.description}>
+          Verify account for unlock adoption and recovery account feature,{'\n'}
+          Use your Thai ID card number to verify.
+        </Text>
+      </View>
+      <View style={styles.inputzone}>
         <TextInput
           placeholder="Enter your Thai ID card number"
+          style={styles.input}
           placeholderTextColor={'gray'}
           onChangeText={text => setId(text)}
           value={id}
           keyboardType="numeric"
           maxLength={13}
-          style={{borderBottomWidth: 1, marginTop: 5, marginBottom: 20}}
         />
-        <Button title="Verify" onPress={() => validateThaiId(id)} />
-        {/* <Button title="test" onPress={() => test()} /> */}
+
+        <TouchableOpacity
+          style={styles.Button}
+          onPress={() => validateThaiId(id)}>
+          <View>
+            <Text style={{color: 'white', fontSize: 20, textAlign: 'center'}}>
+              Verify
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -145,27 +175,62 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: 'white',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  content: {
-    padding: 40,
-    justifyContent: 'center',
-    margin: 20,
-    borderRadius: 20,
-    backgroundColor: '#F0DFC8',
+    alignItems: 'center',
   },
   back: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-    backgroundColor: 'white',
-    borderRadius: 100,
-    zIndex: 1,
+    top: 10,
+    left: 10,
+  },
+  title: {
+    fontSize: 28,
+    color: '#D27C2C',
+    fontFamily: 'InterBold',
+  },
+  description: {
+    marginTop: 20,
+    fontSize: 20,
+    color: 'black',
+    fontFamily: 'InterRegular',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  info: {
+    marginTop: '15%',
+    width: '90%',
+    height: '30%',
+    borderRadius: 20,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  inputzone: {
+    marginTop: '5%',
+    width: '90%',
+    height: '25%',
+    borderRadius: 20,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    alignItems: 'center',
+    paddingTop: 20,
+    justifyContent: 'center',
+  },
+  input: {
+    width: '90%',
+    height: '25%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingLeft: 10,
+    marginVertical: 5,
+  },
+  Button: {
+    backgroundColor: '#D27C2C',
+    width: '70%',
+    height: '20%',
+    borderRadius: 20,
+    marginTop: 20,
+    justifyContent: 'center',
   },
   verifiedscreen: {
     flex: 1,
@@ -177,6 +242,17 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: 'InterLightItalic',
     color: 'gray',
+  },
+  verified: {
+    marginTop: '5%',
+    width: '90%',
+    height: '25%',
+    borderRadius: 20,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    alignItems: 'center',
+   
+    justifyContent: 'center',
   },
 });
 export default Verify;

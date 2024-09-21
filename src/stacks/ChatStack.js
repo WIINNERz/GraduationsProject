@@ -6,7 +6,7 @@ import ChatRoom from '../screens/ChatRoom';
 import ChatList from '../components/ChatList';
 import ChatItem from '../components/ChatItem';
 import ChatRoom1 from '../screens/ChatRoom1';
-import Verify from '../components/Verify';
+import Verify from '../screens/Verify';
 
 export default function ChatStack() {
   const Stack = createNativeStackNavigator();
