@@ -20,7 +20,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA7KGfGgr_Ysm7wBxCvQ7d_SJ3N4qJa1_s"
+          "current_key": "${FIREBASE_API_KEY}"
         }
       ],
       "services": {
