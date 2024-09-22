@@ -55,7 +55,7 @@ export default function ChatRoom1({ navigation }) {
 
           return () => {
               navigation.getParent()?.setOptions({
-                  tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], // Reset tabBarStyle to default
+                  tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], 
               });
           };
       }, [navigation])
@@ -226,6 +226,7 @@ export default function ChatRoom1({ navigation }) {
               senderName: userProfile.senderName,
               imageUrl: '',
               createdAt: Timestamp.fromDate(new Date()),
+              readed: false,
               selectedPets: '',
               telephoneNumber: telephoneNumber,
           });

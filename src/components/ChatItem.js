@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { TouchableOpacity, Text, View, Image } from 'react-native';
+import { TouchableOpacity, Text, View, Image, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
-import { collection, getDocs, query, where,writeBatch ,onSnapshot} from 'firebase/firestore';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { collection, getDocs, query, where, writeBatch, onSnapshot } from 'firebase/firestore';
 import { db } from '../configs/firebaseConfig';
 
 const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
@@ -62,7 +63,7 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
 
     useEffect(() => {
         let unsubscribe;
-    
+
         const fetchUnreadMessages = () => {
             if (roomId) {
                 try {
@@ -72,7 +73,7 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
                         where('readed', '==', false),
                         where('userId', '!=', currentUser.uid)
                     );
-    
+
                     unsubscribe = onSnapshot(q, (querySnapshot) => {
                         console.log(`Unread messages count (excluding current user): ${querySnapshot.size}`);
                         setUnreadCount(querySnapshot.size);
@@ -82,9 +83,9 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
                 }
             }
         };
-    
+
         fetchUnreadMessages();
-    
+
         // Clean up the listener on component unmount
         return () => {
             if (unsubscribe) {
@@ -99,23 +100,64 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
 
     return (
         <TouchableOpacity onPress={handlePress}>
-            <View style={{ flexDirection: 'row', padding: 10, borderBottomWidth: 1, borderColor: 'rgba(0, 0, 0, 0.2)' }}>
-                <Image source={{ uri: item.photoURL }} style={{ width: 50, height: 50, borderRadius: 25 }} />
-                <View style={{ marginLeft: 10 }}>
-                    <Text>{item.username}</Text>
-                    {latestMessage && (
-                        <Text style={{ color: 'gray' }}>
-                            {latestMessage.userId === currentUser.uid ? 'You: ' : ''}
-                            {renderLatestMessage()}
-                        </Text>
-                    )}
-                    <Text style={{ color: unreadCount > 0 ? 'red' : 'gray' }}>
-                        {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}
-                    </Text>
+            <View style={styles.container}>
+                <Image source={{ uri: item.photoURL }} style={styles.image} />
+                <View style={styles.textContainer}>
+                    <View>
+                        <Text style={styles.username}>{item.username}</Text>
+                        {latestMessage && (
+                            <Text style={styles.latestMessage}>
+                                {latestMessage.userId === currentUser.uid ? 'You: ' : ''}
+                                {renderLatestMessage()}
+                            </Text>
+                        )}
+                    </View>
+                    {unreadCount > 0 &&
+                        <MaterialCommunityIcons name="circle" size={20} color="#D27C2C" style={styles.icon} />
+                    }
                 </View>
             </View>
         </TouchableOpacity>
     );
+});
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderRadius:20,
+        borderColor: 'rgba(0, 0, 0, 0.2)',
+        backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 20,
+        elevation: 10, 
+    },
+    
+    image: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+    },
+    textContainer: {
+        marginLeft: 10,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    username: {
+        fontWeight: 'bold',
+        fontSize: 18,
+    },
+    latestMessage: {
+        color: 'gray',
+    },
+    icon: {
+        marginLeft: 'auto',
+    },
 });
 
 export default ChatItem;
