@@ -28,7 +28,7 @@ const AccountInfo = () => {
       docSnap => {
         if (docSnap.exists()) {
           setUserData(docSnap.data());
-          console.log('User data found:', docSnap.data());
+          
         } else {
           console.log('No matching user data found');
           setUserData(null);
