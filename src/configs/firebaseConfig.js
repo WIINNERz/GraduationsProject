@@ -3,14 +3,15 @@ import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/aut
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore, collection } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from '@env';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDje74xykIZh6uCMGolDMcfNv4Tc5KuLRk",
-  authDomain: "graduationspj.firebaseapp.com",
-  projectId: "graduationspj",
-  storageBucket: "graduationspj.appspot.com",
-  messagingSenderId: "452497966669",
-  appId: "1:452497966669:web:642f2118703c5050653e04"
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
