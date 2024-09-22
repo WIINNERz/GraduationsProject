@@ -161,6 +161,7 @@ export default function ChatRoom1({ navigation }) {
               profileURL: userProfile.profileURL,
               senderName: userProfile.senderName,
               imageUrl: type === 'image' ? imageUrl : '',
+              readed : false,
               createdAt: Timestamp.fromDate(new Date()),
           });
           setMessage('');

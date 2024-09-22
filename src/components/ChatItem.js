@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableOpacity, Text, View, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
-import { doc, setDoc, collection, getDocs, query, where,writeBatch } from 'firebase/firestore';
+import { collection, getDocs, query, where,writeBatch ,onSnapshot} from 'firebase/firestore';
 import { db } from '../configs/firebaseConfig';
 
 const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
@@ -61,26 +61,36 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
     }, [latestMessage]);
 
     useEffect(() => {
-        const fetchUnreadMessages = async () => {
+        let unsubscribe;
+    
+        const fetchUnreadMessages = () => {
             if (roomId) {
                 try {
                     const messagesRef = collection(db, 'Rooms', roomId, 'Messages');
                     const q = query(
                         messagesRef,
-                        where('readed', 'in', [false, null]),
+                        where('readed', '==', false),
                         where('userId', '!=', currentUser.uid)
                     );
-
-                    const querySnapshot = await getDocs(q);
-                    console.log(`Unread messages count (excluding current user): ${querySnapshot.size}`);
-                    setUnreadCount(querySnapshot.size);
+    
+                    unsubscribe = onSnapshot(q, (querySnapshot) => {
+                        console.log(`Unread messages count (excluding current user): ${querySnapshot.size}`);
+                        setUnreadCount(querySnapshot.size);
+                    });
                 } catch (error) {
                     console.error("Error fetching unread messages: ", error);
                 }
             }
         };
-
+    
         fetchUnreadMessages();
+    
+        // Clean up the listener on component unmount
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
     }, [roomId, currentUser.uid]);
 
     if (!item || !item.photoURL) {
