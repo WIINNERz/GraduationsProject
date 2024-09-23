@@ -7,6 +7,7 @@ const useAuth = () => {
   const [user, setUser] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userDocExists, setUserDocExists] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -20,16 +21,20 @@ const useAuth = () => {
 
           if (userDoc.exists()) {
             setUserDetails(userDoc.data()); // Set user details from Firestore
+            setUserDocExists(true);
           } else {
             console.log("No such document!");
+            setUserDocExists(false);
           }
         } catch (error) {
           console.error("Error fetching user details from Firestore:", error);
+          setUserDocExists(false);
         }
       } else {
         // No user is signed in
         setUser(null);
         setUserDetails(null);
+        setUserDocExists(false);
       }
       setLoading(false);
     }, (error) => {
@@ -41,7 +46,7 @@ const useAuth = () => {
     return () => unsubscribe();
   }, []);
 
-  const authState = useMemo(() => ({ user, userDetails, loading }), [user, userDetails, loading]);
+  const authState = useMemo(() => ({ user, userDetails, loading, userDocExists }), [user, userDetails, loading, userDocExists]);
 
   return authState;
 };

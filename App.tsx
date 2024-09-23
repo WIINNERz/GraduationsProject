@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import useAuth from './src/hooks/useAuth';
@@ -7,11 +7,15 @@ import AuthNavigator from './src/navigations/AuthNavigator';
 import AppNavigator from './src/navigations/AppNavigator';
 import './src/configs/firebaseConfig';
 
+const App = () => {
+  const { user, loading, userDocExists } = useAuth();
+  const [initialRouteName, setInitialRouteName] = useState<'MyPetStack' | 'WaitVerifyStack' | null>(null);
 
-function App() {
-  const { user, loading } = useAuth();  
+  useEffect(() => {
+    setInitialRouteName(userDocExists ? 'MyPetStack' : 'WaitVerifyStack');
+  }, [userDocExists]);
 
-  if (loading) {
+  if (loading || initialRouteName === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -21,10 +25,14 @@ function App() {
 
   return (
     <NavigationContainer>
-      {user ? <AppNavigator /> : <AuthNavigator />}
+      {user ? (
+        <AppNavigator initialRouteName={initialRouteName} userDocExists={userDocExists} />
+      ) : (
+        <AuthNavigator />
+      )}
     </NavigationContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
   loadingContainer: {
@@ -34,4 +42,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default React.memo(App);

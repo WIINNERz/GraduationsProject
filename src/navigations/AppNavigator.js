@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, View, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
+import { Image, View, StyleSheet, Keyboard } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import PetStack from '../stacks/PetStack';
 import ProfileStack from '../stacks/ProfileStack';
 import HomeStack from '../stacks/HomeStack';
-import FindPet from '../screens/FindPet';
-import { useNavigation } from '@react-navigation/native';
 import ChatStack from '../stacks/ChatStack';
 import MyPetStack from '../stacks/MyPetStack';
+import WaitVerifyStack from '../stacks/WaitVerifyStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -58,27 +57,17 @@ const ProfileTabIcon = () => {
   return (
     <Image
       source={{ uri: profileImageUrl }}
-      style={[styles.profileImage, { borderColor: '#E16539', borderWidth: 2 }]} // เพิ่ม border เพื่อให้โดดเด่นขึ้น
+      style={[styles.profileImage, { borderColor: '#E16539', borderWidth: 2 }]}
     />
   );
 };
 
-const AppNavigator = () => {
+const AppNavigator = ({ initialRouteName, userDocExists }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
 
     return () => {
       keyboardDidHideListener.remove();
@@ -88,56 +77,68 @@ const AppNavigator = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName='HomeStack'
+      initialRouteName={initialRouteName}
       screenOptions={{
         tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8', display: isKeyboardVisible ? 'none' : 'flex' }],
         tabBarActiveTintColor: '#E16539',
         tabBarLabelStyle: { fontSize: 16 }
       }}
     >
-      <Tab.Screen
-        name="MyPetStack"
-        component={MyPetStack}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={40} />
-          ),
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="Pet"
-        component={PetStack}
-        options={{
-          tabBarLabel: 'Find Pet',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="paw-outline" color={color} size={40} />
-          ),
-          headerShown: false
-        }}
-      />
-      <Tab.Screen
-        name="Chat"
-        component={ChatStack}
-        options={{
-          tabBarLabel: 'Chat',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chat" color={color} size={40} />
-          ),
-          headerShown: false,
-
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileStack}
-        options={{
-          headerShown: false,
-          tabBarLabel: 'Profile',
-          tabBarIcon: (props) => <ProfileTabIcon {...props} />
-        }}
-      />
+      {userDocExists ? (
+        <>
+          <Tab.Screen
+            name="MyPetStack"
+            component={MyPetStack}
+            options={{
+              tabBarLabel: 'Home',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialCommunityIcons name="home" color={color} size={40} />
+              ),
+              headerShown: false,
+            }}
+          />
+          <Tab.Screen
+            name="Pet"
+            component={PetStack}
+            options={{
+              tabBarLabel: 'Find Pet',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialCommunityIcons name="paw-outline" color={color} size={40} />
+              ),
+              headerShown: false
+            }}
+          />
+          <Tab.Screen
+            name="Chat"
+            component={ChatStack}
+            options={{
+              tabBarLabel: 'Chat',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialCommunityIcons name="chat" color={color} size={40} />
+              ),
+              headerShown: false,
+            }}
+          />
+          <Tab.Screen
+            name="Profile"
+            component={ProfileStack}
+            options={{
+              headerShown: false,
+              tabBarLabel: 'Profile',
+              tabBarIcon: (props) => <ProfileTabIcon {...props} />
+            }}
+          />
+        </>
+      ) : (
+        <Tab.Screen
+          name="WaitVerifyStack"
+          component={WaitVerifyStack}
+          options={{
+            tabBarButton: () => null, // Hide the tab bar button
+            headerShown: false,
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 };
