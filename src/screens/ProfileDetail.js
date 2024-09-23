@@ -155,8 +155,8 @@ const ProfileDetail = ({ navigation }) => {
       'Select Image',
       'Choose an option',
       [
-        { text: 'Camera', onPress: () => openCamera() },
-        { text: 'Gallery', onPress: () => openImageLibrary() },
+        { text: 'Camera', onPress: () => {openCamera();} },
+        { text: 'Gallery', onPress: () => {openImageLibrary();} },
         { text: 'Cancel', style: 'cancel' }
       ]
     );

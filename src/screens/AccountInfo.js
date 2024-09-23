@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ActivityIndicator,
-  ScrollView,
 } from 'react-native';
 import {auth, firestore} from '../configs/firebaseConfig';
 import {doc, onSnapshot} from 'firebase/firestore';

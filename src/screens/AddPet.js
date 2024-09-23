@@ -111,7 +111,7 @@ const AddPet = () => {
       }
 
       const id = name;
-      const dateTime = new Timestamp.now();
+      const dateTime = new Timestamp(Date.now() / 1000, 0);
       const username = await fetchUsername(user.uid);
       const key = await KeymanagementInstance.retrievemasterkey();
 
@@ -156,7 +156,6 @@ const AddPet = () => {
           birthday: birthday.toISOString().substring(0, 10),
           adoptingConditions,
           additionalImages,
-          location,
         };
       }
 
@@ -227,9 +226,8 @@ const AddPet = () => {
 
   const pickImage = () => {
     Alert.alert('Select Image', 'Choose an option', [
-      {text: 'Camera', onPress: () => openCamera()},
-      {text: 'Gallery', onPress: () => openImageLibrary()},
-      {text: 'Cancel', style: 'cancel'},
+      { text: 'Camera', onPress: () => { openCamera(); } },
+      { text: 'Gallery', onPress: () => { openImageLibrary(); } },
     ]);
   };
 
@@ -280,8 +278,8 @@ const AddPet = () => {
 
   const pickAdditionalImages = () => {
     Alert.alert('Select Additional Images', 'Choose an option', [
-      {text: 'Camera', onPress: () => openAdditionalCamera()},
-      {text: 'Gallery', onPress: () => openAdditionalImageLibrary()},
+      {text: 'Camera', onPress: () => {openAdditionalCamera();}},
+      {text: 'Gallery', onPress: () => {openAdditionalImageLibrary();}},
       {text: 'Cancel', style: 'cancel'},
     ]);
   };

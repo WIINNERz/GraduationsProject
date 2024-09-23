@@ -110,7 +110,11 @@ export default function Settings() {
                 },
                 {
                   text: 'Delete',
-                  onPress: handleDeleteAccount,
+                  onPress: () => {
+                    (async () => {
+                      await handleDeleteAccount();
+                    })();
+                  },
                   style: 'destructive',
                 },
               ],

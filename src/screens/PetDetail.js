@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  Button,
   ActivityIndicator,
   TouchableOpacity,
   Alert,
@@ -12,16 +11,22 @@ import {
   ScrollView,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, onSnapshot, arrayUnion, Timestamp,deleteDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+  Timestamp,
+  deleteDoc,
+} from 'firebase/firestore';
 
-import {auth, db, storage, firestore} from '../configs/firebaseConfig';
+import {auth, storage, firestore} from '../configs/firebaseConfig';
 import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import Checkbox from '../components/checkbox';
 import CryptoJS from 'rn-crypto-js';
-import MyPet from './MyPet';
 import Keymanagement from '../components/Keymanagement';
 
 const PetDetail = () => {
@@ -44,198 +49,249 @@ const PetDetail = () => {
     birthday: '',
     adoptingConditions,
     //additionalImages: [],
-    
   });
-const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
-const [adoptingConditions, setAdoptingConditions] = useState('');
-const [status, setStatus] = useState('');
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState(null);
-const [birthday, setBirthday] = useState(new Date());
-const [date, setDate] = useState(new Date());
-const [show, setShow] = useState(false);
-const [uploading, setUploading] = useState(false);
-const [age, setAge] = useState('');
-const [breeds, setBreeds] = useState('');
-const [weight, setWeight] = useState('');
-const [height, setHeight] = useState('');
-const [characteristics, setCharacteristics] = useState('');
-const [chronic, setChronic] = useState('');
-const [location, setLocation] = useState('');
-const [conditions, setConditions] = useState('');
-const [color, setColor] = useState('');
-const [gender, setGender] = useState('');
-const [name, setName] = useState('');
-//const [additionalImages, setAdditionalImages] = useState([]);
-const route = useRoute();
-const [image, setImage] = useState('');
-const {id} = route.params;
-const navigation = useNavigation();
-const KeymanagementInstance = new Keymanagement();
+  const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
+  const [adoptingConditions, setAdoptingConditions] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [location, setLocation] = useState('');
 
+  //const [additionalImages, setAdditionalImages] = useState([]);
+  const route = useRoute();
+  const [image, setImage] = useState('');
+  const {id} = route.params;
+  const navigation = useNavigation();
+  const KeymanagementInstance = new Keymanagement();
 
-useEffect(() => {
-  if (!user) return;
+  useEffect(() => {
+    if (!user) return;
 
-  const userDoc = doc(firestore, 'Users', user.uid);
+    const userDoc = doc(firestore, 'Users', user.uid);
 
-  const unsubscribe = onSnapshot(userDoc, (docSnap) => {
-    if (docSnap.exists() && docSnap.data().email === user.email) {
-      setUserData(docSnap.data());
-    } else {
-      console.log('No matching user data found');
-    }
-    setLoading(false);
-  }, (error) => {
-    console.error('Error fetching user data:', error);
-    setLoading(false);
-  });
-
-  return () => unsubscribe();
-}, [user]);
-
-const fetchUsername = async (uid) => {
-  const userDocRef = doc(db, 'Users', uid);
-  const userDoc = await getDoc(userDocRef);
-  if (userDoc.exists()) {
-    return userDoc.data().username;
-  } else {
-    console.error('No such user document!');
-    return "";
-  }
-};
-
-useEffect(() => {
-  const fetchPet = async () => {
-    const key = await KeymanagementInstance.retrievemasterkey();
-    try {
-      const petDocRef = doc(db, 'Pets', id);
-      const petDoc = await getDoc(petDocRef);
-      if (petDoc.exists()) {
-          let petData = petDoc.data() || {};
-        if (petData.status === 'have_owner') {
-          petData = {
-            ...petData,
-            age: petData.age ? CryptoJS.AES.decrypt(petData.age, key).toString(CryptoJS.enc.Utf8) : '',
-            breeds: petData.breeds ? CryptoJS.AES.decrypt(petData.breeds, key).toString(CryptoJS.enc.Utf8) : '',
-            weight: petData.weight ? CryptoJS.AES.decrypt(petData.weight, key).toString(CryptoJS.enc.Utf8) : '',
-            height: petData.height ? CryptoJS.AES.decrypt(petData.height, key).toString(CryptoJS.enc.Utf8) : '',
-            characteristics: petData.characteristics ? CryptoJS.AES.decrypt(petData.characteristics, key).toString(CryptoJS.enc.Utf8) : '',
-            chronic: petData.chronic ? CryptoJS.AES.decrypt(petData.chronic, key).toString(CryptoJS.enc.Utf8) : '',
-            location: petData.location  ? CryptoJS.AES.decrypt(petData.location, key).toString(CryptoJS.enc.Utf8) : '',
-            conditions: petData.conditions ? CryptoJS.AES.decrypt(petData.conditions, key).toString(CryptoJS.enc.Utf8) : '',
-            color: petData.color ? CryptoJS.AES.decrypt(petData.color, key).toString(CryptoJS.enc.Utf8) : '',
-            gender: petData.gender ? CryptoJS.AES.decrypt(petData.gender, key).toString(CryptoJS.enc.Utf8) : '',
-            birthday: petData.birthday ? CryptoJS.AES.decrypt(petData.birthday, key).toString(CryptoJS.enc.Utf8) : '',
-          };
+    const unsubscribe = onSnapshot(
+      userDoc,
+      docSnap => {
+        if (docSnap.exists() && docSnap.data().email === user.email) {
+          setUserData(docSnap.data());
+        } else {
+          console.log('No matching user data found');
         }
-        setPet(petData);
-       // setBirthday(new Date(petData.birthday || new Date()));
-      } else {
-        setError('Pet not found');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+        setLoading(false);
+      },
+      error => {
+        console.error('Error fetching user data:', error);
+        setLoading(false);
+      },
+    );
+
+    return () => unsubscribe();
+  }, [user]);
+
+  const fetchUsername = async uid => {
+    const userDocRef = doc(db, 'Users', uid);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      return userDoc.data().username;
+    } else {
+      console.error('No such user document!');
+      return '';
     }
   };
 
-  fetchPet();
-}, [id]);
-
-const handleSave = async () => {
-  try {
-    if (!user) {
-      console.error('No user is currently logged in.');
-      return;
-    }
-
-    const id = name; // Ensure you have a valid document ID
-    const dateTime = Timestamp.now();
-    const username = await fetchUsername(user.uid);
-    const key = await KeymanagementInstance.retrievemasterkey();
-
-    if (!username) return;
-    if (!pet.name) {
-      Alert.alert('Error', 'Pet name cannot be empty.');
-      return;
-    }
-
-    const {
-      name = '',
-      age = '',
-      breeds = '',
-      weight = '',
-      height = '',
-      characteristics = '',
-      chronic = '',
-      location = '',
-      conditions = '', 
-      color = '',
-      gender = '',
-      birthday,
-      adoptingConditions = '' 
-    } = pet;
-
-    //const birthdayValue = birthday ? birthday.toISOString().substring(0, 10) : null;
-
-    let dataToStore;
-
-    if (isFindHomeChecked) {
-      dataToStore = {
-        ...pet,
-        name: name.trim(), 
-        age,
-        breeds,
-        weight,
-        height,
-        characteristics,
-        chronic,
-        location,
-        conditions,
-        color,
-        gender,
-        birthday,
-        adoptingConditions,
-        updatedAt: Timestamp.now(),
-      };
-    } else {
-      dataToStore = {
-        ...pet,
-        name: name.trim(), 
-        age: age ? CryptoJS.AES.encrypt(String(age), key).toString() : null,
-        breeds: breeds ? CryptoJS.AES.encrypt(String(breeds), key).toString() : null,
-        weight: weight ? CryptoJS.AES.encrypt(String(weight), key).toString() : null,
-        height: height ? CryptoJS.AES.encrypt(String(height), key).toString() : null,
-        characteristics: characteristics ? CryptoJS.AES.encrypt(String(characteristics), key).toString() : null,
-        chronic: chronic ? CryptoJS.AES.encrypt(String(chronic), key).toString() : null,
-        conditions: conditions.length > 0 ? conditions.map(condition => CryptoJS.AES.encrypt(String(condition), key).toString()) : [],
-        color: color ? CryptoJS.AES.encrypt(String(color), key).toString() : null,
-        gender: gender ? CryptoJS.AES.encrypt(String(gender), key).toString() : null,
-        birthday: birthday ? CryptoJS.AES.encrypt(birthday, key).toString() : null,
-        updatedAt: Timestamp.now(),
-      };
-    }
-
-    // Remove any fields that are undefined
-    Object.keys(dataToStore).forEach(key => {
-      if (dataToStore[key] === undefined) {
-        delete dataToStore[key];
+  useEffect(() => {
+    const fetchPet = async () => {
+      const key = await KeymanagementInstance.retrievemasterkey();
+      try {
+        const petDocRef = doc(db, 'Pets', id);
+        const petDoc = await getDoc(petDocRef);
+        if (petDoc.exists()) {
+          let petData = petDoc.data() || {};
+          if (petData.status === 'have_owner') {
+            petData = {
+              ...petData,
+              age: petData.age
+                ? CryptoJS.AES.decrypt(petData.age, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              breeds: petData.breeds
+                ? CryptoJS.AES.decrypt(petData.breeds, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              weight: petData.weight
+                ? CryptoJS.AES.decrypt(petData.weight, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              height: petData.height
+                ? CryptoJS.AES.decrypt(petData.height, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              characteristics: petData.characteristics
+                ? CryptoJS.AES.decrypt(petData.characteristics, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              chronic: petData.chronic
+                ? CryptoJS.AES.decrypt(petData.chronic, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              location: petData.location
+                ? CryptoJS.AES.decrypt(petData.location, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              conditions: petData.conditions
+                ? CryptoJS.AES.decrypt(petData.conditions, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              color: petData.color
+                ? CryptoJS.AES.decrypt(petData.color, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              gender: petData.gender
+                ? CryptoJS.AES.decrypt(petData.gender, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+              birthday: petData.birthday
+                ? CryptoJS.AES.decrypt(petData.birthday, key).toString(
+                    CryptoJS.enc.Utf8,
+                  )
+                : '',
+            };
+          }
+          setPet(petData);
+        } else {
+          setError('Pet not found');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    });
+    };
 
-    console.log('Data to store:', dataToStore);
+    fetchPet();
+  }, [id]);
 
-    // Ensure the document reference has an even number of segments
-    const petDocRef = doc(db, 'Pets', name);
-    await updateDoc(petDocRef, dataToStore);
-    navigation.goBack();
-  } catch (err) {
-    setError(err.message);
-    console.error('Error saving pet data:', err);
-  }
-};
+  const handleSave = async () => {
+    try {
+      if (!user) {
+        console.error('No user is currently logged in.');
+        return;
+      }
+
+      const id = name; // Ensure you have a valid document ID
+      const dateTime = Timestamp.now();
+      const username = await fetchUsername(user.uid);
+      const key = await KeymanagementInstance.retrievemasterkey();
+
+      if (!username) return;
+      if (!pet.name) {
+        Alert.alert('Error', 'Pet name cannot be empty.');
+        return;
+      }
+
+      const {
+        name = '',
+        age = '',
+        breeds = '',
+        weight = '',
+        height = '',
+        characteristics = '',
+        chronic = '',
+        location = '',
+        conditions = '',
+        color = '',
+        gender = '',
+        birthday,
+        adoptingConditions = '',
+      } = pet;
+
+      let dataToStore;
+
+      if (isFindHomeChecked) {
+        dataToStore = {
+          ...pet,
+          name: name.trim(),
+          age,
+          breeds,
+          weight,
+          height,
+          characteristics,
+          chronic,
+          location,
+          conditions,
+          color,
+          gender,
+          birthday,
+          adoptingConditions,
+          updatedAt: Timestamp.now(),
+        };
+      } else {
+        dataToStore = {
+          ...pet,
+          name: name.trim(),
+          age: age ? CryptoJS.AES.encrypt(String(age), key).toString() : null,
+          breeds: breeds
+            ? CryptoJS.AES.encrypt(String(breeds), key).toString()
+            : null,
+          weight: weight
+            ? CryptoJS.AES.encrypt(String(weight), key).toString()
+            : null,
+          height: height
+            ? CryptoJS.AES.encrypt(String(height), key).toString()
+            : null,
+          characteristics: characteristics
+            ? CryptoJS.AES.encrypt(String(characteristics), key).toString()
+            : null,
+          chronic: chronic
+            ? CryptoJS.AES.encrypt(String(chronic), key).toString()
+            : null,
+          conditions:
+            conditions.length > 0
+              ? conditions.map(condition =>
+                  CryptoJS.AES.encrypt(String(condition), key).toString(),
+                )
+              : [],
+          color: color
+            ? CryptoJS.AES.encrypt(String(color), key).toString()
+            : null,
+          gender: gender
+            ? CryptoJS.AES.encrypt(String(gender), key).toString()
+            : null,
+          birthday: birthday
+            ? CryptoJS.AES.encrypt(birthday, key).toString()
+            : null,
+          updatedAt: Timestamp.now(),
+        };
+      }
+
+      // Remove any fields that are undefined
+      Object.keys(dataToStore).forEach(key => {
+        if (dataToStore[key] === undefined) {
+          delete dataToStore[key];
+        }
+      });
+
+      console.log('Data to store:', dataToStore);
+
+      // Ensure the document reference has an even number of segments
+      const petDocRef = doc(db, 'Pets', name);
+      await updateDoc(petDocRef, dataToStore);
+      navigation.goBack();
+    } catch (err) {
+      setError(err.message);
+      console.error('Error saving pet data:', err);
+    }
+  };
 
   useEffect(() => {
     if (pet?.status === 'dont_have_owner') {
@@ -251,35 +307,77 @@ const handleSave = async () => {
     }));
   };
 
-
-  const handleDelete = async () => {
-    Alert.alert('Delete Pet', 'Are you sure you want to delete this pet?', [
-      {
-        text: 'Yes',
-        onPress: async () => {
+  // const handleDelete = async () => {
+  //   Alert.alert('Delete Pet', 'Are you sure you want to delete this pet?', [
+  //     {
+  //       text: 'Yes',
+  //       onPress: async () => {
+  //         (async () => {
+  //           try {
+  //             await deleteDoc(doc(db, 'Pets', pet.id));
+  //             navigation.navigate('MyPets');
+  //           } catch (err) {
+  //             setError(err.message);
+  //           }
+  //         })();
+  //       },
+  //     },
+  //     {
+  //       text: 'No',
+  //       style: 'cancel',
+  //     },
+  //   ]);
+  // };
+const handleDelete = async () => {
+  Alert.alert('Delete Pet', 'Are you sure you want to delete this pet?', [
+    {
+      text: 'Yes',
+      onPress: () => {
+        // Wrap the async function in a synchronous function
+        (async () => {
           try {
-            await deleteDoc(doc(db, 'Pets', pet.id));
-            navigation.navigate("MyPets");
-          } catch (err) {
-            setError(err.message);
+            await deletePet(); // Replace with your actual async function
+            console.log('Pet deleted successfully');
+            navigation.navigate('MyPets');
+          } catch (error) {
+            console.error('Error deleting pet:', error);
           }
+        })();
+      },
+    },
+    {
+      text: 'No',
+      onPress: () => console.log('Delete action cancelled'),
+      style: 'cancel',
+    },
+  ]);
+};
+
+const deletePet = async () => {
+  try {
+    const petDocRef = doc(firestore, 'Pets', pet.id); // Replace 'petId' with the actual pet ID
+    await deleteDoc(petDocRef);
+  } catch (error) {
+    console.error('Error deleting pet:', error);
+  }
+};
+  const pickImage = () => {
+    Alert.alert('Select Image', 'Choose an option', [
+      {
+        text: 'Camera',
+        onPress: () => {
+          openCamera();
         },
       },
       {
-        text: 'No',
-        style: 'cancel',
+        text: 'Gallery',
+        onPress: () => {
+          openImageLibrary();
+        },
       },
-    ]);
-  };
-
-  const pickImage = () => {
-    Alert.alert('Select Image', 'Choose an option', [
-      {text: 'Camera', onPress: () => openCamera()},
-      {text: 'Gallery', onPress: () => openImageLibrary()},
       {text: 'Cancel', style: 'cancel'},
     ]);
   };
-
 
   const openImageLibrary = async () => {
     const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
@@ -329,57 +427,6 @@ const handleSave = async () => {
     }
   };
 
-  // const pickAdditionalImages = () => {
-  //   Alert.alert(
-  //     'Select Additional Images',
-  //     'Choose an option',
-  //     [
-  //       { text: 'Camera', onPress: openAdditionalCamera },
-  //       { text: 'Gallery', onPress: openAdditionalImageLibrary },
-  //       { text: 'Cancel', style: 'cancel' }
-  //     ]
-  //   );
-  // };
-
-  // const openAdditionalImageLibrary = async () => {
-  //   const result = await launchImageLibrary({ mediaType: 'photo', quality: 1, selectionLimit: 0 });
-  //   if (!result.canceled) {
-  //     setAdditionalImages(prevImages => [...prevImages, ...result.assets.map(asset => asset.uri)]);
-  //     Alert.alert('Success', 'Additional images uploaded successfully.');
-  //   }
-  // };
-
-  // const openAdditionalCamera = async () => {
-  //   const result = await launchCamera({ mediaType: 'photo', quality: 1 });
-  //   if (!result.canceled) {
-  //     setAdditionalImages(prevImages => [...prevImages, result.assets[0].uri]);
-  //     Alert.alert('Success', 'Additional image uploaded successfully.');
-  //   }
-  // };
-
-  // const uploadAdditionalImages = async (petDocRef) => {
-  //   if (additionalImages.length === 0) return;
-
-  //   setUploading(true);
-  //   try {
-  //     for (const uri of additionalImages) {
-  //       if (!uri) continue;
-  //       const storageRef = ref(storage, `imageP/${user.uid}/pets/${name}/additional/${Date.now()}`);
-  //       const response = await fetch(uri);
-  //       const blob = await response.blob();
-  //       const snapshot = await uploadBytes(storageRef, blob);
-  //       const downloadURL = await getDownloadURL(snapshot.ref);
-  //       await updateDoc(petDocRef, { additionalImages: arrayUnion(downloadURL) });
-  //     }
-  //   } catch (error) {
-  //     Alert.alert('Error', 'Failed to upload additional images. Please try again.');
-  //     console.error('Error uploading additional images: ', error);
-  //   } finally {
-  //     setUploading(false);
-  //   }
-  // };
-
-
   if (loading) {
     return (
       <View style={styles.container}>
@@ -403,14 +450,14 @@ const handleSave = async () => {
           />
         </TouchableOpacity>
         <Text style={{color: 'black', fontWeight: 'bold', fontSize: 18}}>
-            Edit Pet Profile
+          Edit Pet Profile
         </Text>
         <Text></Text>
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
         style={styles.container}>
-            {pet?.photoURL ? (
+        {pet?.photoURL ? (
           <Image source={{uri: pet.photoURL}} style={styles.image} />
         ) : (
           <MaterialCommunityIcons name="account" size={50} color="gray" />
@@ -451,16 +498,11 @@ const handleSave = async () => {
           />
           <Text> Birthday </Text>
           <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputDate}
-            value={pet?.birthday || '' } 
-            editable={false}
-                />
-            {/* <TouchableOpacity
-              onPress={() => setShow(true)}
-              style={styles.iconContainer}>
-              <MaterialCommunityIcons name="calendar" size={24} color="black" />
-            </TouchableOpacity> */}
+            <TextInput
+              style={styles.inputDate}
+              value={pet?.birthday || ''}
+              editable={false}
+            />
           </View>
           <View style={styles.whContainer}>
             <View style={styles.containerwh}>
@@ -514,7 +556,9 @@ const handleSave = async () => {
               <TextInput
                 style={styles.inputwh}
                 placeholder="Characteristics"
-                value={pet?.characteristics ? `${pet.characteristics}` || '' : ''}
+                value={
+                  pet?.characteristics ? `${pet.characteristics}` || '' : ''
+                }
                 onChangeText={text => setPet({...pet, characteristics: text})}
               />
             </View>
@@ -537,52 +581,31 @@ const handleSave = async () => {
             isChecked={isFindHomeChecked}
           />
 
-             {isFindHomeChecked && (
-           <View style={styles.adoptionDetailsContainer}>
-            <Text>Location</Text>
-             <TextInput
-                    style={styles.inputwh}
-                    placeholder="Location"
-                    placeholderTextColor={"gray"}
-                    value={pet?.location ? pet.location || '' : ''}
-                    onChangeText={text =>
-                      setPet(prevPet => ({ ...prevPet, location: text }))
-                    }
-                  />
-           <Text>Adopting Conditions</Text>
-           <TextInput
-                    style={styles.input}
-                    placeholder="Adopting Conditions"
-                    value={pet?.adoptingConditions || ''}  // Fallback to empty string if pet.adoptingConditions is null or undefined
-                    onChangeText={text =>
-                      setPet(prevPet => ({ ...prevPet, adoptingConditions: text }))  // Update adoptingConditions with new text
-                    }
-           />
-        {/* <TouchableOpacity onPress={pickImage} style={styles.imagePickerButton}>
-            <Text>Pick Image</Text>
-          </TouchableOpacity>
-          {imageP && <Image source={{ uri: imageP }} style={styles.imagePreview} />}
-          <TouchableOpacity onPress={pickAdditionalImages} style={styles.imagePickerButton}>
-            <Text>Pick Additional Images</Text>
-          </TouchableOpacity>
-          <View style={styles.additionalImagesContainer}>
-            {additionalImages.map((uri, index) => (
-              <Image key={index} source={{ uri }} style={styles.additionalImage} />
-            ))}
-          </View> */}
-        </View>
+          {isFindHomeChecked && (
+            <View style={styles.adoptionDetailsContainer}>
+              <Text>Location</Text>
+              <TextInput
+                style={styles.inputwh}
+                placeholder="Location"
+                placeholderTextColor={'gray'}
+                value={pet?.location ? pet.location || '' : ''}
+                onChangeText={text =>
+                  setPet(prevPet => ({...prevPet, location: text}))
+                }
+              />
+              <Text>Adopting Conditions</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Adopting Conditions"
+                value={pet?.adoptingConditions || ''} // Fallback to empty string if pet.adoptingConditions is null or undefined
+                onChangeText={
+                  text =>
+                    setPet(prevPet => ({...prevPet, adoptingConditions: text})) // Update adoptingConditions with new text
+                }
+              />
+            </View>
           )}
-
         </View>
-        {/* {show && (
-          <DateTimePicker
-            mode="date"
-            display="default"
-            value={date || new Date()}
-            onChange={onChange}
-          />
-        )} */}
-
         <View style={styles.buttonPanel}>
           <TouchableOpacity style={styles.buttonS} onPress={() => handleSave()}>
             <Text>Save</Text>
@@ -625,11 +648,6 @@ const styles = StyleSheet.create({
     width: '45%',
     backgroundColor: '#fff',
     marginHorizontal: 17,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   input: {
     width: '100%',
@@ -712,6 +730,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
 

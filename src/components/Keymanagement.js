@@ -32,7 +32,6 @@ const Keymanagement = () => {
     }
     try {
       await Keychain.setGenericPassword('maskey', key);
-      console.log(key);
       console.log('Key stored successfully');
     } catch (error) {
       console.log('Could not store key', error);
@@ -66,7 +65,6 @@ const Keymanagement = () => {
     try {
       const passkey = await getpasskey(password);
       const decmaster = await getmasterkey(passkey);
-      console.log('masterkey ', decmaster);
       await storeKey(decmaster);
     } catch (error) {
       console.error('Could not retrieve and store key', error);
@@ -111,7 +109,6 @@ const Keymanagement = () => {
       const {iv} = await getuserkey();
       const recoverykey = await getpasskey(id);
       const masterKey = await retrievemasterkey();
-      console.log('masterkey ', masterKey);
       const encryptedMasterKeyforRecovery = await Aes.encrypt(
         masterKey,
         recoverykey,
