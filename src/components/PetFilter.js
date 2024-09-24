@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     marginVertical: 10,
+    backgroundColor: '#fff',
   },
   searchBoxContainer: {
     flexDirection: 'row',
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 5,
     borderRadius: 5,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#CCCCCC',
     alignItems: 'center',
   },
   selectedCard: {

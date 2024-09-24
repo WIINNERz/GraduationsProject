@@ -12,11 +12,8 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {
-  doc,
-  getDoc,
-} from 'firebase/firestore';
-import {firestore } from '../configs/firebaseConfig';
+import {doc, getDoc , updateDoc} from 'firebase/firestore';
+import {firestore} from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from '../components/Keymanagement';
 
@@ -27,6 +24,7 @@ export default function PetProfile() {
   const {id} = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false); // State to track favorite status
   const KeymanagementInstance = new Keymanagement();
   const navigation = useNavigation();
   useFocusEffect(
@@ -92,6 +90,9 @@ export default function PetProfile() {
                 : null,
             };
             setPet(decryptedPetData);
+            if (petData.favorite) {
+              setIsFavorite(true);
+            }
           } catch (err) {
             console.log(err);
           }
@@ -105,6 +106,22 @@ export default function PetProfile() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleFavorite = () => {
+    if (isFavorite === false) {
+      setIsFavorite(true);
+      const petRef = doc(firestore, 'Pets', id);
+      updateDoc(petRef, {
+        favorite: true,
+      });
+    } else {
+      setIsFavorite(false);
+      const petRef = doc(firestore, 'Pets', id);
+      updateDoc(petRef, {
+        favorite: false,
+      });
     }
   };
 
@@ -133,16 +150,31 @@ export default function PetProfile() {
             <MaterialCommunityIcons name="account" size={150} color="gray" />
           )}
         </View>
-        <Text
-          style={{
-            fontSize: 24,
-            color: 'black',
-            paddingVertical: 10,
-            paddingHorizontal: 30,
-            fontFamily: 'InterBold',
-          }}>
-          {pet?.name}
-        </Text>
+        <View style={styles.namesection}>
+          <Text
+            style={{
+              fontSize: 24,
+              color: 'black',
+              paddingVertical: 10,
+              paddingLeft: 30,
+              fontFamily: 'InterBold',
+            }}>
+            {pet?.name}
+          </Text>
+          <TouchableOpacity style={styles.favbutton} onPress={toggleFavorite}>
+            <MaterialCommunityIcons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={25}
+              color="#D27C2C"
+         
+            />
+
+            <Text
+              style={{color: '#D27C2C', fontSize: 20, fontFamily: 'InterBold' , marginLeft : 3}}>
+              {isFavorite ? 'unfavorite' : 'favorite'}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.panelData}>
           <View style={styles.row}>
             <View style={styles.leftcolum}>
@@ -371,5 +403,22 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     flexDirection: 'column',
     justifyContent: 'space-between',
+  },
+  namesection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  favbutton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: '#D27C2C',
   },
 });

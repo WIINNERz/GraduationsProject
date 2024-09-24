@@ -79,7 +79,7 @@ export default function MyPet() {
             name="arrow-left"
             size={35}
             color="#D27C2C"
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("Home")}
           />
           <Text style={styles.screentitle}>My Pets</Text>
         <TouchableOpacity

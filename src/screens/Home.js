@@ -33,14 +33,13 @@ const Home = () => {
       try {
         const db = getFirestore();
         const petsCollection = collection(db, 'Pets');
-        const q = query(petsCollection, where('uid', '==', user.uid));
+        const q = query(petsCollection, where('uid', '==', user.uid),where('favorite', '==', true));
         const querySnapshot = await getDocs(q);
-
         const petList = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
-
+        
         setDogs(petList);
       } catch (err) {
         setError(err.message);
@@ -162,7 +161,7 @@ const Home = () => {
           />
         ) : (
           <View style={styles.nopetview}>
-            <Text style={styles.nopettext}>No pets available</Text>
+            <Text style={styles.nopettext}>Add your favorite pets!</Text>
           </View>
         )}
       </View>
@@ -186,7 +185,7 @@ const Home = () => {
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => navigation.navigate('Location')}>
-            <MaterialCommunityIcons name="map" size={40} color="#D27C2C" />
+            <MaterialCommunityIcons name="file-question" size={40} color="#D27C2C" />
             <Text style={styles.menuText}>Something</Text>
           </TouchableOpacity>
           <TouchableOpacity

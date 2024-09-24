@@ -82,13 +82,14 @@ const FindPet = () => {
     <KeyboardAvoidingView
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <View contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text
             style={{color: 'white', fontFamily: 'InterSemiBold', fontSize: 26}}>
             Looking for Owner
           </Text>
         </View>
+        <View style={styles.filterContainer}>
         <PetFilter
           filter={filter}
           setFilter={setFilter}
@@ -97,6 +98,8 @@ const FindPet = () => {
           selectedField={selectedField}
           setSelectedField={setSelectedField}
         />
+        </View>
+        <View style={styles.datapanel}>
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : error ? (
@@ -110,21 +113,22 @@ const FindPet = () => {
             <Text style={styles.noPetsText}>No Pets Available</Text>
           </View>
         )}
-      </ScrollView>
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white', 
     flex: 1,
     height: '100%',
     width: '100%',
   },
   header: {
     width: '100%',
-    height: 74,
+    height : '8%',
     padding: 20,
     flexDirection: 'row',
     backgroundColor: '#D27C2C',
@@ -132,6 +136,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
+  },
+  filterContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    width: '100%',
+    height: '22%',
+  },
+  datapanel: {
+    height: '70%',
+    backgroundColor: '#fff',
   },
   errorText: {
     color: 'red',
