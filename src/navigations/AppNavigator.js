@@ -8,7 +8,7 @@ import PetStack from '../stacks/PetStack';
 import ProfileStack from '../stacks/ProfileStack';
 import HomeStack from '../stacks/HomeStack';
 import ChatStack from '../stacks/ChatStack';
-import MyPetStack from '../stacks/MyPetStack';
+import MyPetStack from '../stacks/MyPetStack'; // Ensure this import is correct
 import WaitVerifyStack from '../stacks/WaitVerifyStack';
 
 const Tab = createBottomTabNavigator();
@@ -134,7 +134,7 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
           name="WaitVerifyStack"
           component={WaitVerifyStack}
           options={{
-            tabBarButton: () => null, // Hide the tab bar button
+            tabBarButton: () => null, 
             headerShown: false,
           }}
         />
