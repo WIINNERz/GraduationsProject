@@ -14,7 +14,7 @@ const AccountInfo = () => {
           color="#D27C2C"
           onPress={() => navigate.goBack()}
         />
-            <Text>What is that , Nah We don't have and We don't care</Text>
+            <Text style={{fontSize :40 }}>Wait For PearMhai</Text>
         </View>
     );
 };

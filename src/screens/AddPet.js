@@ -226,8 +226,18 @@ const AddPet = () => {
 
   const pickImage = () => {
     Alert.alert('Select Image', 'Choose an option', [
-      { text: 'Camera', onPress: () => { openCamera(); } },
-      { text: 'Gallery', onPress: () => { openImageLibrary(); } },
+      {
+        text: 'Camera',
+        onPress: () => {
+          openCamera();
+        },
+      },
+      {
+        text: 'Gallery',
+        onPress: () => {
+          openImageLibrary();
+        },
+      },
     ]);
   };
 
@@ -278,8 +288,18 @@ const AddPet = () => {
 
   const pickAdditionalImages = () => {
     Alert.alert('Select Additional Images', 'Choose an option', [
-      {text: 'Camera', onPress: () => {openAdditionalCamera();}},
-      {text: 'Gallery', onPress: () => {openAdditionalImageLibrary();}},
+      {
+        text: 'Camera',
+        onPress: () => {
+          openAdditionalCamera();
+        },
+      },
+      {
+        text: 'Gallery',
+        onPress: () => {
+          openAdditionalImageLibrary();
+        },
+      },
       {text: 'Cancel', style: 'cancel'},
     ]);
   };
@@ -348,7 +368,7 @@ const AddPet = () => {
     {label: 'Snake', value: 'Snake'},
     {label: 'Fish', value: 'Fish'},
     {label: 'Sheep', value: 'Sheep'},
-    {label: 'Others', value: 'Other'}, //do we need to input/specify the others?
+    {label: 'Others', value: 'Other'}, 
   ];
   if (loading) {
     return (
@@ -360,17 +380,16 @@ const AddPet = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons
-            name="chevron-left"
-            size={40}
-            color="#E16539"
-          />
-        </TouchableOpacity>
-        <Text style={{color: 'black', fontWeight: 'bold', fontSize: 18}}>
+        <MaterialCommunityIcons
+        style={styles.back}
+        name="arrow-left"
+        size={35}
+        color="#D27C2C"
+        onPress={() => navigation.goBack()}
+      />
+       <Text style={styles.screenTitle}>
           Add Pet
         </Text>
-        <Text> </Text>
       </View>
       <View style={styles.photoSec}>
         <View style={{borderRadius: 100}}>
@@ -505,17 +524,6 @@ const AddPet = () => {
             value={chronic}
             onChangeText={setChronic}
           />
-          {/* <View style={styles.checkboxContainer}>
-            <Checkbox
-              text="Don't have owner"
-              isChecked={isChecked}
-              onPress={() => {
-                setIsChecked(!isChecked);
-                setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
-              }}
-            />
-          </View> */}
-
           {userData?.verify ? (
             <>
               <View style={styles.checkboxContainer}>
@@ -604,12 +612,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 17,
   },
   header: {
-    flexDirection: 'row',
-    position: 'relative',
-    justifyContent: 'space-between',
+    width: '100%',
+    height: "8%",
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
     backgroundColor: 'white',
+  },
+  screenTitle: {
+    fontSize: 20,
+    fontFamily : "InterBold",
+    color: '#D27C2C',
   },
   box1: {
     width: '100%',
@@ -786,6 +798,14 @@ const styles = StyleSheet.create({
   itemTextStyle: {
     color: 'gray',
   },
+  back: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    zIndex: 1,
+},
 });
 
 export default AddPet;
