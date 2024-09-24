@@ -307,27 +307,6 @@ const PetDetail = () => {
     }));
   };
 
-  // const handleDelete = async () => {
-  //   Alert.alert('Delete Pet', 'Are you sure you want to delete this pet?', [
-  //     {
-  //       text: 'Yes',
-  //       onPress: async () => {
-  //         (async () => {
-  //           try {
-  //             await deleteDoc(doc(db, 'Pets', pet.id));
-  //             navigation.navigate('MyPets');
-  //           } catch (err) {
-  //             setError(err.message);
-  //           }
-  //         })();
-  //       },
-  //     },
-  //     {
-  //       text: 'No',
-  //       style: 'cancel',
-  //     },
-  //   ]);
-  // };
 const handleDelete = async () => {
   Alert.alert('Delete Pet', 'Are you sure you want to delete this pet?', [
     {
