@@ -16,6 +16,12 @@
         android:theme="@style/AppTheme"
         android:supportsRtl="true"
         tools:replace="android:usesCleartextTraffic">
+        
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCnkHACQgl9XfquJLpIvNFL4uWCWBYVwWI"/>
+        
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

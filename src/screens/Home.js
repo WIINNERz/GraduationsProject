@@ -184,7 +184,7 @@ const Home = () => {
         <View style={styles.menu}>
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => navigation.navigate('Location')}>
+            onPress={() => navigation.navigate('Location1')}>
             <MaterialCommunityIcons name="file-question" size={40} color="#D27C2C" />
             <Text style={styles.menuText}>Something</Text>
           </TouchableOpacity>
