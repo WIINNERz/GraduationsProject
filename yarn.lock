@@ -1833,10 +1833,10 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/geolocation@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@react-native-community/geolocation/-/geolocation-3.3.0.tgz"
-  integrity sha512-7DFeuotH7m7ImoXffN3TmlGSFn1XjvsaphPort0XZKipssYbdHiKhVVWG+jzisvDhcXikUc6nbUJgddVBL6RDg==
+"@react-native-community/geolocation@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.npmjs.org/@react-native-community/geolocation/-/geolocation-3.4.0.tgz"
+  integrity sha512-bzZH89/cwmpkPMKKveoC72C4JH0yF4St5Ceg/ZM9pA1SqX9MlRIrIrrOGZ/+yi++xAvFDiYfihtn9TvXWU9/rA==
 
 "@react-native-firebase/app@^20.4.0", "@react-native-firebase/app@20.4.0":
   version "20.4.0"
@@ -2128,6 +2128,11 @@
   version "7.20.6"
   dependencies:
     "@babel/types" "^7.20.7"
+
+"@types/geojson@^7946.0.13":
+  version "7946.0.14"
+  resolved "https://registry.npmjs.org/@types/geojson/-/geojson-7946.0.14.tgz"
+  integrity sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==
 
 "@types/graceful-fs@^4.1.3":
   version "4.1.9"
@@ -3628,7 +3633,7 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.2.0,
     "@react-native-async-storage/async-storage" "^1.24.0"
     "@react-native-community/checkbox" "^0.5.17"
     "@react-native-community/datetimepicker" "^8.2.0"
-    "@react-native-community/geolocation" "^3.3.0"
+    "@react-native-community/geolocation" "^3.4.0"
     "@react-native-firebase/app" "^20.4.0"
     "@react-native-firebase/auth" "^20.4.0"
     "@react-native-firebase/firestore" "^20.4.0"
@@ -3646,6 +3651,8 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.2.0,
     react-native-gesture-handler "^2.18.1"
     react-native-image-picker "^7.1.2"
     react-native-keychain "^8.2.0"
+    react-native-maps "^1.18.0"
+    react-native-permissions "^4.1.5"
     react-native-safe-area-context "^4.10.9"
     react-native-screens "^3.34.0"
     react-native-vector-icons "^10.1.0"
@@ -5279,6 +5286,18 @@ react-native-keychain@^8.2.0:
   resolved "https://registry.npmjs.org/react-native-keychain/-/react-native-keychain-8.2.0.tgz"
   integrity sha512-SkRtd9McIl1Ss2XSWNLorG+KMEbgeVqX+gV+t3u1EAAqT8q2/OpRmRbxpneT2vnb/dMhiU7g6K/pf3nxLUXRvA==
 
+react-native-maps@^1.18.0:
+  version "1.18.0"
+  resolved "https://registry.npmjs.org/react-native-maps/-/react-native-maps-1.18.0.tgz"
+  integrity sha512-S17nYUqeMptgIPaAZuVRo+eRelPreBBYQWw6jsxU7qQ12p+THSfFaqabcNn7fBmsXhT3T27iIl8ek8v1H8BaGw==
+  dependencies:
+    "@types/geojson" "^7946.0.13"
+
+react-native-permissions@^4.1.5:
+  version "4.1.5"
+  resolved "https://registry.npmjs.org/react-native-permissions/-/react-native-permissions-4.1.5.tgz"
+  integrity sha512-r6VMRacASmtRHS+GZ+5HQCp9p9kiE+UU9magHOZCXZLTJitdTuVHWZRrb4v4oqZGU+zAp3mZhTQftuMMv+WLUg==
+
 react-native-randombytes@^3.6.1:
   version "3.6.1"
   resolved "https://registry.npmjs.org/react-native-randombytes/-/react-native-randombytes-3.6.1.tgz"
@@ -5308,7 +5327,7 @@ react-native-vector-icons@^10.1.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.62", react-native@0.75.2:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.62", "react-native@>= 0.64.3", react-native@>=0.70.0, react-native@0.75.2:
   version "0.75.2"
   dependencies:
     "@jest/create-cache-key-function" "^29.6.3"
@@ -5371,7 +5390,7 @@ react-test-renderer@18.3.1:
     react-shallow-renderer "^16.15.0"
     scheduler "^0.23.2"
 
-react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", react@^18.2.0, react@^18.3.1, react@>=16.8, react@>=17.0.0, react@18.3.1:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", react@^18.2.0, react@^18.3.1, "react@>= 17.0.1", react@>=16.8, react@>=17.0.0, react@>=18.1.0, react@18.3.1:
   version "18.3.1"
   dependencies:
     loose-envify "^1.1.0"
