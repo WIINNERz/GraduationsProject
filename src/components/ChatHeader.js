@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View,Text } from "react-native";
+import { Image, StyleSheet, View,Text ,Dimensions } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { auth ,storage,firestore } from "../configs/firebaseConfig";
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
@@ -35,7 +35,7 @@ function ChatHeader(){
     return (
         <View style={styles.container}>
             <View>
-            <Text style={{color: 'white',  fontFamily: 'InterSemiBold', fontSize: 26 }}>Chat</Text>
+            <Text style={styles.title}>Chat</Text>
             
             </View>
             <View>
@@ -55,11 +55,13 @@ function ChatHeader(){
         </View>
     )
 }
+const {width} = Dimensions.get('window');
+const titleSize = width / 17;
 const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: "8%",
-        padding: 20,
+        paddingHorizontal: 20,
         flexDirection: 'row',
         backgroundColor: '#D27C2C',
         justifyContent: 'space-between',
@@ -72,6 +74,11 @@ const styles = StyleSheet.create({
         height: 48,
         borderRadius: 50,
         
+    },
+    title : {
+        fontSize: titleSize,
+        color: 'white',
+        fontFamily: 'InterSemiBold',
     },
 });
 export default ChatHeader;

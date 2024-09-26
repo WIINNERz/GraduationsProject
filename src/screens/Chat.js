@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator , Dimensions } from "react-native";
 import ChatHeader from "../components/ChatHeader";
 import ChatList from "../components/ChatList";
 import { useEffect, useState, useCallback } from "react";

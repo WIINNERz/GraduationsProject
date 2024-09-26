@@ -27,6 +27,9 @@ const Home = () => {
   const flatListRef = useRef(null);
   const navigation = useNavigation();
   const user = auth.currentUser;
+  const pawsize = Dimensions.get('window').width / 13; //40
+  const favsize = Dimensions.get('window').width / 5; //80
+
 
   const fetchDogs = async () => {
     if (user) {
@@ -96,7 +99,7 @@ const Home = () => {
         <Image source={{uri: item.photoURL}} style={styles.petPic} />
       ) : (
         <View style={styles.petIcon} >
-        <MaterialCommunityIcons name="dog" size={95} color="#E16539" />
+        <MaterialCommunityIcons name="dog" size={favsize} color="#E16539" />
         </View>
       )}
       <Text style={styles.petdetail}>{item.name}</Text>
@@ -107,7 +110,7 @@ const Home = () => {
     <View style={styles.screen}>
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialCommunityIcons name="paw-outline" size={40} color="white" />
+          <MaterialCommunityIcons name="paw-outline" size={pawsize} color="white" />
           <Text style={styles.title}>PetPal</Text>
         </View>
       </View>
@@ -171,13 +174,13 @@ const Home = () => {
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => navigation.navigate('MyPets')}>
-            <MaterialCommunityIcons name="dog" size={40} color="#D27C2C" />
+            <MaterialCommunityIcons name="dog" size={pawsize} color="#D27C2C" />
             <Text style={styles.menuText}>My Pets</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => navigation.navigate('AddPet')}>
-            <MaterialCommunityIcons name="plus" size={40} color="#D27C2C" />
+            <MaterialCommunityIcons name="plus" size={pawsize} color="#D27C2C" />
             <Text style={styles.menuText}>Add new pet</Text>
           </TouchableOpacity>
         </View>
@@ -185,7 +188,7 @@ const Home = () => {
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => navigation.navigate('Location1')}>
-            <MaterialCommunityIcons name="file-question" size={40} color="#D27C2C" />
+            <MaterialCommunityIcons name="file-question" size={pawsize} color="#D27C2C" />
             <Text style={styles.menuText}>Something</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -193,7 +196,7 @@ const Home = () => {
             onPress={() => navigation.navigate('Location')}>
             <MaterialCommunityIcons
               name="map-marker"
-              size={40}
+              size={pawsize}
               color="#D27C2C"
             />
             <Text style={styles.menuText}>Pet's hospital near you</Text>
@@ -206,6 +209,7 @@ const Home = () => {
 
 const {width} = Dimensions.get('window');
 const itemSize = width / 4;
+const titleSize = width / 17;
 
 const styles = StyleSheet.create({
   screen: {
@@ -217,7 +221,7 @@ const styles = StyleSheet.create({
   header: {
     width: '100%',
     height: '8%',
-    padding: 20,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     backgroundColor: '#D27C2C',
     justifyContent: 'space-between',
@@ -230,7 +234,7 @@ const styles = StyleSheet.create({
     padding :"3%",
   },
   title: {
-    fontSize: 26,
+    fontSize: titleSize,
     fontWeight: '600',
     color: 'white',
     backgroundColor: '#D27C2C',

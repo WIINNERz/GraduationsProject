@@ -7,6 +7,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
+
 } from 'react-native';
 import {
   getFirestore,
@@ -82,10 +84,10 @@ const FindPet = () => {
     <KeyboardAvoidingView
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <View contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text
-            style={{color: 'white', fontFamily: 'InterSemiBold', fontSize: 26}}>
+            style={styles.title}>
             Looking for Owner
           </Text>
         </View>
@@ -114,22 +116,23 @@ const FindPet = () => {
           </View>
         )}
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-
+const {width} = Dimensions.get('window');
+const titleSize = width / 17;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white', 
-    flex: 1,
+  flex: 1,
     height: '100%',
     width: '100%',
   },
   header: {
     width: '100%',
     height : '8%',
-    padding: 20,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     backgroundColor: '#D27C2C',
     justifyContent: 'space-between',
@@ -138,15 +141,17 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   filterContainer: {
-    flexDirection: 'column',
+    
     justifyContent: 'center',
     backgroundColor: '#fff',
     width: '100%',
-    height: '22%',
+   
   },
   datapanel: {
-    height: '70%',
+    height: '84%',
     backgroundColor: '#fff',
+    width: '100%',
+    marginBottom: '8%',
   },
   errorText: {
     color: 'red',
@@ -169,6 +174,11 @@ const styles = StyleSheet.create({
   },
   petList: {
     marginBottom: 300,
+  },
+  title : {
+    fontSize: titleSize,
+    color: 'white',
+    fontFamily: 'InterSemiBold',
   },
 });
 

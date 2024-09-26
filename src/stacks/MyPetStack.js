@@ -43,6 +43,11 @@ export default function MyPetStack() {
         component={Location1}
         options={{headerShown: false}}
       />
+        <Stack.Screen
+        name="Location"
+        component={Location}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
