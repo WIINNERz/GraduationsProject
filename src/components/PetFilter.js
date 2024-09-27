@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {View, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, TextInput , Dimensions} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -12,6 +12,7 @@ const PetFilter = ({
   setSelectedField,
 }) => {
   const [isFocus, setIsFocus] = useState(false);
+  const iconsize = Dimensions.get('window').width / 15;
   const typeData = useMemo(
     () => [
       {label: 'All', value: 'all', icon: 'paw'},
@@ -55,7 +56,6 @@ const PetFilter = ({
             itemTextStyle={styles.itemTextStyle}
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
             data={sort}
             labelField="label"
             valueField="value"
@@ -69,7 +69,8 @@ const PetFilter = ({
             }}
           />
         </View>
-      </View>
+      
+
       <View style={styles.CardContainer}>
         {typeData.map(type => (
           <TouchableOpacity
@@ -78,20 +79,22 @@ const PetFilter = ({
             onPress={() => setFilter(type.value)}>
             <MaterialCommunityIcons
               name={type.icon}
-              size={30}
+              size={iconsize}
               color={filter === type.value ? 'white' : '#333'}
             />
           </TouchableOpacity>
         ))}
       </View>
+      </View>
     </View>
   );
 };
-
+const width = Dimensions.get('window').width;
+const cardSize = width / 9;
 const styles = StyleSheet.create({
   filterContainer: {
-    flexDirection: 'column',
     flexWrap: 'wrap',
+    flexDirection: 'column',
     justifyContent: 'center',
     marginVertical: 10,
     backgroundColor: '#fff',
@@ -102,7 +105,7 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 50,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginVertical: 5,
     borderRadius: 20,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 50,
     justifyContent: 'center',
-    marginBottom: 10,
+    marginVertical: 5,
     borderRadius: 20,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -127,11 +130,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   card: {
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingTop: 5,
+    width: cardSize,
+    height: cardSize,
     margin: 5,
     borderRadius: 5,
     backgroundColor: '#CCCCCC',
-    alignItems: 'center',
+    justifyContent: 'center',
   },
   selectedCard: {
     backgroundColor: '#d27c2c',
@@ -140,6 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    
   },
   searchContainer: {
     width: '100%',
@@ -153,10 +160,6 @@ const styles = StyleSheet.create({
   selectedTextStyle: {
     fontSize: 16,
     color: 'gray',
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
   },
   inputSearchStyle: {
     height: 40,

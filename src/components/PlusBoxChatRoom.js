@@ -102,14 +102,14 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
           const decryptedTel = userData.tel ? await KeymanagementInstance.decryptData(userData.tel) : null;
           setState(prevState => ({
             ...prevState,
-            telephoneNumber: decryptedTel || 'No telephone number found'
+            telephoneNumber: decryptedTel || 'Doesn\'t have a telephone number',
           }));
                 if (onSendTelephone) {
-            onSendTelephone(decryptedTel || 'No telephone number found');
+            onSendTelephone(decryptedTel || 'Doesn\'t have a telephone number',);
           }
         } else {
-          setState(prevState => ({ ...prevState, telephoneNumber: 'No telephone number found' }));
-          Alert.alert('Telephone Number', 'No telephone number found');
+          setState(prevState => ({ ...prevState, telephoneNumber: 'Doesn\'t have a telephone number', }));
+          Alert.alert('Telephone Number', 'Doesn\'t have a telephone number',);
         }
       } catch (err) {
         console.log('Error fetching telephone number:', err.message);

@@ -84,14 +84,14 @@ const FindPet = () => {
     <KeyboardAvoidingView
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.container}>
+       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text
             style={styles.title}>
             Looking for Owner
           </Text>
-        </View>
-        <View style={styles.filterContainer}>
+        </View> 
+       <View style={styles.filterContainer}>
         <PetFilter
           filter={filter}
           setFilter={setFilter}
@@ -125,7 +125,7 @@ const titleSize = width / 17;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white', 
-  flex: 1,
+    flex: 1,
     height: '100%',
     width: '100%',
   },
@@ -141,14 +141,13 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   filterContainer: {
-    
-    justifyContent: 'center',
+    justifyContent : 'flex-start',
     backgroundColor: '#fff',
     width: '100%',
+    height: '22%',
    
   },
   datapanel: {
-    height: '84%',
     backgroundColor: '#fff',
     width: '100%',
     marginBottom: '8%',

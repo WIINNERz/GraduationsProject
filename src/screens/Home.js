@@ -108,6 +108,7 @@ const Home = () => {
 
   return (
     <View style={styles.screen}>
+      <View style={styles.container}>
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="paw-outline" size={pawsize} color="white" />
@@ -203,6 +204,7 @@ const Home = () => {
           </TouchableOpacity>
         </View>
       </View>
+      </View>
     </View>
   );
 };
@@ -218,6 +220,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  container: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    marginBottom: "3%",
+  },
   header: {
     width: '100%',
     height: '8%',
@@ -232,6 +240,7 @@ const styles = StyleSheet.create({
   maincontainer: {
     height: '45%',
     padding :"3%",
+    
   },
   title: {
     fontSize: titleSize,

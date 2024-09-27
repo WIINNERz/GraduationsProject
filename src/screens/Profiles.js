@@ -171,7 +171,7 @@ const Profiles = () => {
           <Text style={{opacity: 0.5}}>@{userData.username}</Text>
           {userData.verify ? (
             <TouchableOpacity
-              onPress={() => navigation.navigate('ProfileDetail')}>
+              onPress={() => navigation.navigate('Verify')}>
               <View style={styles.verified}>
                 <Text style={{color: 'black'}}>Verified</Text>
                 <MaterialCommunityIcons
@@ -188,9 +188,11 @@ const Profiles = () => {
           )}
         </View>
       </View>
+      <View style={styles.menupanel}>
       <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
+        
         <View style={styles.panel}>
-          <View style={styles.leftContent}>
+          <View style={styles.menucontainer}>
             <View style={styles.iconContainer}>
               <MaterialCommunityIcons
                 name="account"
@@ -198,47 +200,68 @@ const Profiles = () => {
                 color="#D27C2C"
               />
             </View>
-            <View style={styles.myaccount}>
+            <View style={styles.menuname}>
               <Text style={styles.topic}>My Account</Text>
-              <Text style={{opacity: 0.5}}>Make changes to your account</Text>
+              <Text style={{opacity: 0.5}}>Make changes to your accountMake changes to your accountMake changes to your account</Text>
             </View>
           </View>
+
+          <View style={styles.rightContent}>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+          </View>
+
+        
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('MyPet')}>
+        
         <View style={styles.panel}>
-          <View style={styles.leftContent}>
+          <View style={styles.menucontainer}>
             <View style={styles.iconContainer}>
               <MaterialCommunityIcons name="paw" size={30} color="#D27C2C" />
             </View>
-            <View style={styles.myaccount}>
+            <View style={styles.menuname}>
               <Text style={styles.topic}>My Pet</Text>
-              <Text style={{opacity: 0.5}}>Make changes to your account</Text>
+              <Text style={{opacity: 0.5}}>View your own pets</Text>
             </View>
           </View>
+
+          <View style={styles.rightContent}>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+          </View>
+
+        
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+        
         <View style={styles.panel}>
-          <View style={styles.leftContent}>
+          
+          <View style={styles.menucontainer}>
+            
             <View style={styles.iconContainer}>
               <MaterialCommunityIcons name="cog" size={30} color="#D27C2C" />
             </View>
-            <View style={styles.myaccount}>
+
+            <View style={styles.menuname}>
               <Text style={styles.topic}>Setting</Text>
               <Text style={{opacity: 0.5}}>
                 Further secure your account for safety
               </Text>
             </View>
           </View>
+          
+          <View style={styles.rightContent}>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+          </View>
+
+        
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Policy')}>
+        
         <View style={styles.panel}>
-          <View style={styles.leftContent}>
+          <View style={styles.menucontainer}>
             <View style={styles.iconContainer}>
               <MaterialCommunityIcons
                 name="shield-lock"
@@ -246,29 +269,36 @@ const Profiles = () => {
                 color="#D27C2C"
               />
             </View>
-            <View style={styles.myaccount}>
+            <View style={styles.menuname}>
               <Text style={styles.topic}>Privacy Policy</Text>
               <Text style={{opacity: 0.5}}>
                 Further secure your account for safety
               </Text>
             </View>
           </View>
+          <View style={styles.rightContent}>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+          </View>
+
         </View>
       </TouchableOpacity>
+
       <TouchableOpacity onPress={handleSignOut}>
         <View style={styles.panel}>
-          <View style={styles.leftContent}>
+          <View style={styles.menucontainer}>
             <View style={styles.iconContainer}>
               <MaterialCommunityIcons name="logout" size={30} color="#D27C2C" />
             </View>
-            <View style={styles.myaccount}>
+            <View style={styles.menuname}>
               <Text style={styles.topic}>Logout</Text>
             </View>
           </View>
+          <View style={styles.rightContent}>
           <MaterialCommunityIcons name="chevron-right" size={30} color="gray" />
+          </View>
         </View>
       </TouchableOpacity>
+    </View>
     </View>
   );
 };
@@ -297,7 +327,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 50,
     marginBottom: 10,
   },
-  leftContent: {
+  menucontainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -307,11 +337,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 100,
     height: 40,
-    width: 40,
+    width: "10%",
   },
-  myaccount: {
+  menuname: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     padding: 10,
-    alignContent: 'flex-start',
+  
+    width: '83%',
   },
   image: {
     width: 80,
@@ -348,6 +381,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  menupanel: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },  
+  myaccount: {
+    alignContent: 'flex-start',
+  },
+  rightContent: {
+    width: '7%',
+  },  
 });
 
 export default Profiles;

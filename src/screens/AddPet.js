@@ -3,7 +3,6 @@ import CryptoJS from 'rn-crypto-js';
 import {
   View,
   TextInput,
-  Button,
   StyleSheet,
   TouchableOpacity,
   Alert,
@@ -368,7 +367,7 @@ const AddPet = () => {
     {label: 'Snake', value: 'Snake'},
     {label: 'Fish', value: 'Fish'},
     {label: 'Sheep', value: 'Sheep'},
-    {label: 'Others', value: 'Other'}, 
+    {label: 'Others', value: 'Other'},
   ];
   if (loading) {
     return (
@@ -378,209 +377,203 @@ const AddPet = () => {
     );
   }
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <MaterialCommunityIcons
-        style={styles.back}
-        name="arrow-left"
-        size={35}
-        color="#D27C2C"
-        onPress={() => navigation.goBack()}
-      />
-       <Text style={styles.screenTitle}>
-          Add Pet
-        </Text>
+          style={styles.back}
+          name="arrow-left"
+          size={35}
+          color="#D27C2C"
+          onPress={() => navigation.goBack()}
+        />
+        <Text style={styles.screenTitle}>Add Pet</Text>
       </View>
-      <View style={styles.photoSec}>
-        <View style={{borderRadius: 100}}>
-          {imageP ? (
-            <Image source={{uri: imageP}} style={styles.image} />
-          ) : (
-            <MaterialCommunityIcons name="dog" size={120} color="#E16539" />
-          )}
-        </View>
-        <TouchableOpacity onPress={pickImage}>
-          <MaterialCommunityIcons
-            style={styles.camera}
-            name="camera-plus"
-            size={30}
-            color="#000"
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.container}>
-        <View style={styles.subContainer}>
-          <View style={styles.box2}>
-            <TextInput
-              style={styles.input}
-              placeholder="Name"
-              placeholderTextColor={'gray'}
-              value={name}
-              onChangeText={setName}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Age"
-              placeholderTextColor={'gray'}
-              value={age}
-              editable={false}
-            />
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.photoSec}>
+          <View style={{borderRadius: 100}}>
+            {imageP ? (
+              <Image source={{uri: imageP}} style={styles.image} />
+            ) : (
+              <MaterialCommunityIcons name="dog" size={120} color="#E16539" />
+            )}
           </View>
-          <View style={styles.box2}>
+          <TouchableOpacity onPress={pickImage}>
+            <MaterialCommunityIcons
+              style={styles.camera}
+              name="camera-plus"
+              size={30}
+              color="#000"
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.container}>
+          <View style={styles.subContainer}>
+            <View style={styles.box2}>
+              <TextInput
+                style={styles.input}
+                placeholder="Name"
+                placeholderTextColor={'gray'}
+                value={name}
+                onChangeText={setName}
+              />
+              <Text style={styles.age}> Age :{age}</Text>
+            </View>
+            <View style={styles.box2}>
+              <Dropdown
+                style={[styles.input, isFocus && {borderColor: 'blue'}]}
+                placeholderStyle={styles.placeholderStyle}
+                itemTextStyle={styles.itemTextStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={genderData}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!isFocus ? 'Gender' : '...'}
+                value={gender}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={item => {
+                  setGender(item.value);
+                  setIsFocus(false);
+                }}
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Color"
+                placeholderTextColor={'gray'}
+                value={color}
+                onChangeText={setColor}
+              />
+            </View>
+
             <Dropdown
-              style={[styles.input, isFocus && {borderColor: 'blue'}]}
+              style={[styles.inputwh, isFocus && {borderColor: 'blue'}]}
               placeholderStyle={styles.placeholderStyle}
-              itemTextStyle={styles.itemTextStyle}
               selectedTextStyle={styles.selectedTextStyle}
               inputSearchStyle={styles.inputSearchStyle}
               iconStyle={styles.iconStyle}
-              data={genderData}
+              itemTextStyle={styles.itemTextStyle}
+              data={typeData}
               maxHeight={300}
               labelField="label"
               valueField="value"
-              placeholder={!isFocus ? 'Gender' : '...'}
-              value={gender}
+              placeholder={!isFocus ? 'Type' : '...'}
+              value={type}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onChange={item => {
-                setGender(item.value);
+                setType(item.value);
                 setIsFocus(false);
               }}
             />
-
             <TextInput
-              style={styles.input}
-              placeholder="Color"
+              style={styles.inputwh}
+              placeholder="Breed"
               placeholderTextColor={'gray'}
-              value={color}
-              onChangeText={setColor}
+              value={breeds}
+              onChangeText={setBreeds}
             />
-          </View>
-
-          <Dropdown
-            style={[styles.inputwh, isFocus && {borderColor: 'blue'}]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            itemTextStyle={styles.itemTextStyle}
-            data={typeData}
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus ? 'Type' : '...'}
-            value={type}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={item => {
-              setType(item.value);
-              setIsFocus(false);
-            }}
-          />
-          <TextInput
-            style={styles.inputwh}
-            placeholder="Breed"
-            placeholderTextColor={'gray'}
-            value={breeds}
-            onChangeText={setBreeds}
-          />
-          <View style={styles.inputContainer}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.inputDate}
+                value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
+                editable={false}
+              />
+              <Calendar date={date} onChange={onDateChange} />
+            </View>
+            <View style={styles.box2}>
+              <TextInput
+                style={styles.input}
+                placeholder="Weight"
+                placeholderTextColor={'gray'}
+                value={weight}
+                onChangeText={setWeight}
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Height"
+                placeholderTextColor={'gray'}
+                value={height}
+                onChangeText={setHeight}
+                keyboardType="numeric"
+              />
+            </View>
             <TextInput
-              style={styles.inputDate}
-              value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
-              editable={false}
-            />
-            <Calendar date={date} onChange={onDateChange} />
-          </View>
-          <View style={styles.box2}>
-            <TextInput
-              style={styles.input}
-              placeholder="Weight"
+              style={styles.inputwh}
+              placeholder="Characteristics"
               placeholderTextColor={'gray'}
-              value={weight}
-              onChangeText={setWeight}
-              keyboardType="numeric"
+              value={characteristics}
+              onChangeText={setCharacteristics}
             />
             <TextInput
-              style={styles.input}
-              placeholder="Height"
+              style={styles.inputwh}
+              placeholder="Chronic Diseases"
               placeholderTextColor={'gray'}
-              value={height}
-              onChangeText={setHeight}
-              keyboardType="numeric"
+              value={chronic}
+              onChangeText={setChronic}
             />
-          </View>
-          <TextInput
-            style={styles.inputwh}
-            placeholder="Characteristics"
-            placeholderTextColor={'gray'}
-            value={characteristics}
-            onChangeText={setCharacteristics}
-          />
-          <TextInput
-            style={styles.inputwh}
-            placeholder="Chronic Diseases"
-            placeholderTextColor={'gray'}
-            value={chronic}
-            onChangeText={setChronic}
-          />
-          {userData?.verify ? (
-            <>
-              <View style={styles.checkboxContainer}>
-                <Checkbox
-                  text="Find Owner"
-                  isChecked={isChecked}
-                  onPress={() => {
-                    setIsChecked(!isChecked);
-                    setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
-                  }}
-                />
-              </View>
-              <View style={styles.subContainer}>
-                {isChecked && (
-                  <>
-                    <TextInput
-                      style={styles.inputwh}
-                      placeholder="Location"
-                      placeholderTextColor={'gray'}
-                      value={location}
-                      onChangeText={setLocation}
-                    />
-                    <TextInput
-                      style={styles.inputwh}
-                      placeholder="Conditions"
-                      placeholderTextColor={'gray'}
-                      value={conditions}
-                      onChangeText={setConditions}
-                    />
-                    <TouchableOpacity
-                      style={styles.additionalImagePicker}
-                      onPress={pickAdditionalImages}>
-                      <Text style={styles.additionalImagePickerText}>
-                        Pick Additional Images
-                      </Text>
-                    </TouchableOpacity>
-                    <View style={styles.additionalImagesContainer}>
-                      {additionalImages.map((uri, index) => (
-                        <Image
-                          key={index}
-                          source={{uri}}
-                          style={styles.additionalImage}
-                        />
-                      ))}
-                    </View>
-                  </>
-                )}
-              </View>
-            </>
-          ) : null}
-          <View style={[styles.buttonContainer, {marginBottom: 50}]}>
-            <CancelPButton onPress={() => navigation.navigate('MyPet')} />
-            <SavePButton onPress={handleSubmit} />
+            {userData?.verify ? (
+              <>
+                <View style={styles.checkboxContainer}>
+                  <Checkbox
+                    text="Find Owner"
+                    isChecked={isChecked}
+                    onPress={() => {
+                      setIsChecked(!isChecked);
+                      setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
+                    }}
+                  />
+                </View>
+                <View style={styles.subContainer}>
+                  {isChecked && (
+                    <>
+                      <TextInput
+                        style={styles.inputwh}
+                        placeholder="Location"
+                        placeholderTextColor={'gray'}
+                        value={location}
+                        onChangeText={setLocation}
+                      />
+                      <TextInput
+                        style={styles.inputwh}
+                        placeholder="Conditions"
+                        placeholderTextColor={'gray'}
+                        value={conditions}
+                        onChangeText={setConditions}
+                      />
+                      <TouchableOpacity
+                        style={styles.additionalImagePicker}
+                        onPress={pickAdditionalImages}>
+                        <Text style={styles.additionalImagePickerText}>
+                          Pick Additional Images
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={styles.additionalImagesContainer}>
+                        {additionalImages.map((uri, index) => (
+                          <Image
+                            key={index}
+                            source={{uri}}
+                            style={styles.additionalImage}
+                          />
+                        ))}
+                      </View>
+                    </>
+                  )}
+                </View>
+              </>
+            ) : null}
+            <View style={[styles.buttonContainer, {marginBottom: 100}]}>
+              <CancelPButton onPress={() => navigation.navigate('MyPet')} />
+              <SavePButton onPress={handleSubmit} />
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -613,15 +606,24 @@ const styles = StyleSheet.create({
   },
   header: {
     width: '100%',
-    height: "8%",
+    height: '8%',
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
   },
   screenTitle: {
     fontSize: 20,
-    fontFamily : "InterBold",
+    fontFamily: 'InterBold',
     color: '#D27C2C',
+    paddingTop: 5,
   },
   box1: {
     width: '100%',
@@ -641,6 +643,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
+    color: 'black',
+  },
+  age: {
+    width: '49%',
+    padding: 10,
+    paddingTop: 15,
+    margin: 5,
+    marginBottom: 5,
+    borderRadius: 10,
+    borderBottomWidth: 1,
+    // borderLeftWidth: 1,
+    // borderRightWidth: 1,
+    borderColor: '#E16539',
     color: 'black',
   },
   inputC: {
@@ -800,12 +815,11 @@ const styles = StyleSheet.create({
   },
   back: {
     position: 'absolute',
-    top: 20,
     left: 20,
-    backgroundColor: 'white',
-    borderRadius: 100,
-    zIndex: 1,
-},
+  },
+  scrollViewContent: {
+    paddingTop: 60,
+  },
 });
 
 export default AddPet;
