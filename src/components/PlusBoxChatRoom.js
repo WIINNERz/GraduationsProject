@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  Modal,
 } from 'react-native';
 import React, { useState, useCallback } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,6 +13,7 @@ import { getFirestore, collection, query, where, getDocs, getDoc, doc } from 'fi
 import { launchImageLibrary } from 'react-native-image-picker';
 import { auth } from '../configs/firebaseConfig';
 import Keymanagement from './Keymanagement';
+import { useNavigation } from '@react-navigation/native';
 
 export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelephone }) {
   const [state, setState] = useState({
@@ -22,7 +24,8 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
     selectedPets: {},
     telephoneNumber: '',
   });
-
+  const [telModalVisible, setTelModalVisible] = useState(false);
+  const navigation = useNavigation();
   const KeymanagementInstance = Keymanagement();
   const user = auth.currentUser;
 
@@ -104,12 +107,16 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
             ...prevState,
             telephoneNumber: decryptedTel || 'Doesn\'t have a telephone number',
           }));
-                if (onSendTelephone) {
-            onSendTelephone(decryptedTel || 'Doesn\'t have a telephone number',);
+          if (decryptedTel) {
+            if (onSendTelephone) {
+              onSendTelephone(decryptedTel);
+            }
+          } else {
+            setTelModalVisible(true);
           }
         } else {
-          setState(prevState => ({ ...prevState, telephoneNumber: 'Doesn\'t have a telephone number', }));
-          Alert.alert('Telephone Number', 'Doesn\'t have a telephone number',);
+          setState(prevState => ({ ...prevState, telephoneNumber: 'Doesn\'t have a telephone number' }));
+          setTelModalVisible(true);
         }
       } catch (err) {
         console.log('Error fetching telephone number:', err.message);
@@ -180,6 +187,25 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
           </TouchableOpacity>
         </View>
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={telModalVisible}
+        onRequestClose={() => {
+          setTelModalVisible(!telModalVisible);
+        }}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.title}>Telephone Number</Text>
+            <Text style={styles.modalText}>You can't send your telephone number because it is not available.</Text>
+            <TouchableOpacity
+              style={[styles.button1, styles.buttonClose]}
+              onPress={() => setTelModalVisible(!telModalVisible)}>
+              <Text style={styles.textStyle}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -257,5 +283,47 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -5,
     right: -5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button1: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  title: {
+    fontSize: 20,
+    marginBottom: 10,
   },
 });
