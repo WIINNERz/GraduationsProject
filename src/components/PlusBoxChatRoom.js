@@ -14,8 +14,9 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { auth } from '../configs/firebaseConfig';
 import Keymanagement from './Keymanagement';
 import { useNavigation } from '@react-navigation/native';
+import Geolocation from '@react-native-community/geolocation';
 
-export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelephone }) {
+export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelephone,onSendLocation }) {
   const [state, setState] = useState({
     isPetPanelVisible: false,
     loading: true,
@@ -28,7 +29,21 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
   const navigation = useNavigation();
   const KeymanagementInstance = Keymanagement();
   const user = auth.currentUser;
-
+  const sendLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const location = { latitude, longitude };
+        if (onSendLocation) {
+          onSendLocation(location);
+        }
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
   const pickImage = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
@@ -129,7 +144,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
   return (
     <View style={styles.container}>
       <View style={styles.button}>
-        <TouchableOpacity style={styles.buttonStyle}>
+        <TouchableOpacity style={styles.buttonStyle} onPress={sendLocation}>
           <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
         </TouchableOpacity>
         <Text>Location</Text>

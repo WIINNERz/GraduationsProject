@@ -3,6 +3,7 @@ import React, { memo, useEffect, useState, useMemo } from 'react';
 import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from '../configs/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
+import MapView, { Marker } from 'react-native-maps';
 
 const MessageItem = ({ message, currentUser, roomId, messageId }) => {
   const [adoptedPets, setAdoptedPets] = useState({});
@@ -17,6 +18,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
     selectedPets = [],
     adopted = false,
     telephoneNumber = '',
+    location = null,
   } = message || {};
 
   const isCurrentUser = userId === currentUser?.uid;
@@ -134,7 +136,24 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
       )}
     </View>
   );
-
+  const LocationInfo = ({ location }) => (
+    <MapView
+      style={styles.map}
+      initialRegion={{
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}>
+      <Marker
+        coordinate={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+        }}
+        title="Location"
+      />
+    </MapView>
+  );
   return (
     <View style={styles.container}>
       <View
@@ -161,6 +180,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
           {telephoneNumber && (
             <TelephoneInfo telephoneNumber={telephoneNumber} isCurrentUser={isCurrentUser} />
           )}
+           {location && <LocationInfo location={location} />}
           <Text style={styles.timestamp}>{formattedCreatedAt}</Text>
         </View>
       </View>
@@ -264,6 +284,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
     borderRadius: 20,
     padding: 10,
+  },
+  map: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    marginTop: 10,
   },
 });
 

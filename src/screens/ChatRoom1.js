@@ -176,7 +176,25 @@ export default function ChatRoom1({navigation}) {
       console.error('Error sending message:', error);
     }
   };
+  const handleSendLocation = async (location) => {
+    try {
+      let roomId = getRoomId(user.uid, uid);
+      const docRef = doc(db, 'Rooms', roomId);
+      const messageRef = collection(docRef, 'Messages');
 
+      await setDoc(doc(messageRef), {
+        userId: user?.uid,
+        text: '',
+        profileURL: userProfile.profileURL,
+        senderName: userProfile.senderName,
+        imageUrl: '',
+        createdAt: Timestamp.fromDate(new Date()),
+        location,
+      });
+    } catch (error) {
+      console.error('Error sending location:', error);
+    }
+  };
   const handleImagePicked = url => {
     const filename = url.split('/').pop();
     textRef.current = filename;
@@ -255,6 +273,7 @@ export default function ChatRoom1({navigation}) {
             onImagePicked={handleImagePicked}
             onSendPets={handleSendPets}
             onSendTelephone={handleSendTelephone}
+            onSendLocation={handleSendLocation}
           />
         </View>
       )}
