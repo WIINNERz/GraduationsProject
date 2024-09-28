@@ -7,6 +7,8 @@ import {
   FlatList,
   Image,
   Dimensions,
+  Linking,
+  PermissionsAndroid,
 } from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,6 +20,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import {auth} from '../configs/firebaseConfig';
+import Geolocation from '@react-native-community/geolocation';
 
 const Home = () => {
   const [dogs, setDogs] = useState([]);
@@ -29,7 +32,7 @@ const Home = () => {
   const user = auth.currentUser;
   const pawsize = Dimensions.get('window').width / 13; //40
   const favsize = Dimensions.get('window').width / 5; //80
-
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   const fetchDogs = async () => {
     if (user) {
@@ -105,6 +108,61 @@ const Home = () => {
       <Text style={styles.petdetail}>{item.name}</Text>
     </TouchableOpacity>
   );
+  const requestLocationPermission = async () => {
+    try {
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+                title: 'Location Permission',
+                message: 'This App needs access to your location',
+                buttonNeutral: 'Ask Me Later',
+                buttonNegative: 'Cancel',
+                buttonPositive: 'OK',
+            },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('You can use the location');
+            getCurrentLocation();
+        } else {
+            console.log('Location permission denied');
+        }
+    } catch (err) {
+        console.warn(err);
+    }
+};
+
+const getCurrentLocation = (callback) => {
+    Geolocation.getCurrentPosition(
+        position => {
+            const { latitude, longitude } = position.coords;
+            setCurrentLocation({
+                latitude,
+                longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+            });
+            if (callback) callback({ latitude, longitude });
+        },
+        error => console.log(error),
+        { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 },
+    );
+};
+
+const openMaps = () => {
+    const { latitude, longitude } = currentLocation || {};
+    if (latitude && longitude) {
+        const query = 'animal hospital';
+        const url = `https://www.google.com/maps/search/?api=1&query=${query}&query_place_id=${latitude},${longitude}`;
+        Linking.openURL(url);
+    } else {
+        requestLocationPermission();
+        getCurrentLocation(({ latitude, longitude }) => {
+            const query = 'animal hospital';
+            const url = `https://www.google.com/maps/search/?api=1&query=${query}&query_place_id=${latitude},${longitude}`;
+            Linking.openURL(url);
+        });
+    }
+};
 
   return (
     <View style={styles.screen}>
@@ -188,7 +246,7 @@ const Home = () => {
         <View style={styles.menu}>
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => navigation.navigate('Location1')}>
+            onPress={openMaps}>
             <MaterialCommunityIcons name="file-question" size={pawsize} color="#D27C2C" />
             <Text style={styles.menuText}>Something</Text>
           </TouchableOpacity>

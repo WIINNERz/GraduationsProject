@@ -28,7 +28,7 @@ const Location1 = () => {
         }
     };
 
-    const getCurrentLocation = () => {
+    const getCurrentLocation = (callback) => {
         Geolocation.getCurrentPosition(
             position => {
                 const { latitude, longitude } = position.coords;
@@ -38,20 +38,26 @@ const Location1 = () => {
                     latitudeDelta: 0.05,
                     longitudeDelta: 0.05,
                 });
+                if (callback) callback({ latitude, longitude });
             },
             error => console.log(error),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+            { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 },
         );
     };
 
     const openMaps = () => {
-        const { latitude, longitude } = currentLocation;
+        const { latitude, longitude } = currentLocation || {};
         if (latitude && longitude) {
             const query = 'animal hospital';
             const url = `https://www.google.com/maps/search/?api=1&query=${query}&query_place_id=${latitude},${longitude}`;
             Linking.openURL(url);
         } else {
-            alert('Location not found');
+            requestLocationPermission();
+            getCurrentLocation(({ latitude, longitude }) => {
+                const query = 'animal hospital';
+                const url = `https://www.google.com/maps/search/?api=1&query=${query}&query_place_id=${latitude},${longitude}`;
+                Linking.openURL(url);
+            });
         }
     };
 
@@ -60,15 +66,9 @@ const Location1 = () => {
             <View style={styles.header}>
                 <Text style={styles.headerText}>Location1</Text>
             </View>
-            {currentLocation ? (
-                <TouchableOpacity style={styles.button} onPress={openMaps}>
-                    <Text style={styles.buttonText}>Open Maps</Text>
-                </TouchableOpacity>
-            ) : (
-                <TouchableOpacity style={styles.button} onPress={requestLocationPermission}>
-                    <Text style={styles.buttonText}>Get Location</Text>
-                </TouchableOpacity>
-            )}
+            <TouchableOpacity style={styles.button} onPress={openMaps}>
+                <Text style={styles.buttonText}>Open Maps</Text>
+            </TouchableOpacity>
         </View>
     );
 };
