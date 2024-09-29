@@ -67,25 +67,34 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
     );
   };
   const sendLocation = async () => {
-    const hasPermission = await requestLocationPermission();
-    if (!hasPermission) {
-      Alert.alert('Permission Denied', 'Location permission is required to send your location.');
-      return;
+    try {
+      const hasPermission = await requestLocationPermission();
+      if (!hasPermission) {
+        Alert.alert('Permission Denied', 'Location permission is required to send your location.');
+        return;
+      }
+  
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const location = { latitude, longitude };
+          console.log('Location obtained:', location); // Log the obtained location
+          if (onSendLocation) {
+            onSendLocation(location);
+          } else {
+            console.error('onSendLocation function is not defined');
+          }
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          Alert.alert('Error', `Failed to get your location. Error code: ${error.code}, Message: ${error.message}`);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    } catch (error) {
+      console.error('Error in sendLocation function:', error);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     }
-
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const location = { latitude, longitude };
-        if (onSendLocation) {
-          onSendLocation(location);
-        }
-      },
-      (error) => {
-        console.error('Error getting location:', error);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
   };
   const pickImage = async () => {
     const result = await launchImageLibrary({
@@ -281,7 +290,7 @@ const styles = StyleSheet.create({
   button: {
     height: 100,
     width: 100,
-    padding: 15,
+    padding: '3%',
     alignItems: 'center',
   },
   buttonStyle: {
@@ -289,7 +298,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: '#D9D9D9',
-    padding: 10,
+    padding: '1%',
     justifyContent: 'center',
     alignItems: 'center',
   },

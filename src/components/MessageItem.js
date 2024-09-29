@@ -136,24 +136,33 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
       )}
     </View>
   );
-  const LocationInfo = ({ location }) => (
-    <MapView
-      style={styles.map}
-      initialRegion={{
-        latitude: location.latitude,
-        longitude: location.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      }}>
-      <Marker
-        coordinate={{
-          latitude: location.latitude,
-          longitude: location.longitude,
-        }}
-        title="Location"
-      />
-    </MapView>
-  );
+  const LocationInfo = ({ location }) => {
+    const openInGoogleMaps = () => {
+      const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
+      Linking.openURL(url).catch(err => console.error('Error opening Google Maps:', err));
+    };
+  
+    return (
+      <TouchableOpacity onPress={openInGoogleMaps}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}>
+          <Marker
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            title="Location"
+          />
+        </MapView>
+      </TouchableOpacity>
+    );
+  };
   return (
     <View style={styles.container}>
       <View
