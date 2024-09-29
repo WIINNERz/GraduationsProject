@@ -108,7 +108,7 @@ const FindPet = () => {
           <Text style={styles.errorText}>{error}</Text>
         ) : pets.length > 0 ? (
           <View style={styles.petList}>
-            <PetList style={styles.petList} pets={pets} />
+            <PetList  pets={pets} />
           </View>
         ) : (
           <View style={styles.noPetsContainer}>
@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
   datapanel: {
     backgroundColor: '#fff',
     width: '100%',
-    marginBottom: '8%',
+    height: '62%',
+    
   },
   errorText: {
     color: 'red',
@@ -172,13 +173,17 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   petList: {
-    marginBottom: 300,
+    width: '100%',
+    height: '100%',
+    paddingHorizontal : 5,
+    
   },
   title : {
     fontSize: titleSize,
     color: 'white',
     fontFamily: 'InterSemiBold',
   },
+
 });
 
 export default FindPet;

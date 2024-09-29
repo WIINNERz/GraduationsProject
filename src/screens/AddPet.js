@@ -10,6 +10,7 @@ import {
   Text,
   Image,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -576,7 +577,8 @@ const AddPet = () => {
     </View>
   );
 };
-
+const {width} = Dimensions.get('window');
+const titleSize = width / 17;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -620,7 +622,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   screenTitle: {
-    fontSize: 20,
+    fontSize: titleSize,
     fontFamily: 'InterBold',
     color: '#D27C2C',
     paddingTop: 5,
@@ -653,8 +655,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     borderRadius: 10,
     borderBottomWidth: 1,
-    // borderLeftWidth: 1,
-    // borderRightWidth: 1,
+
     borderColor: '#E16539',
     color: 'black',
   },

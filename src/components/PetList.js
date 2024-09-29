@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import React from 'react';
 import PetCard from './PetCard';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,7 @@ export default function PetList({ pets }) {
                 noBorder={index + 1 === pets.length}
                     item={item}
                     index={index}
+            
                     navigation={navigation}
                 />
             ))}
@@ -23,10 +24,9 @@ export default function PetList({ pets }) {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 5,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        marginBottom:50
+        paddingHorizontal: 3, // Add padding to account for the margin
     },
 });

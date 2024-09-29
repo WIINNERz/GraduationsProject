@@ -302,7 +302,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: titleSize,
-    fontWeight: '600',
     color: 'white',
     backgroundColor: '#D27C2C',
     fontFamily: 'InterSemiBold',

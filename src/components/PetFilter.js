@@ -12,7 +12,7 @@ const PetFilter = ({
   setSelectedField,
 }) => {
   const [isFocus, setIsFocus] = useState(false);
-  const iconsize = Dimensions.get('window').width / 15;
+  const iconsize = Dimensions.get('window').width / 17;
   const typeData = useMemo(
     () => [
       {label: 'All', value: 'all', icon: 'paw'},
@@ -130,14 +130,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   card: {
-    paddingHorizontal: 10,
-    paddingTop: 5,
+    
     width: cardSize,
     height: cardSize,
     margin: 5,
     borderRadius: 5,
     backgroundColor: '#CCCCCC',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   selectedCard: {
     backgroundColor: '#d27c2c',

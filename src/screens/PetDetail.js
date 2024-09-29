@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {
@@ -307,39 +308,39 @@ const PetDetail = () => {
     }));
   };
 
-const handleDelete = async () => {
-  Alert.alert('Delete Pet', 'Are you sure you want to delete this pet?', [
-    {
-      text: 'Yes',
-      onPress: () => {
-        // Wrap the async function in a synchronous function
-        (async () => {
-          try {
-            await deletePet(); // Replace with your actual async function
-            console.log('Pet deleted successfully');
-            navigation.navigate('MyPets');
-          } catch (error) {
-            console.error('Error deleting pet:', error);
-          }
-        })();
+  const handleDelete = async () => {
+    Alert.alert('Delete Pet', 'Are you sure you want to delete this pet?', [
+      {
+        text: 'Yes',
+        onPress: () => {
+          // Wrap the async function in a synchronous function
+          (async () => {
+            try {
+              await deletePet(); // Replace with your actual async function
+              console.log('Pet deleted successfully');
+              navigation.navigate('MyPets');
+            } catch (error) {
+              console.error('Error deleting pet:', error);
+            }
+          })();
+        },
       },
-    },
-    {
-      text: 'No',
-      onPress: () => console.log('Delete action cancelled'),
-      style: 'cancel',
-    },
-  ]);
-};
+      {
+        text: 'No',
+        onPress: () => console.log('Delete action cancelled'),
+        style: 'cancel',
+      },
+    ]);
+  };
 
-const deletePet = async () => {
-  try {
-    const petDocRef = doc(firestore, 'Pets', pet.id); // Replace 'petId' with the actual pet ID
-    await deleteDoc(petDocRef);
-  } catch (error) {
-    console.error('Error deleting pet:', error);
-  }
-};
+  const deletePet = async () => {
+    try {
+      const petDocRef = doc(firestore, 'Pets', pet.id); // Replace 'petId' with the actual pet ID
+      await deleteDoc(petDocRef);
+    } catch (error) {
+      console.error('Error deleting pet:', error);
+    }
+  };
   const pickImage = () => {
     Alert.alert('Select Image', 'Choose an option', [
       {
@@ -421,17 +422,14 @@ const deletePet = async () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons
-            name="chevron-left"
-            size={40}
-            color="#E16539"
-          />
-        </TouchableOpacity>
-        <Text style={{color: 'black', fontWeight: 'bold', fontSize: 18}}>
-          Edit Pet Profile
-        </Text>
-        <Text></Text>
+        <MaterialCommunityIcons
+          style={styles.back}
+          name="arrow-left"
+          size={35}
+          color="#D27C2C"
+          onPress={() => navigation.goBack()}
+        />
+        <Text style={styles.screenTitle}>Edit Pet Profile</Text>
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
@@ -478,7 +476,7 @@ const deletePet = async () => {
           <Text> Birthday </Text>
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.inputDate}
+              style={styles.input}
               value={pet?.birthday || ''}
               editable={false}
             />
@@ -601,13 +599,16 @@ const deletePet = async () => {
     </View>
   );
 };
+const {width} = Dimensions.get('window');
 
+const titleSize = width / 17;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     flex: 1,
   },
   scrollViewContent: {
+    paddingTop: 80,
     flexGrow: 1,
     paddingBottom: 80,
     alignItems: 'center',
@@ -636,6 +637,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
+    color: 'black',
   },
   inputwh: {
     width: '100%',
@@ -703,15 +705,30 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   header: {
-    flexDirection: 'row',
-    position: 'relative',
-    justifyContent: 'space-between',
+    width: '100%',
+    height: '8%',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
+
+  back: {
+    position: 'absolute',
+    left: 20,
+  },
+  screenTitle: {
+    fontSize: titleSize,
+    fontFamily: 'InterBold',
+    color: '#D27C2C',
+    paddingTop: 5,
   },
 });
 

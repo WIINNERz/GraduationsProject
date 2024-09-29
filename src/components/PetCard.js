@@ -67,9 +67,8 @@ const textStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   card: {
-    width: '45%',
-    margin:10,
-    marginBottom: 10,
+    width: '49%', 
+    marginBottom: "2%", 
     borderRadius: 10,
     backgroundColor: '#F0DFC8',
   },

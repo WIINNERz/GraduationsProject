@@ -82,8 +82,9 @@ export default function PetProfile() {
             <MaterialCommunityIcons name="account" size={50} color="gray" />
           )}
         </View>
-  
-            <Text style={{
+
+        <Text
+          style={{
             fontSize: 24,
             color: 'black',
             paddingVertical: 10,
@@ -135,16 +136,16 @@ export default function PetProfile() {
               <Text style={styles.valuePet}>{pet?.height}</Text>
             </View>
           </View>
-
+          <View style={styles.onecolumn}>
+            <Text style={styles.categoryPet}>Characteristics</Text>
+            <Text style={styles.valuePet}>{pet?.characteristics}</Text>
+          </View>
           <View style={styles.row}>
             <View style={styles.leftcolum}>
-              <Text style={styles.categoryPet}>Characteristics</Text>
-              <Text style={styles.valuePet}>{pet?.characteristics}</Text>
-            </View>
-            <View style={styles.rightcolum}>
               <Text style={styles.categoryPet}>Current Owner</Text>
               <Text style={styles.valuePet}>{pet?.username}</Text>
             </View>
+            <View style={styles.rightcolum}></View>
           </View>
         </View>
         <View style={styles.healtbook}>
@@ -154,12 +155,12 @@ export default function PetProfile() {
           <View style={styles.healtData}>
             <View style={{paddingVertical: 5, paddingBottom: '10%'}}>
               <Text style={styles.categoryPet}>Health Conditions</Text>
-              <Text style={styles.valuePet}>All good </Text>
+              <Text style={styles.valuePet}></Text>
             </View>
             <View style={styles.row}>
               <View style={styles.leftcolum}>
                 <Text style={styles.categoryPet}>Drug allergy</Text>
-                <Text style={styles.valuePet}>None ja baby</Text>
+                <Text style={styles.valuePet}></Text>
               </View>
               <View style={styles.rightcolum}>
                 <Text style={styles.categoryPet}>Chronic</Text>
@@ -168,10 +169,10 @@ export default function PetProfile() {
             </View>
             <View style={{paddingVertical: 5, paddingTop: '10%'}}>
               <Text style={styles.categoryPet}>Vaccination list</Text>
-              <Text style={styles.valuePet}> 1. Mapping list </Text>
-              <Text style={styles.valuePet}> 2. Wait for Update </Text>
-              <Text style={styles.valuePet}> 3. </Text>
-              <Text style={styles.valuePet}> 4. </Text>
+              <Text style={styles.valuePet}> 1.</Text>
+              <Text style={styles.valuePet}> 2.</Text>
+              <Text style={styles.valuePet}> 3.</Text>
+              <Text style={styles.valuePet}> 4.</Text>
             </View>
             <View style={{paddingVertical: 5}}>
               <Text
@@ -205,7 +206,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    
   },
   panel: {
     height: 350,
@@ -239,7 +239,6 @@ const styles = StyleSheet.create({
   healtData: {
     flexDirection: 'column',
     flex: 1,
-
   },
   panelData: {
     flex: 1,
@@ -326,6 +325,5 @@ const styles = StyleSheet.create({
     height: '8%',
     position: 'absolute',
     overflow: 'hidden',
-   
   },
 });

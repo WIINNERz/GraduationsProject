@@ -12,7 +12,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {doc, getDoc , updateDoc} from 'firebase/firestore';
+import {doc, getDoc, updateDoc} from 'firebase/firestore';
 import {firestore} from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from '../components/Keymanagement';
@@ -24,7 +24,8 @@ export default function PetProfile() {
   const {id} = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false); // State to track favorite status
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [status, setStatus] = useState(null);
   const KeymanagementInstance = new Keymanagement();
   const navigation = useNavigation();
   useFocusEffect(
@@ -90,6 +91,7 @@ export default function PetProfile() {
                 : null,
             };
             setPet(decryptedPetData);
+            setStatus('My pet');
             if (petData.favorite) {
               setIsFavorite(true);
             }
@@ -98,6 +100,7 @@ export default function PetProfile() {
           }
         } else {
           setPet(petData);
+          setStatus('Adoptable');
         }
       } else {
         setError('Pet not found');
@@ -166,11 +169,15 @@ export default function PetProfile() {
               name={isFavorite ? 'heart' : 'heart-outline'}
               size={25}
               color="#D27C2C"
-         
             />
 
             <Text
-              style={{color: '#D27C2C', fontSize: 20, fontFamily: 'InterBold' , marginLeft : 3}}>
+              style={{
+                color: '#D27C2C',
+                fontSize: 20,
+                fontFamily: 'InterBold',
+                marginLeft: 3,
+              }}>
               {isFavorite ? 'unfavorite' : 'favorite'}
             </Text>
           </TouchableOpacity>
@@ -217,17 +224,17 @@ export default function PetProfile() {
               <Text style={styles.categoryPet}>Height</Text>
               <Text style={styles.valuePet}>{pet?.height}</Text>
             </View>
-          </View>
-
+          </View> 
           <View style={styles.row}>
             <View style={styles.leftcolum}>
-              <Text style={styles.categoryPet}>Characteristics</Text>
-              <Text style={styles.valuePet}>{pet?.characteristics}</Text>
-            </View>
-            <View style={styles.rightcolum}>
               <Text style={styles.categoryPet}>Status</Text>
-              <Text style={styles.valuePet}>{pet?.status}</Text>
+              <Text style={styles.valuePet}>{status}</Text>
             </View>
+            <View style={styles.rightcolum}></View>
+          </View>
+          <View style={styles.onecolumn}>
+            <Text style={styles.categoryPet}>Characteristics</Text>
+            <Text style={styles.valuePet}>{pet?.characteristics}</Text>
           </View>
         </View>
         <View style={styles.healtbook}>
@@ -237,12 +244,12 @@ export default function PetProfile() {
           <View style={styles.healtData}>
             <View style={{paddingVertical: 5, paddingBottom: '10%'}}>
               <Text style={styles.categoryPet}>Health Conditions</Text>
-              <Text style={styles.valuePet}>All good </Text>
+              <Text style={styles.valuePet}></Text>
             </View>
             <View style={styles.row}>
               <View style={styles.leftcolum}>
                 <Text style={styles.categoryPet}>Drug allergy</Text>
-                <Text style={styles.valuePet}>None ja baby</Text>
+                <Text style={styles.valuePet}></Text>
               </View>
               <View style={styles.rightcolum}>
                 <Text style={styles.categoryPet}>Chronic</Text>
@@ -251,8 +258,8 @@ export default function PetProfile() {
             </View>
             <View style={{paddingVertical: 5, paddingTop: '10%'}}>
               <Text style={styles.categoryPet}>Vaccination list</Text>
-              <Text style={styles.valuePet}> 1. Mapping list </Text>
-              <Text style={styles.valuePet}> 2. Wait for Update </Text>
+              <Text style={styles.valuePet}> 1. </Text>
+              <Text style={styles.valuePet}> 2. </Text>
               <Text style={styles.valuePet}> 3. </Text>
               <Text style={styles.valuePet}> 4. </Text>
             </View>
