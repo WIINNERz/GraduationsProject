@@ -6,6 +6,7 @@ import {
   Alert,
   Image,
   Modal,
+  PermissionsAndroid,
 } from 'react-native';
 import React, { useState, useCallback } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -29,7 +30,49 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
   const navigation = useNavigation();
   const KeymanagementInstance = Keymanagement();
   const user = auth.currentUser;
-  const sendLocation = () => {
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'This app needs access to your location to send it in the chat.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn(err);
+      return false;
+    }
+  };
+  const confirmAndSendLocation = () => {
+    Alert.alert(
+      'Send Location',
+      'Are you sure you want to send your location?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: sendLocation,
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+  const sendLocation = async () => {
+    const hasPermission = await requestLocationPermission();
+    if (!hasPermission) {
+      Alert.alert('Permission Denied', 'Location permission is required to send your location.');
+      return;
+    }
+
     Geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
@@ -144,8 +187,8 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
   return (
     <View style={styles.container}>
       <View style={styles.button}>
-        <TouchableOpacity style={styles.buttonStyle} onPress={sendLocation}>
-          <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
+      <TouchableOpacity style={styles.buttonStyle} onPress={confirmAndSendLocation}>
+      <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
         </TouchableOpacity>
         <Text>Location</Text>
       </View>
