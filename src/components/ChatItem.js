@@ -3,14 +3,15 @@ import { TouchableOpacity, Text, View, Image, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { collection, getDocs, query, where, writeBatch, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, writeBatch, onSnapshot, orderBy, limit,getDocs } from 'firebase/firestore';
 import { db } from '../configs/firebaseConfig';
 
-const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
+const ChatItem = React.memo(({ item, roomId }) => {
     const navigation = useNavigation();
     const auth = getAuth();
     const currentUser = auth.currentUser;
     const [unreadCount, setUnreadCount] = useState(0);
+    const [latestMessage, setLatestMessage] = useState(null);
 
     const handlePress = useCallback(async () => {
         try {
@@ -53,6 +54,10 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
                 return `Send Pet : ${latestMessage.selectedPets.map(pet => pet.name).join(', ')}`;
             } else if (latestMessage.imageURL) {
                 return `Image : ${latestMessage.imageURL}`;
+            } else if (latestMessage.location) {
+                return `Location : ${latestMessage.location.latitude}, ${latestMessage.location.longitude}`;
+            } else if (latestMessage.telephoneNumber) {
+                return `Telephone : ${latestMessage.telephoneNumber}`;
             } else {
                 return "No content";
             }
@@ -62,7 +67,25 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
     }, [latestMessage]);
 
     useEffect(() => {
-        let unsubscribe;
+        let unsubscribeLatestMessage;
+        let unsubscribeUnreadCount;
+
+        const fetchLatestMessage = () => {
+            if (roomId) {
+                try {
+                    const messagesRef = collection(db, 'Rooms', roomId, 'Messages');
+                    const latestMessageQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
+
+                    unsubscribeLatestMessage = onSnapshot(latestMessageQuery, (querySnapshot) => {
+                        const latestMessageDoc = querySnapshot.docs[0];
+                        const latestMessageData = latestMessageDoc ? { id: latestMessageDoc.id, ...latestMessageDoc.data() } : null;
+                        setLatestMessage(latestMessageData);
+                    });
+                } catch (error) {
+                    console.error("Error fetching latest message: ", error);
+                }
+            }
+        };
 
         const fetchUnreadMessages = () => {
             if (roomId) {
@@ -74,7 +97,7 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
                         where('userId', '!=', currentUser.uid)
                     );
 
-                    unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    unsubscribeUnreadCount = onSnapshot(q, (querySnapshot) => {
                         console.log(`Unread messages count (excluding current user): ${querySnapshot.size}`);
                         setUnreadCount(querySnapshot.size);
                     });
@@ -84,12 +107,16 @@ const ChatItem = React.memo(({ item, latestMessage, roomId }) => {
             }
         };
 
+        fetchLatestMessage();
         fetchUnreadMessages();
 
-        // Clean up the listener on component unmount
+        // Clean up the listeners on component unmount
         return () => {
-            if (unsubscribe) {
-                unsubscribe();
+            if (unsubscribeLatestMessage) {
+                unsubscribeLatestMessage();
+            }
+            if (unsubscribeUnreadCount) {
+                unsubscribeUnreadCount();
             }
         };
     }, [roomId, currentUser.uid]);
@@ -126,16 +153,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         borderBottomWidth: 1,
-        borderRadius:20,
+        borderRadius: 20,
         borderColor: 'rgba(0, 0, 0, 0.2)',
         backgroundColor: '#fff',
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 20,
-        elevation: 10, 
+        elevation: 10,
+        marginBottom: 10,
     },
-    
     image: {
         width: 50,
         height: 50,
