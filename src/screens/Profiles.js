@@ -202,7 +202,7 @@ const Profiles = () => {
             </View>
             <View style={styles.menuname}>
               <Text style={styles.topic}>My Account</Text>
-              <Text style={{opacity: 0.5}}>Make changes to your accountMake changes to your account</Text>
+              <Text style={{opacity: 0.5}}>Make changes to your account</Text>
             </View>
           </View>
 
