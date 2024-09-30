@@ -60,6 +60,8 @@ const AddPet = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [status, setStatus] = useState('have_owner');
   const [isFocus, setIsFocus] = useState(false);
+  const [genderFocused, setGenderFocused] = useState(false);
+  const [typeFocused, setTypeFocused] = useState(false);
   const KeymanagementInstance = Keymanagement();
 
   const data = [
@@ -421,7 +423,7 @@ const AddPet = () => {
             </View>
             <View style={styles.box2}>
               <Dropdown
-                style={[styles.input, isFocus && {borderColor: 'blue'}]}
+                style={[styles.input, genderFocused && {borderColor: 'blue'}]}
                 placeholderStyle={styles.placeholderStyle}
                 itemTextStyle={styles.itemTextStyle}
                 selectedTextStyle={styles.selectedTextStyle}
@@ -431,13 +433,13 @@ const AddPet = () => {
                 maxHeight={300}
                 labelField="label"
                 valueField="value"
-                placeholder={!isFocus ? 'Gender' : '...'}
+                placeholder={!genderFocused ? 'Gender' : '...'}
                 value={gender}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
+                onFocus={() => setGenderFocused(true)}
+                onBlur={() => setGenderFocused(false)}
                 onChange={item => {
                   setGender(item.value);
-                  setIsFocus(false);
+                  setGenderFocused(false);
                 }}
               />
 
@@ -451,7 +453,7 @@ const AddPet = () => {
             </View>
 
             <Dropdown
-              style={[styles.inputwh, isFocus && {borderColor: 'blue'}]}
+              style={[styles.inputwh, typeFocused && {borderColor: 'blue'}]}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
               inputSearchStyle={styles.inputSearchStyle}
@@ -461,13 +463,13 @@ const AddPet = () => {
               maxHeight={300}
               labelField="label"
               valueField="value"
-              placeholder={!isFocus ? 'Type' : '...'}
+              placeholder={!typeFocused ? 'Type' : '...'}
               value={type}
-              onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
+              onFocus={() => setTypeFocused(true)}
+              onBlur={() => setTypeFocused(false)}
               onChange={item => {
                 setType(item.value);
-                setIsFocus(false);
+                setTypeFocused(false);
               }}
             />
             <TextInput
