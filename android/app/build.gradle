@@ -76,6 +76,8 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
+    compileSdkVersion 30
+    defaultConfig {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
@@ -83,8 +85,8 @@ android {
     namespace "com.graduationspj"
     defaultConfig {
         applicationId "com.graduationspj"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 23
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
