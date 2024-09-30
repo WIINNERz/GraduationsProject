@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     fontFamily: 'InterBold',
   },
   description: {
-    marginTop: 20,
+    marginVertical: 20,
     fontSize: 20,
     color: 'black',
     fontFamily: 'InterRegular',
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   info: {
     marginTop: '15%',
     width: '90%',
-    height: '30%',
+    height: 'auto',
     borderRadius: 20,
     borderColor: '#ccc',
     borderWidth: 1,
