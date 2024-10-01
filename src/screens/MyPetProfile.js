@@ -96,7 +96,6 @@ export default function PetProfile() {
               setIsFavorite(true);
             }
           } catch (err) {
-            console.log(err);
           }
         } else {
           setPet(petData);

@@ -121,10 +121,7 @@ const Home = () => {
             },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('You can use the location');
-            getCurrentLocation();
-        } else {
-            console.log('Location permission denied');
+           getCurrentLocation();
         }
     } catch (err) {
         console.warn(err);

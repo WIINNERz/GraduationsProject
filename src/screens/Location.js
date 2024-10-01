@@ -21,8 +21,6 @@ const Location = () => {
     if (result === RESULTS.GRANTED) {
        getCurrentLocation();
        
-    } else {
-      console.log('Location permission denied');
     }
   };
 
@@ -51,8 +49,7 @@ const Location = () => {
     );
     const data = await response.json();
     setHospitals(data);
-    console.log(data);
-  };
+ };
 
   // เรียกใช้เมื่อคอมโพเนนต์ถูกโหลด
   useEffect(() => {

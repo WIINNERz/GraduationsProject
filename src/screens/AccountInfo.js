@@ -29,7 +29,6 @@ const AccountInfo = () => {
           setUserData(docSnap.data());
           
         } else {
-          console.log('No matching user data found');
           setUserData(null);
         }
         setLoading(false);

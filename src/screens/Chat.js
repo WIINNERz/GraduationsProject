@@ -52,17 +52,14 @@ const Chat = () => {
                 }));
 
                 setUsers(usersData.filter(Boolean));
-            } else {
-                console.log("No additional users found.");
-            }
-
+            } 
             setChatRooms(rooms);
             setLoading(false);
         });
 
         return unsubscribe;
     }, [user?.uid]);
-
+ 
     return (
         <View style={styles.screen}>
             <ChatHeader />

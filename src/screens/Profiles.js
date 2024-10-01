@@ -53,9 +53,7 @@ const Profiles = () => {
             setFirstname('');
             setLastname('');
           }
-        } else {
-          console.log('No matching user data found');
-        }
+        } 
         setLoading(false);
       },
       error => {

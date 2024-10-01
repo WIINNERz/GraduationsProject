@@ -71,8 +71,6 @@ const ProfileDetail = ({ navigation }) => {
             console.error('Error decrypting data: ', error);
           }
           
-        } else {
-          console.log('No matching user data found');
         }
       }
       setLoading(false);
@@ -192,10 +190,7 @@ const ProfileDetail = ({ navigation }) => {
       const blob = await response.blob();
 
       const snapshot = await uploadBytes(storageRef, blob);
-      console.log('Uploaded a blob or file!');
-
       const downloadURL = await getDownloadURL(snapshot.ref);
-      console.log('File available at', downloadURL);
 
       const userDoc = doc(firestore, 'Users', user.uid);
       await updateDoc(userDoc, { photoURL: downloadURL });

@@ -282,8 +282,6 @@ const PetDetail = () => {
         }
       });
 
-      console.log('Data to store:', dataToStore);
-
       // Ensure the document reference has an even number of segments
       const petDocRef = doc(db, 'Pets', name);
       await updateDoc(petDocRef, dataToStore);
@@ -317,7 +315,6 @@ const PetDetail = () => {
           (async () => {
             try {
               await deletePet(); // Replace with your actual async function
-              console.log('Pet deleted successfully');
               navigation.navigate('MyPets');
             } catch (error) {
               console.error('Error deleting pet:', error);
@@ -327,7 +324,6 @@ const PetDetail = () => {
       },
       {
         text: 'No',
-        onPress: () => console.log('Delete action cancelled'),
         style: 'cancel',
       },
     ]);

@@ -23,7 +23,6 @@ const handleDeleteAccount = async () => {
         await deleteObject(userImageRef);
       } catch (storageError) {
         // If the file does not exist, it will throw an error which can be ignored
-        console.log('No image found to delete:', storageError.message);
       }
 
       // Delete the user account

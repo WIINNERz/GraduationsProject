@@ -77,8 +77,6 @@ const AddPet = () => {
       docSnap => {
         if (docSnap.exists() && docSnap.data().email === user.email) {
           setUserData(docSnap.data());
-        } else {
-          console.log('No matching user data found');
         }
         setLoading(false);
       },
@@ -106,7 +104,6 @@ const AddPet = () => {
     try {
       const user = auth.currentUser;
       if (!user) {
-        console.error('No user is currently logged in.');
         return;
       }
 
@@ -272,11 +269,7 @@ const AddPet = () => {
       const blob = await response.blob();
 
       const snapshot = await uploadBytes(storageRef, blob);
-      console.log('Uploaded a blob or file!');
-
       const downloadURL = await getDownloadURL(snapshot.ref);
-      console.log('File available at', downloadURL);
-
       await updateDoc(petDocRef, {photoURL: downloadURL});
     } catch (error) {
       Alert.alert('Error', 'Failed to upload image. Please try again.');

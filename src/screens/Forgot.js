@@ -14,7 +14,7 @@ const Forgot = ({ navigation }) => {
             await sendPasswordResetEmail(auth, email);
             alert("Reset email sent to " + email);
         } catch (e) {
-            console.log(e);
+            //console.log(e);
             alert("Error sending reset email: " + e.message);
         } finally {
             setLoading(false);

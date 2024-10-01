@@ -34,7 +34,6 @@ const ChangePassword = ({ navigation }) => {
     //                 await updateDoc(userRef, {
     //                     masterKey: reencryptMaskey
     //                 });
-    //                 console.log('Master key updated successfully!');
     //             } catch (decryptError) {
     //                 console.error('Error decrypting master key: ', decryptError);
     //                 Alert.alert('Error', 'Failed to decrypt master key. Please check your old password.', [{ text: 'OK' }]);
@@ -83,7 +82,6 @@ const ChangePassword = ({ navigation }) => {
             navigation.navigate('Settings');
         } catch (error) {
             Alert.alert('Error', error.message, [{ text: 'OK' }]);
-            console.log(error);
         }
     };
 
