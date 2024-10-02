@@ -44,13 +44,12 @@ const Recovery = () => {
       const userDoc = await getDoc(userRef);
       const userData = userDoc.data();
       if (userData.hashedID === hash) {
-
       await keyinstance.recoveryMaskeyByID(id , passwordLog);
       }
-      // Alert.alert('Success', 'Key recovered successfully', [{ text: 'OK' }]);
+      Alert.alert('Success', 'data recovered successfully', [{ text: 'OK' }]);
     } catch (error) {
       console.error('Could not recover key', error);
-      // Alert.alert('Error', 'Could not recover key. Please try again.', [{ text: 'OK' }]);
+     
     }
   };
 

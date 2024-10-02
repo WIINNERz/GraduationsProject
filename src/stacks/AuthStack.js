@@ -13,7 +13,7 @@ import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Forgot from '../screens/Forgot';
 import Keymanagement from '../components/Keymanagement';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import E2EE from '../components/E2EE';
 const AuthStack = () => {
   const navigation = useNavigation();
   const [isSignIn, setIsSignIn] = React.useState(true);
@@ -30,7 +30,7 @@ const AuthStack = () => {
   const [error, setError] = React.useState('');
   const db = getFirestore();
   const backgroundAnimation = React.useRef(new Animated.Value(0)).current;
-
+  const ee2e = E2EE();
 
 
   const validatePassword = password => {
@@ -45,6 +45,7 @@ const AuthStack = () => {
         await signInWithEmailAndPassword(auth, emailLog, passwordLog);
         const KeymanagementInstance = Keymanagement();
         await KeymanagementInstance.retrieveandstorekey(passwordLog);
+        await ee2e.storeSecretKey();
         navigation.navigate('MyPets');
         setEmailLog('');
         setPasswordLog('');
@@ -105,9 +106,9 @@ const AuthStack = () => {
                 uid,
                 photoURL,
               });
-
               const KeymanagementInstance = Keymanagement();
               await KeymanagementInstance.createAndEncryptMasterKey(passwordReg , uid);
+              await ee2e.generateKeyPair(uid);
               // Clear form fields and stop loading
               setUsername('');
               setEmailReg('');

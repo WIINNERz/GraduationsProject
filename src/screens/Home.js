@@ -249,7 +249,7 @@ const openMaps = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => navigation.navigate('Location')}>
+            onPress={() => navigation.navigate('testpage')}>
             <MaterialCommunityIcons
               name="map-marker"
               size={pawsize}

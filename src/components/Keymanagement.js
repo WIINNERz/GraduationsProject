@@ -31,7 +31,7 @@ const Keymanagement = () => {
       return;
     }
     try {
-      await Keychain.setGenericPassword('maskey', key);
+      await Keychain.setGenericPassword('maskey', key , { service: 'masterkey' });
       console.log('Key stored successfully');
     } catch (error) {
       console.log('Could not store key', error);
@@ -40,7 +40,8 @@ const Keymanagement = () => {
   // used for clear key
   async function clearKey() {
     try {
-      await Keychain.resetGenericPassword();
+      await Keychain.resetGenericPassword ( { service: 'masterkey' });
+      await Keychain.resetGenericPassword ( { service: 'privatekey' });
       console.log('Key cleared successfully');
     } catch (error) {
       console.error('Could not clear key', error);
@@ -49,7 +50,7 @@ const Keymanagement = () => {
   // used for retrieve master key from keychain
   async function retrievemasterkey() {
     try {
-      const credentials = await Keychain.getGenericPassword();
+      const credentials = await Keychain.getGenericPassword({ service: 'masterkey' });
       if (credentials) {
         return credentials.password;
       } else {

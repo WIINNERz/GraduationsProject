@@ -31,6 +31,7 @@
     "react-native-dotenv": "^3.4.11",
     "react-native-element-dropdown": "^2.12.1",
     "react-native-gesture-handler": "^2.18.1",
+    "react-native-get-random-values": "^1.11.0",
     "react-native-image-picker": "^7.1.2",
     "react-native-keychain": "^8.2.0",
     "react-native-maps": "^1.18.0",
@@ -39,7 +40,10 @@
     "react-native-screens": "^3.34.0",
     "react-native-vector-icons": "^10.1.0",
     "react-native-webview": "^13.12.2",
-    "rn-crypto-js": "^1.1.2"
+    "rn-crypto-js": "^1.1.2",
+    "text-encoding": "^0.7.0",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
