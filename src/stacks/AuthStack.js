@@ -45,7 +45,6 @@ const AuthStack = () => {
         await signInWithEmailAndPassword(auth, emailLog, passwordLog);
         const KeymanagementInstance = Keymanagement();
         await KeymanagementInstance.retrieveandstorekey(passwordLog);
-        await ee2e.storeSecretKey();
         navigation.navigate('MyPets');
         setEmailLog('');
         setPasswordLog('');
@@ -53,6 +52,7 @@ const AuthStack = () => {
         console.error('Error signing in:', err);
         setError('Failed to sign in. Please check your email and password.');
       } finally {
+        await ee2e.storeSecretKey();
         setLoading(false);
       }
     } else {

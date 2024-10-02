@@ -16,6 +16,7 @@ import {doc, updateDoc, onSnapshot} from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import Keymanagement from '../components/Keymanagement';
+import E2EE from '../components/E2EE';
 
 const Profiles = () => {
   const navigation = useNavigation();
@@ -27,6 +28,7 @@ const Profiles = () => {
   const [uploading, setUploading] = useState(false);
   const user = auth.currentUser;
   const KeymanagementInstance = Keymanagement();
+  const E2EEInstance = E2EE();
 
   useEffect(() => {
     if (!user) return;
@@ -75,6 +77,9 @@ const Profiles = () => {
         console.error('Error signing out:', error);
       });
       KeymanagementInstance.clearKey();
+      E2EEInstance.clearSecretKey();
+      
+
   };
 
   const pickImage = () => {

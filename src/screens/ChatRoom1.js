@@ -160,10 +160,7 @@ export default function ChatRoom1({navigation}) {
         const MySecretKey = await e2ee.getMySecretKey();
         const theirPublicKey = userData.publicKey;
         const sharedSecret = e2ee.computeSharedSecret(MySecretKey, theirPublicKey);
-        // console.log('My secret:', MySecretKey);
-        // console.log('Their public key:', theirPublicKey);
         setSharedSecret(sharedSecret);        
-        // console.log('Shared secret:', sharedSecret);
       }
     } catch (error) {
       console.error('Error fetching other user profile:', error);

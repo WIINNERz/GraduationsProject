@@ -39,13 +39,26 @@ const E2EE = () => {
       const userRef = doc(firestore, 'Users', currentUser.uid);
       const userDoc = await getDoc(userRef); // Use getDoc to fetch a single document
       const userData = userDoc.data();
-      const {encPrivateKey } = userData;
+      const { encPrivateKey } = userData;
       const decryptedPrivateKey = await KeymanagementInstance.decryptData(encPrivateKey);
-      await Keychain.setGenericPassword('privatekey', decryptedPrivateKey ,{service : 'privatekey' });
-      console.log('Skey stored successfully');
+      if (!decryptedPrivateKey) {
+        throw new Error('Decrypted private key is empty or null');
+      }
+
+      await Keychain.setGenericPassword('privatekey', decryptedPrivateKey, { service: 'privatekey' });
+      console.log('Secret key stored successfully');
     } catch (error) {
       console.error('Could not get key', error);
       return {};
+    }
+  }
+  const clearSecretKey = async () => {
+    try {
+      await Keychain.resetGenericPassword({service:'privatekey'});
+      console.log('SKey cleared successfully');
+    } 
+    catch (error) {
+      console.error('Could not clear key', error);
     }
   }
 
@@ -62,6 +75,7 @@ const E2EE = () => {
       return '';
     }
   }
+
   const computeSharedSecret = (mySecretKey, theirPublicKey) => {
     const secretKey = decodeBase64(mySecretKey);
     const publicKey = decodeBase64(theirPublicKey);
@@ -100,6 +114,7 @@ const E2EE = () => {
     decryptMessage,
     getMySecretKey,
     storeSecretKey,
+    clearSecretKey,
   };
 };
 
