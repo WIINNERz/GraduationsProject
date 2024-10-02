@@ -41,7 +41,8 @@ const E2EE = () => {
       const userData = userDoc.data();
       const {encPrivateKey } = userData;
       const decryptedPrivateKey = await KeymanagementInstance.decryptData(encPrivateKey);
-      await Keychain.setGenericPassword('privatekey', decryptedPrivateKey , { service : 'privatekey' });
+      await Keychain.setGenericPassword('privatekey', decryptedPrivateKey ,{service : 'privatekey' });
+      console.log('Skey stored successfully');
     } catch (error) {
       console.error('Could not get key', error);
       return {};

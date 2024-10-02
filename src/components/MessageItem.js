@@ -127,7 +127,8 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
       <Text style={styles.telstyle}>
         {isCurrentUser
           ? `You sent ${telephoneNumber} `
-          : telephoneNumber}
+          // : telephoneNumber}
+          : `${senderName}'s number ${telephoneNumber}`} 
       </Text>
       {!isCurrentUser && (
         <TouchableOpacity style={styles.callButton} onPress={() => handleCall(telephoneNumber)}>
@@ -220,6 +221,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
+    fontFamily : 'InterRegular',
   },
   messageImage: {
     width: 200,
@@ -272,7 +274,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
   },
   callButton: {
-    width: 200,
+    width: 140,
+    marginHorizontal: 10,
     padding: 10,
     backgroundColor: '#007bff',
     borderRadius: 5,
@@ -285,14 +288,13 @@ const styles = StyleSheet.create({
   },
   telstyle: {
     fontSize: 16,
-    fontWeight: '500',
-    textAlign: 'center',
+    fontFamily : 'InterRegular',
+    marginLeft : 10,
+    textAlign: 'left',
   },
   telsContainer: {
-    width: '100%',
-    backgroundColor: '#D9D9D9',
-    borderRadius: 20,
-    padding: 10,
+    alignItems : 'center',
+    justifyContent: 'center',
   },
   map: {
     width: 200,

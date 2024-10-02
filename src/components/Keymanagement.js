@@ -32,7 +32,7 @@ const Keymanagement = () => {
     }
     try {
       await Keychain.setGenericPassword('maskey', key , { service: 'masterkey' });
-      console.log('Key stored successfully');
+      console.log('MKey stored successfully');
     } catch (error) {
       console.log('Could not store key', error);
     }

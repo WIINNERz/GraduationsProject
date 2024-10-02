@@ -105,20 +105,22 @@ export default function ChatRoom1({navigation}) {
         let allMessages = snapshot.docs.map(doc => {
           const data = doc.data();
           let decryptedText = '';
-          let decryptedtel = '';
+          let decryptedTel = '';
+
           if (sharedSecret) {
-            console.log(data.telephoneNumber);
             try {
-              if (data.text !== '' || !data.text) {
-              decryptedText = e2ee.decryptMessage(sharedSecret, data.text, data.nonce);
-              } else if (data.telephoneNumber !== '' || null) {
-              decryptedtel = e2ee.decryptMessage(sharedSecret, data.telephoneNumber, data.nonce);
-              } 
+              if (data.text) {
+                decryptedText = e2ee.decryptMessage(sharedSecret, data.text, data.nonce);
+              }
+              if (data.telephoneNumber) {
+                decryptedTel = e2ee.decryptMessage(sharedSecret, data.telephoneNumber, data.nonce);
+              }
             } catch (error) {
               console.error('Decryption failed:', error);
             }
           }
-          return { id: doc.id, ...data, text: decryptedText , telephoneNumber: decryptedtel};
+
+          return { id: doc.id, ...data, text: decryptedText, telephoneNumber: decryptedTel };
         });
         setMessages([...allMessages]);
       });
