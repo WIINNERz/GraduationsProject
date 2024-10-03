@@ -85,7 +85,7 @@ export default function MyPet() {
         <TouchableOpacity
           style={styles.plusButton}
           onPress={() => navigation.navigate('AddPet')}>
-          <MaterialCommunityIcons name="plus" size={30} color="#E16539" />
+          <MaterialCommunityIcons name="plus" size={35} color="#E16539" />
         </TouchableOpacity>
       </View>
 
@@ -119,19 +119,21 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   back: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
+
     backgroundColor: 'white',
     borderRadius: 100,
+
     zIndex: 1,
   },
   header: {
     width: '100%',
     height: '8%',
-    justifyContent : "center",
+    justifyContent: 'space-between',
+    paddingHorizontal: '5%',
+    flexDirection: 'row',
     alignItems : "center",
     backgroundColor: '#D27C2C',
+
   },
   container: {
     flex: 1,
@@ -148,15 +150,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0DFC8',
   },
   plusButton: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
+    borderRadius: 100,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 80,
-    height: 40,
-    borderRadius: 10,
+
   },
   petdetail: {
     paddingTop: 5,

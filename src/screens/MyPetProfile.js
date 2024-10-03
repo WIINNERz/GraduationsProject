@@ -100,6 +100,9 @@ export default function PetProfile() {
         } else {
           setPet(petData);
           setStatus('Adoptable');
+          if (petData.favorite) {
+            setIsFavorite(true);
+          }
         }
       } else {
         setError('Pet not found');

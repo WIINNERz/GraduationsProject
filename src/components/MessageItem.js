@@ -1,13 +1,23 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Linking } from 'react-native';
-import React, { memo, useEffect, useState, useMemo } from 'react';
-import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { auth, firestore } from '../configs/firebaseConfig';
-import { useNavigation } from '@react-navigation/native';
-import MapView, { Marker } from 'react-native-maps';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  Linking,
+} from 'react-native';
+import React, {memo, useEffect, useState, useMemo} from 'react';
+import {getFirestore, doc, updateDoc, getDoc} from 'firebase/firestore';
+import {auth, firestore} from '../configs/firebaseConfig';
+import {useNavigation} from '@react-navigation/native';
+import MapView, {Marker} from 'react-native-maps';
+import Keymanagement from './Keymanagement';
 
-const MessageItem = ({ message, currentUser, roomId, messageId }) => {
+const MessageItem = ({message, currentUser, roomId, messageId}) => {
   const [adoptedPets, setAdoptedPets] = useState({});
   const navigate = useNavigation();
+  const KeymanagementInstance = Keymanagement();
   const {
     userId,
     profileURL = '',
@@ -36,6 +46,60 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
     }
     return false;
   };
+  const fetchPet = async id => {
+    try {
+      const petDoc = await getDoc(doc(firestore, 'Pets', id));
+      if (petDoc.exists()) {
+        const petData = {id: petDoc.id, ...petDoc.data()};
+        const KeymanagementInstance = Keymanagement();
+        try {
+          const encryptedPetData = {
+            gender: petData.gender
+              ? await KeymanagementInstance.encryptData(petData.gender)
+              : null,
+            birthday: petData.birthday
+              ? await KeymanagementInstance.encryptData(petData.birthday)
+              : null,
+            height: petData.height
+              ? await KeymanagementInstance.encryptData(
+                  petData.height.toString(),
+                )
+              : null,
+            age: petData.age
+              ? await KeymanagementInstance.encryptData(petData.age.toString())
+              : null,
+            breeds: petData.breeds
+              ? await KeymanagementInstance.encryptData(petData.breeds)
+              : null,
+            characteristics: petData.characteristics
+              ? await KeymanagementInstance.encryptData(petData.characteristics)
+              : null,
+            chronic: petData.chronic
+              ? await KeymanagementInstance.encryptData(petData.chronic)
+              : null,
+            color: petData.color
+              ? await KeymanagementInstance.encryptData(petData.color)
+              : null,
+            weight: petData.weight
+              ? await KeymanagementInstance.encryptData(
+                  petData.weight.toString(),
+                )
+              : null,
+          };
+          return encryptedPetData;
+        } catch (err) {
+          console.error('Error encrypting pet data:', err);
+          // return {};
+        }
+      } else {
+        console.error('Pet not found');
+        // return {};
+      }
+    } catch (err) {
+      console.error('Error fetching pet data:', err);
+      // return {};
+    }
+  };
 
   const handleAdopt = async (petId, petUid, messageId, roomId) => {
     if (!petId || !petUid || !messageId || !roomId) {
@@ -59,10 +123,10 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
         'Your account has not been verified',
         'Please verify your account to adopt this pet',
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Go Verify', onPress: () => navigate.navigate('Verify') },
+          {text: 'Cancel', style: 'cancel'},
+          {text: 'Go Verify', onPress: () => navigate.navigate('Verify')},
         ],
-        { cancelable: false },
+        {cancelable: false},
       );
       console.log('User not verified');
       return;
@@ -71,8 +135,16 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
     try {
       const db = getFirestore();
       const petDoc = doc(db, 'Pets', petId);
+      const encpet = await fetchPet(petId);
       const messageDoc = doc(db, 'Rooms', roomId, 'Messages', messageId);
-
+      const newUserDoc = doc(db, 'Users', currentUser.uid);
+      const userDoc = await getDoc(newUserDoc);
+      if (!userDoc.exists()) {
+        console.error('User data not found');
+        return;
+      }
+      const userData = userDoc.data();
+      const username = userData.username;
       const messageSnapshot = await getDoc(messageDoc);
       if (!messageSnapshot.exists() || messageSnapshot.data().adopted) {
         console.log('Pet already adopted or message does not exist');
@@ -81,28 +153,39 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
 
       await updateDoc(petDoc, {
         uid: currentUser.uid,
+        favorite: false,
+        username: username,
         status: 'have_owner',
+        gender: encpet.gender,
+        birthday: encpet.birthday,
+        height: encpet.height,
+        age: encpet.age,
+        breeds: encpet.breeds,
+        characteristics: encpet.characteristics,
+        chronic: encpet.chronic,
+        color: encpet.color,
+        weight: encpet.weight,
       });
 
       await updateDoc(messageDoc, {
         adopted: true,
       });
 
-      setAdoptedPets(prev => ({ ...prev, [petId]: true }));
+      setAdoptedPets(prev => ({...prev, [petId]: true}));
       console.log('Pet adopted successfully');
     } catch (error) {
       console.error('Error adopting pet: ', error);
     }
   };
 
-  const handleCall = (telephoneNumber) => {
+  const handleCall = telephoneNumber => {
     Linking.openURL(`tel:${telephoneNumber}`);
     console.log('Calling', telephoneNumber);
   };
 
-  const PetItem = ({ pet }) => (
+  const PetItem = ({pet}) => (
     <View style={styles.petItem}>
-      <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
+      <Image source={{uri: pet.photoURL}} style={styles.petImage} />
       <Text style={styles.petName}>
         {senderName} wants to pass {pet.name} to you for further care.
       </Text>
@@ -122,27 +205,31 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
     </View>
   );
 
-  const TelephoneInfo = ({ telephoneNumber, isCurrentUser }) => (
+  const TelephoneInfo = ({telephoneNumber, isCurrentUser}) => (
     <View style={styles.telsContainer}>
       <Text style={styles.telstyle}>
         {isCurrentUser
           ? `You sent ${telephoneNumber} `
-          // : telephoneNumber}
-          : `${senderName}'s number ${telephoneNumber}`} 
+          : // : telephoneNumber}
+            `${senderName}'s number ${telephoneNumber}`}
       </Text>
       {!isCurrentUser && (
-        <TouchableOpacity style={styles.callButton} onPress={() => handleCall(telephoneNumber)}>
+        <TouchableOpacity
+          style={styles.callButton}
+          onPress={() => handleCall(telephoneNumber)}>
           <Text style={styles.buttonText}>Call</Text>
         </TouchableOpacity>
       )}
     </View>
   );
-  const LocationInfo = ({ location }) => {
+  const LocationInfo = ({location}) => {
     const openInGoogleMaps = () => {
       const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
-      Linking.openURL(url).catch(err => console.error('Error opening Google Maps:', err));
+      Linking.openURL(url).catch(err =>
+        console.error('Error opening Google Maps:', err),
+      );
     };
-  
+
     return (
       <TouchableOpacity onPress={openInGoogleMaps}>
         <MapView
@@ -172,11 +259,11 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
           isCurrentUser ? styles.currentUser : styles.otherUser,
         ]}>
         {!isCurrentUser && profileURL && (
-          <Image source={{ uri: profileURL }} style={styles.profileImage} />
+          <Image source={{uri: profileURL}} style={styles.profileImage} />
         )}
         <View style={styles.messageContent}>
           {imageUrl ? (
-            <Image source={{ uri: imageUrl }} style={styles.messageImage} />
+            <Image source={{uri: imageUrl}} style={styles.messageImage} />
           ) : (
             <Text style={styles.messageText}>{text}</Text>
           )}
@@ -188,9 +275,12 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
             </View>
           )}
           {telephoneNumber && (
-            <TelephoneInfo telephoneNumber={telephoneNumber} isCurrentUser={isCurrentUser} />
+            <TelephoneInfo
+              telephoneNumber={telephoneNumber}
+              isCurrentUser={isCurrentUser}
+            />
           )}
-           {location && <LocationInfo location={location} />}
+          {location && <LocationInfo location={location} />}
           <Text style={styles.timestamp}>{formattedCreatedAt}</Text>
         </View>
       </View>
@@ -221,7 +311,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
-    fontFamily : 'InterRegular',
+    fontFamily: 'InterRegular',
   },
   messageImage: {
     width: 200,
@@ -288,12 +378,12 @@ const styles = StyleSheet.create({
   },
   telstyle: {
     fontSize: 16,
-    fontFamily : 'InterRegular',
-    marginLeft : 10,
+    fontFamily: 'InterRegular',
+    marginLeft: 10,
     textAlign: 'left',
   },
   telsContainer: {
-    alignItems : 'center',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   map: {

@@ -106,6 +106,8 @@ export default function ChatRoom1({navigation}) {
           const data = doc.data();
           let decryptedText = '';
           let decryptedTel = '';
+          let decryptedLocation = '';
+          let location = null;
 
           if (sharedSecret) {
             try {
@@ -115,12 +117,16 @@ export default function ChatRoom1({navigation}) {
               if (data.telephoneNumber) {
                 decryptedTel = e2ee.decryptMessage(sharedSecret, data.telephoneNumber, data.nonce);
               }
+              if (data.location) {
+                decryptedLocation = e2ee.decryptMessage(sharedSecret, data.location, data.nonce);
+                location = JSON.parse(decryptedLocation);
+              }
             } catch (error) {
               console.error('Decryption failed:', error);
             }
           }
 
-          return { id: doc.id, ...data, text: decryptedText, telephoneNumber: decryptedTel };
+          return { id: doc.id, ...data, text: decryptedText, telephoneNumber: decryptedTel , location : location};
         });
         setMessages([...allMessages]);
       });
@@ -235,7 +241,14 @@ export default function ChatRoom1({navigation}) {
       let roomId = getRoomId(user.uid, uid);
       const docRef = doc(db, 'Rooms', roomId);
       const messageRef = collection(docRef, 'Messages');
-
+      if (!sharedSecret) {
+        Alert.alert('Error', 'Key not found');
+        return;
+      }
+      console.log(' plain text Location:', location);
+      // const locationString = ;
+      const encrypted = e2ee.encryptMessage(sharedSecret, JSON.stringify(location));
+      console.log('Encrypted Location:', encrypted);
       await setDoc(doc(messageRef), {
         userId: user?.uid,
         text: '',
@@ -243,7 +256,8 @@ export default function ChatRoom1({navigation}) {
         senderName: userProfile.senderName,
         imageUrl: '',
         createdAt: Timestamp.fromDate(new Date()),
-        location,
+        location : encrypted.cipherText,
+        nonce : encrypted.nonce,
       });
     } catch (error) {
       console.error('Error sending location:', error);
@@ -289,19 +303,6 @@ export default function ChatRoom1({navigation}) {
 
   const handleSendTelephone = telephoneNumber => {
     setTelephoneNumber(telephoneNumber);
-  //   try {
-  //     const encrypted = e2ee.encryptMessage(sharedSecret, telephoneNumber);
-  //     console.log('Encrypted telephone number:', encrypted.cipherText);
-  //     console.log('Nonce:', encrypted.nonce);
-  //     setEnctel(encrypted.cipherText);
-  //     setTelNonce(encrypted.nonce);
-  //     console.log('Encrypted telephone number var:', encTel);
-  //     console.log('Nonce var:', telnonce);
-  //     const dec = e2ee.decryptMessage(sharedSecret, encrypted.cipherText, encrypted.nonce);
-  //     console.log('Decrypted telephone number:', dec);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
     setTelModalVisible(true);
   };
 
@@ -315,8 +316,8 @@ export default function ChatRoom1({navigation}) {
         return;
       }
       const encrypted = e2ee.encryptMessage(sharedSecret, telephoneNumber);
-       const encTel = encrypted.cipherText;
-       const telnonce = encrypted.nonce;
+      const encTel = encrypted.cipherText;
+      const telnonce = encrypted.nonce;
       await setDoc(doc(messageRef), {
         userId: user?.uid,
         text: '',

@@ -171,7 +171,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
           const userData = userDoc.data();
           
           const decryptedTel = userData.tel ? await KeymanagementInstance.decryptData(userData.tel) : null;
-          console.log('User data:', decryptedTel);
+          
           setState(prevState => ({
             ...prevState,
             telephoneNumber: decryptedTel || 'Doesn\'t have a telephone number',
