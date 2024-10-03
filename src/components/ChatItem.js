@@ -37,7 +37,6 @@ const ChatItem = React.memo(({ item, roomId }) => {
                 });
 
                 await batch.commit();
-                console.log('Successfully updated readed field for all messages');
             } else {
                 console.error("roomId is missing.");
             }

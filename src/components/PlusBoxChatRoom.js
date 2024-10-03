@@ -118,14 +118,21 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
       try {
         const db = getFirestore();
         const petsCollection = collection(db, 'Pets');
-        const q = query(petsCollection, where('uid', '==', user.uid));
+        const q = query(
+          petsCollection,
+          where('uid', '==', user.uid),
+          where('status', '==', 'dont_have_owner')
+        );
         const querySnapshot = await getDocs(q);
-
+  
         const petList = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-
+        if (petList.length === 0) {
+          Alert.alert('No Pets', "You don't have any pets.");
+          setState(prevState => ({ ...prevState, isPetPanelVisible: false }));
+        }
         setState(prevState => ({ ...prevState, petData: petList, loading: false }));
       } catch (err) {
         setState(prevState => ({ ...prevState, error: err.message, loading: false }));
@@ -248,7 +255,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
                 </TouchableOpacity>
               ))
             ) : (
-              <Text>No pets found</Text>
+                <Text style={{fontSize:64}}>No pets found</Text>
             )
           )}
           <TouchableOpacity style={styles.sendButton} onPress={handleSendPets}>
