@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth } from '../configs/firebaseConfig';
 
-const WaitVerify = () => {
+const WaitVerify = ({ route }) => {
     const navigation = useNavigation();
-    const route = useRoute();
-    const { uid } = route.params || {};
 
     useFocusEffect(
         useCallback(() => {
@@ -26,13 +24,12 @@ const WaitVerify = () => {
         const checkVerificationInterval = setInterval(async () => {
             const user = auth.currentUser;
             if (user) {
-                await user.reload(); // Reload user data
+                await user.reload();
                 if (user.emailVerified) {
-                    clearInterval(checkVerificationInterval); // Stop checking when verified
-                    navigation.navigate('MyPetStack'); // Navigate to MyPetStack
+                    clearInterval(checkVerificationInterval);
                 }
             }
-        }, 3000); // Check every 3 seconds
+        }, 3000);
 
         return () => clearInterval(checkVerificationInterval); // Cleanup on unmount
     }, [navigation]);
@@ -55,6 +52,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 20,
     },
+
 });
 
 export default WaitVerify;

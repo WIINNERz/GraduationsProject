@@ -12,15 +12,14 @@ const useAuth = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // User is signed in, fetch additional user details from Firestore
         setUser(user);
 
         try {
-          const userDocRef = doc(firestore, 'Users', user.uid); // Assume 'Users' is the collection
+          const userDocRef = doc(firestore, 'Users', user.uid); 
           const userDoc = await getDoc(userDocRef);
 
           if (userDoc.exists()) {
-            setUserDetails(userDoc.data()); // Set user details from Firestore
+            setUserDetails(userDoc.data()); 
             setUserDocExists(true);
           } else {
             console.log("No such document!");
@@ -31,7 +30,6 @@ const useAuth = () => {
           setUserDocExists(false);
         }
       } else {
-        // No user is signed in
         setUser(null);
         setUserDetails(null);
         setUserDocExists(false);
@@ -41,8 +39,6 @@ const useAuth = () => {
       console.error("Failed to authenticate user:", error);
       setLoading(false);
     });
-
-    // Clean up the subscription on unmount
     return () => unsubscribe();
   }, []);
 

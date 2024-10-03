@@ -62,8 +62,9 @@ const ProfileTabIcon = () => {
   );
 };
 
-const AppNavigator = ({ initialRouteName, userDocExists }) => {
+const AppNavigator = ({ initialRouteName }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [userDocExists, setUserDocExists] = useState(false);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
@@ -73,6 +74,31 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    const db = getFirestore();
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      const userDocRef = doc(db, "Users", user.uid);
+
+      const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setUserDocExists(true);
+        } else {
+          setUserDocExists(false);
+        }
+      }, (error) => {
+        console.error("Error fetching user document:", error);
+        setUserDocExists(false);
+      });
+
+      return () => unsubscribe();
+    } else {
+      setUserDocExists(false);
+    }
   }, []);
 
   return (
