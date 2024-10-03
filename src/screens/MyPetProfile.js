@@ -162,7 +162,7 @@ export default function PetProfile() {
               color: 'black',
               paddingVertical: 10,
               paddingLeft: 30,
-              fontFamily: 'InterBold',
+              fontFamily: 'InterSemiBold',
             }}>
             {pet?.name}
           </Text>

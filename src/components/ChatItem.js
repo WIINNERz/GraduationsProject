@@ -175,10 +175,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     username: {
-        fontWeight: 'bold',
+        fontFamily: 'InterBold',
         fontSize: 18,
     },
     latestMessage: {
+        fontFamily: 'InterRegular',
         color: 'gray',
     },
     icon: {

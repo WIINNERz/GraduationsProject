@@ -409,6 +409,7 @@ const AddPet = () => {
                 style={styles.input}
                 placeholder="Name"
                 placeholderTextColor={'gray'}
+    
                 value={name}
                 onChangeText={setName}
               />
@@ -634,6 +635,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '49%',
+    fontFamily: 'InterRegular',
     padding: 10,
     margin: 5,
     marginBottom: 5,
@@ -646,11 +648,11 @@ const styles = StyleSheet.create({
     width: '49%',
     padding: 10,
     paddingTop: 15,
+    fontFamily: 'InterRegular',
     margin: 5,
     marginBottom: 5,
     borderRadius: 10,
     borderBottomWidth: 1,
-
     borderColor: '#E16539',
     color: 'black',
   },
@@ -666,6 +668,7 @@ const styles = StyleSheet.create({
   },
   inputwh: {
     width: '100%',
+    fontFamily: 'InterRegular',
     padding: 10,
     marginTop: 5,
     marginBottom: 10,
@@ -675,6 +678,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   inputDate: {
+    fontFamily: 'InterRegular',
     width: '90%',
     padding: 10,
     marginTop: 5,
@@ -790,6 +794,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   placeholderStyle: {
+    fontFamily: 'InterRegular',
     fontSize: 14,
     color: 'gray',
   },

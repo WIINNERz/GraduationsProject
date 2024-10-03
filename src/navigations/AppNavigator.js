@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, View, StyleSheet, Keyboard } from 'react-native';
+import { Image, View, StyleSheet, Keyboard, Text } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -90,7 +90,11 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
             name="MyPetStack"
             component={MyPetStack}
             options={{
-              tabBarLabel: 'Home',
+              tabBarLabel: ({ color }) => (
+                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                  Home
+                </Text>
+              ),
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="home" color={color} size={40} />
               ),
@@ -101,7 +105,11 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
             name="Pet"
             component={PetStack}
             options={{
-              tabBarLabel: 'Find Pet',
+              tabBarLabel: ({ color }) => (
+                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                  Find Pet
+                </Text>
+              ),
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="paw-outline" color={color} size={40} />
               ),
@@ -112,7 +120,11 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
             name="Chat"
             component={ChatStack}
             options={{
-              tabBarLabel: 'Chat',
+              tabBarLabel: ({ color }) => (
+                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                  Chat
+                </Text>
+              ),
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="chat" color={color} size={40} />
               ),
@@ -124,7 +136,11 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
             component={ProfileStack}
             options={{
               headerShown: false,
-              tabBarLabel: 'Profile',
+              tabBarLabel: ({ color }) => (
+                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                  Settings
+                </Text>
+              ),
               tabBarIcon: (props) => <ProfileTabIcon {...props} />
             }}
           />

@@ -124,8 +124,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingHorizontal: 20,
+
   },
   searchBox: {
+    fontFamily : 'InterRegular',
     flex: 1,
     marginLeft: 10,
   },
@@ -154,19 +156,23 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   placeholderStyle: {
+    
     fontSize: 14,
     color: 'gray',
   },
   selectedTextStyle: {
+    fontFamily : 'InterRegular',
     fontSize: 16,
     color: 'gray',
   },
   inputSearchStyle: {
+
     height: 40,
     fontSize: 16,
     color: 'black',
   },
   itemTextStyle: {
+    fontFamily : 'InterRegular',
     color: 'gray',
   },
 });

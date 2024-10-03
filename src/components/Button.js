@@ -15,7 +15,7 @@ export const CancelPButton= () => {
     return (
         <View>
             <TouchableOpacity style={styles.CancelPButton} onPress={() => navigation.goBack()}>
-                <Text>Cancel</Text>
+                <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
         </View>
     );
@@ -38,6 +38,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    buttonText: {
+        color: 'white',
+        fontFamily: 'InterRegular',
     },
 });
 

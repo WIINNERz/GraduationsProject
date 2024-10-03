@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  Linking,
+  Dimensions,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -480,7 +480,10 @@ export default function ChatRoom1({navigation}) {
     </View>
   );
 }
-
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+const modaltitle = windowWidth / 20;
+const modaltext = windowWidth / 24;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -560,7 +563,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   title: {
-    fontSize: 20,
+    fontSize: modaltitle,
     fontFamily: 'InterBold',
     color: 'red',
     marginBottom: 10,
@@ -571,7 +574,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalText: {
-    fontSize: 16,
+    fontSize: modaltext,
     textAlign: 'center',
   },
   petPic : {

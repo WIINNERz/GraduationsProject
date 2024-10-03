@@ -17,6 +17,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import Keymanagement from '../components/Keymanagement';
 import E2EE from '../components/E2EE';
+import { verify } from 'tweetnacl';
+import Notiverify from '../components/Notiverify';
 
 const Profiles = () => {
   const navigation = useNavigation();
@@ -171,12 +173,12 @@ const Profiles = () => {
             <Text> </Text>
             <Text style={styles.name}>{lastname}</Text>
           </View>
-          <Text style={{opacity: 0.5}}>@{userData.username}</Text>
+          <Text style={styles.username}>@{userData.username}</Text>
           {userData.verify ? (
             <TouchableOpacity
               onPress={() => navigation.navigate('Verify')}>
               <View style={styles.verified}>
-                <Text style={{color: 'black'}}>Verified</Text>
+                <Text style={styles.verify}>Verified</Text>
                 <MaterialCommunityIcons
                   name="account-circle"
                   size={20}
@@ -186,14 +188,13 @@ const Profiles = () => {
             </TouchableOpacity>
           ) : (
             <View style={styles.verified}>
-              <Text style={{opacity: 0.5}}>Not Verified</Text>
+              <Text style={styles.notiverify}>Not Verified</Text>
             </View>
           )}
         </View>
       </View>
       <View style={styles.menupanel}>
       <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
-        
         <View style={styles.panel}>
           <View style={styles.menucontainer}>
             <View style={styles.iconContainer}>
@@ -205,7 +206,7 @@ const Profiles = () => {
             </View>
             <View style={styles.menuname}>
               <Text style={styles.topic}>My Account</Text>
-              <Text style={{opacity: 0.5}}>Make changes to your account</Text>
+              <Text style={styles.menudes}>Make changes to your account</Text>
             </View>
           </View>
 
@@ -225,7 +226,7 @@ const Profiles = () => {
             </View>
             <View style={styles.menuname}>
               <Text style={styles.topic}>My Pet</Text>
-              <Text style={{opacity: 0.5}}>View your own pets</Text>
+              <Text style={styles.menudes}>View your own pets</Text>
             </View>
           </View>
 
@@ -248,7 +249,7 @@ const Profiles = () => {
 
             <View style={styles.menuname}>
               <Text style={styles.topic}>Setting</Text>
-              <Text style={{opacity: 0.5}}>
+              <Text style={styles.menudes}>
                 Further secure your account for safety
               </Text>
             </View>
@@ -274,7 +275,7 @@ const Profiles = () => {
             </View>
             <View style={styles.menuname}>
               <Text style={styles.topic}>Privacy Policy</Text>
-              <Text style={{opacity: 0.5}}>
+              <Text style={styles.menudes}>
                 Further secure your account for safety
               </Text>
             </View>
@@ -311,6 +312,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  verify: {
+    color : 'black',
+    fontFamily : 'InterRegular',
+  },
+  notiverify: {
+    color : 'black',
+    fontFamily : 'InterRegular',
+    opacity: 0.5,
+  },
+
+
   panel: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -377,12 +389,23 @@ const styles = StyleSheet.create({
   },
   topic: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'InterBold',
     color: 'black',
   },
+  menudes: {
+    fontSize: 14,
+    fontFamily: 'InterItalic',  
+    color: 'black',
+    opacity: 0.5,
+  },
   name: {
-    fontWeight: 'bold',
+    fontFamily: 'InterBold',
     fontSize: 16,
+  },
+  username: {
+    fontFamily: 'InterLight',
+    fontSize: 14,
+    opacity: 0.5,
   },
   menupanel: {
     width: '100%',

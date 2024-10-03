@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   nopets: {
+    fontFamily: 'InterLightItalic',
     textAlign: 'center',
     fontSize: 18,
     marginTop: 20,

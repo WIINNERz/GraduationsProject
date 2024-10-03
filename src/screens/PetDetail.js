@@ -443,7 +443,7 @@ const PetDetail = () => {
         <View style={styles.subContainer}>
           <View style={styles.whContainer}>
             <View style={styles.containerwh}>
-              <Text>Name</Text>
+              <Text style={styles.field}>Name</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Name"
@@ -462,14 +462,14 @@ const PetDetail = () => {
               />
             </View>
           </View>
-          <Text>Breeds</Text>
+          <Text style={styles.field}>Breeds</Text>
           <TextInput
             style={styles.input}
             placeholder="Breed"
             value={pet?.breeds || ''}
             onChangeText={text => setPet({...pet, breeds: text})}
           />
-          <Text> Birthday </Text>
+         <Text style={styles.field}> Birthday </Text>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -479,7 +479,7 @@ const PetDetail = () => {
           </View>
           <View style={styles.whContainer}>
             <View style={styles.containerwh}>
-              <Text>Weight</Text>
+            <Text style={styles.field}>Weight</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Weight"
@@ -491,7 +491,7 @@ const PetDetail = () => {
               />
             </View>
             <View style={styles.containerwh}>
-              <Text>Height</Text>
+            <Text style={styles.field}>Height</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Height"
@@ -505,7 +505,7 @@ const PetDetail = () => {
           </View>
           <View style={styles.whContainer}>
             <View style={styles.containerwh}>
-              <Text>Color</Text>
+            <Text style={styles.field}>Color</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Color"
@@ -514,7 +514,7 @@ const PetDetail = () => {
               />
             </View>
             <View style={styles.containerwh}>
-              <Text>Gender</Text>
+            <Text style={styles.field}>Gender</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Gender"
@@ -525,7 +525,7 @@ const PetDetail = () => {
           </View>
           <View style={styles.whContainer}>
             <View style={styles.container}>
-              <Text>Characteristics</Text>
+            <Text style={styles.field}>Characteristics</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Characteristics"
@@ -538,7 +538,7 @@ const PetDetail = () => {
           </View>
           <View style={styles.whContainer}>
             <View style={styles.container}>
-              <Text>Chronic</Text>
+            <Text style={styles.field}>Chronic</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Chronic"
@@ -556,7 +556,7 @@ const PetDetail = () => {
 
           {isFindHomeChecked && (
             <View style={styles.adoptionDetailsContainer}>
-              <Text>Location</Text>
+              <Text style={styles.field}>Location</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Location"
@@ -566,7 +566,7 @@ const PetDetail = () => {
                   setPet(prevPet => ({...prevPet, location: text}))
                 }
               />
-              <Text>Adopting Conditions</Text>
+              <Text style={styles.field}>Adopting Conditions</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Adopting Conditions"
@@ -626,6 +626,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 17,
   },
   input: {
+    fontFamily: 'InterRegular',
     width: '100%',
     padding: 10,
     marginTop: 5,
@@ -636,6 +637,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   inputwh: {
+    fontFamily: 'InterRegular',
     width: '100%',
     padding: 10,
     marginTop: 5,
@@ -725,6 +727,9 @@ const styles = StyleSheet.create({
     fontFamily: 'InterBold',
     color: '#D27C2C',
     paddingTop: 5,
+  },
+  field: {
+    fontFamily: 'InterRegular',
   },
 });
 
