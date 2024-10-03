@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
+  
   header: {
     width: '100%',
     height : '8%',
@@ -169,6 +170,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   noPetsText: {
+    fontFamily: 'InterLightItalic',
     fontSize: 18,
     color: '#555',
   },

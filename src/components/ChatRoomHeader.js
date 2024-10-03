@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     username: {
         marginLeft: 10,
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily : 'InterBold',
         paddingLeft: 10,
     },
 });

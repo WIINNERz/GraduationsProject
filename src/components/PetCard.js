@@ -49,18 +49,21 @@ const textStyles = StyleSheet.create({
   date: {
     fontSize: 10,
     color: 'gray',
+    fontFamily : 'InterRegular',
   },
   name: {
     fontSize: 20,
     color: 'black',
+    fontFamily : 'InterRegular',
   },
   label: {
     fontSize: 14,
     color: 'black',
-    fontWeight: '500',
+    fontFamily : 'InterSemiBold',
   },
   value: {
     fontSize: 14,
+    fontFamily : 'InterRegular',
     color: 'black',
   },
 });

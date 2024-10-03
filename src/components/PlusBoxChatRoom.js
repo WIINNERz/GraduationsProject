@@ -201,26 +201,26 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
       <TouchableOpacity style={styles.buttonStyle} onPress={confirmAndSendLocation}>
       <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
         </TouchableOpacity>
-        <Text>Location</Text>
+        <Text style={styles.menuname} >Location</Text>
       </View>
       <View style={styles.button}>
         <TouchableOpacity style={styles.buttonStyle} onPress={pickImage}>
           <MaterialCommunityIcons name="image" size={30} color="#E16539" />
         </TouchableOpacity>
-        <Text>Photo</Text>
+          <Text style={styles.menuname}>Photo</Text>
       </View>
       <View style={styles.button}>
         <TouchableOpacity style={styles.buttonStyle} onPress={fetchTelephoneNumber}>
           <MaterialCommunityIcons name="phone" size={30} color="#E16539" />
         </TouchableOpacity>
-        <Text>Telephone</Text>
-        <Text>Number</Text>
+          <Text style={styles.menuname}>Telephone</Text>
+          <Text style={styles.menuname}>Number</Text>
       </View>
       <View style={styles.button}>
         <TouchableOpacity style={styles.buttonStyle} onPress={pickPet}>
           <MaterialCommunityIcons name="dog-side" size={30} color="#E16539" />
         </TouchableOpacity>
-        <Text>Transfer Pet Profile</Text>
+          <Text style={styles.menuname}>Transfer Pet Profile</Text>
       </View>
       {state.isPetPanelVisible && (
         <View style={styles.petPanel}>
@@ -394,5 +394,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     marginBottom: 10,
+  },
+  menuname: {
+    marginTop: 5,
+    color: 'black',
+    fontFamily: 'InterRegular',
   },
 });

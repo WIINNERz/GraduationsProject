@@ -165,12 +165,15 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'InterBold',
   },
   descriptionText: {
+
     fontSize: 14,
-    color: 'gray',
-    marginTop: 5,
+    fontFamily: 'InterItalic',  
+    color: 'black',
+    opacity: 0.5,
+    // marginTop: 5,
   },
   back: {
     position: 'absolute',

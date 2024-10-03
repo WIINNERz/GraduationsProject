@@ -244,18 +244,18 @@ const openMaps = () => {
           <TouchableOpacity
             style={styles.menuItem}
             onPress={openMaps}>
-            <MaterialCommunityIcons name="file-question" size={pawsize} color="#D27C2C" />
-            <Text style={styles.menuText}>Something</Text>
+            <MaterialCommunityIcons name="map-marker" size={pawsize} color="#D27C2C" />
+            <Text style={styles.menuText}>Pet's hospital</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => navigation.navigate('Testpage')}>
             <MaterialCommunityIcons
-              name="map-marker"
+              name="file-question"
               size={pawsize}
               color="#D27C2C"
             />
-            <Text style={styles.menuText}>Pet's hospital near you</Text>
+            <Text style={styles.menuText}>Pond's lab</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -316,6 +316,10 @@ const styles = StyleSheet.create({
     padding: 5,
     width: '50%',
     margin: 5,
+  },
+  menuText: {
+    fontSize: 16,
+    fontFamily: 'InterRegular',
   },
 
   petcontainer: {
@@ -389,6 +393,7 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     paddingHorizontal: 5,
+
   },
 });
 

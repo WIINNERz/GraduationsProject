@@ -187,7 +187,7 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
     <View style={styles.petItem}>
       <Image source={{uri: pet.photoURL}} style={styles.petImage} />
       <Text style={styles.petName}>
-        {senderName} wants to pass {pet.name} to you for further care.
+        {senderName} wants to sent {pet.name} to you for further care.
       </Text>
       {!isCurrentUser && (
         <TouchableOpacity
@@ -203,6 +203,7 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
         </TouchableOpacity>
       )}
     </View>
+    
   );
 
   const TelephoneInfo = ({telephoneNumber, isCurrentUser}) => (
@@ -349,11 +350,11 @@ const styles = StyleSheet.create({
   },
   petName: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'InterSemiBold',
     textAlign: 'center',
   },
   adoptButton: {
-    width: 200,
+    width: 140,
     padding: 10,
     backgroundColor: '#D27C2C',
     borderRadius: 5,
@@ -361,7 +362,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   adoptedButton: {
-    backgroundColor: 'gray',
+    backgroundColor: 'rgba(rgba(210, 124, 44, 0.5))',
   },
   callButton: {
     width: 140,
