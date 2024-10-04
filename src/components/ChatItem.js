@@ -50,18 +50,19 @@ const ChatItem = React.memo(({ item, roomId }) => {
 
         if (latestMessage.text === "") {
             if (Array.isArray(latestMessage.selectedPets) && latestMessage.selectedPets.length > 0) {
-                return `Send Pet : ${latestMessage.selectedPets.map(pet => pet.name).join(', ')}`;
+                return `Send a pet's profile`;
             } else if (latestMessage.imageURL) {
-                return `Image : ${latestMessage.imageURL}`;
+                return `Sent an image`;
             } else if (latestMessage.location) {
-                return `Location : ${latestMessage.location.latitude}, ${latestMessage.location.longitude}`;
+                return `Sent a location`;
             } else if (latestMessage.telephoneNumber) {
-                return `Telephone : ${latestMessage.telephoneNumber}`;
+                return `Sent a phone number`;
+                
             } else {
                 return "No content";
             }
         } else {
-            return latestMessage.text;
+            return "Sent a message";
         }
     }, [latestMessage]);
 
@@ -78,6 +79,7 @@ const ChatItem = React.memo(({ item, roomId }) => {
                     unsubscribeLatestMessage = onSnapshot(latestMessageQuery, (querySnapshot) => {
                         const latestMessageDoc = querySnapshot.docs[0];
                         const latestMessageData = latestMessageDoc ? { id: latestMessageDoc.id, ...latestMessageDoc.data() } : null;
+                        console.log("Latest message data: ", latestMessageData);
                         setLatestMessage(latestMessageData);
                     });
                 } catch (error) {

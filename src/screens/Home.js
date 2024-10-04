@@ -206,7 +206,9 @@ const openMaps = () => {
       <View style={styles.petcontainer}>
         <Text style={styles.sectiontitle}>Favorite Pets</Text>
         {loading ? (
-          <Text>Loading...</Text>
+          <View style={styles.loading}>
+          <Text >Loading...</Text>
+          </View>
         ) : error ? (
           <Text>Error: {error}</Text>
         ) : dogs.length > 0 ? (
@@ -393,7 +395,11 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     paddingHorizontal: 5,
-
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

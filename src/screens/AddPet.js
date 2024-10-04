@@ -574,7 +574,7 @@ const AddPet = () => {
   );
 };
 const {width} = Dimensions.get('window');
-const titleSize = width / 17;
+const titleSize = width / 16;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',

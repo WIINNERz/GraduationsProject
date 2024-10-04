@@ -6,7 +6,7 @@ import PetDetail from '../screens/PetDetail';
 import MyPetProfile from '../screens/MyPetProfile';
 import Home from '../screens/Home';
 import Location1 from '../screens/Location1';
-import Testpage from '../screens/testpage';
+import Testpage from '../screens/Testpage';
 
 const Stack = createNativeStackNavigator();
 
