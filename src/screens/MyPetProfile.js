@@ -172,16 +172,6 @@ export default function PetProfile() {
               size={25}
               color="#D27C2C"
             />
-
-            <Text
-              style={{
-                color: '#D27C2C',
-                fontSize: 20,
-                fontFamily: 'InterBold',
-                marginLeft: 3,
-              }}>
-              {isFavorite ? 'unfavorite' : 'favorite'}
-            </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.panelData}>

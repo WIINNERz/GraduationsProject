@@ -2,5 +2,5 @@ projectKey=Petpal
 serverUrl=http://localhost:9000
 serverVersion=10.6.0.92116
 dashboardUrl=http://localhost:9000/dashboard?id=Petpal
-ceTaskId=587fdb2f-4e1e-41fd-93b0-386ecf5c4d7c
-ceTaskUrl=http://localhost:9000/api/ce/task?id=587fdb2f-4e1e-41fd-93b0-386ecf5c4d7c
+ceTaskId=8e3ec528-7647-421d-a1f2-dc007c6e7b0e
+ceTaskUrl=http://localhost:9000/api/ce/task?id=8e3ec528-7647-421d-a1f2-dc007c6e7b0e
