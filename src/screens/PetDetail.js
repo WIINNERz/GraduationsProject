@@ -20,6 +20,7 @@ import {
   onSnapshot,
   Timestamp,
   deleteDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 
 import {auth, storage, firestore} from '../configs/firebaseConfig';
@@ -58,7 +59,7 @@ const PetDetail = () => {
   const [uploading, setUploading] = useState(false);
   const [location, setLocation] = useState('');
 
-  //const [additionalImages, setAdditionalImages] = useState([]);
+  const [additionalImages, setAdditionalImages] = useState([]);
   const route = useRoute();
   const [image, setImage] = useState('');
   const {id} = route.params;
@@ -214,6 +215,7 @@ const PetDetail = () => {
         gender = '',
         birthday,
         adoptingConditions = '',
+        additionalImages = [],
       } = pet;
 
       let dataToStore;
@@ -234,6 +236,7 @@ const PetDetail = () => {
           gender,
           birthday,
           adoptingConditions,
+          additionalImages,
           updatedAt: Timestamp.now(),
         };
       } else {
@@ -381,20 +384,36 @@ const PetDetail = () => {
     );
     try {
       const response = await fetch(uri);
+    
+      // Check if the response is OK (status code 200-299)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    
       const blob = await response.blob();
-
+    
+      // Ensure the blob is not empty
+      if (!blob.size) {
+        throw new Error('Blob is empty');
+      }
+    
       const snapshot = await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(snapshot.ref);
-
-      const petDoc = doc(db, 'Pets', id);
-      await updateDoc(petDoc, {photoURL: downloadURL});
-
-      setPet(prevState => ({
+    
+      // Ensure the Firestore document is being referenced correctly
+      const petDocRef = doc(db, 'Pets', id);  // Make sure 'id' is the correct pet document ID
+    
+      // Add the image URL to Firestore using arrayUnion to append the URL to additionalImages
+      await updateDoc(petDocRef, {
+        additionalImages: arrayUnion(downloadURL),  // Ensure 'additionalImages' is an array in Firestore
+      });
+    
+      setPet((prevState) => ({
         ...prevState,
-        photoURL: downloadURL,
+        additionalImages: [...(prevState.additionalImages || []), downloadURL], // Update local state to reflect the new image URL
       }));
-
-      Alert.alert('Success', 'Profile photo updated successfully.');
+    
+      Alert.alert('Success', 'Additional image uploaded successfully.');
     } catch (error) {
       Alert.alert('Error', 'Failed to upload image. Please try again.');
       console.error('Error uploading image: ', error);
@@ -402,6 +421,104 @@ const PetDetail = () => {
       setUploading(false);
     }
   };
+
+
+
+  const pickAdditionalImages = () => {
+    Alert.alert('Select Images', 'Choose an option', [
+        {
+            text: 'Camera',
+            onPress: () => {
+                openCameraForAdditionalImages();
+            },
+        },
+        {
+            text: 'Gallery',
+            onPress: () => {
+                openImageLibraryForAdditionalImages();
+            },
+        },
+        { text: 'Cancel', style: 'cancel' },
+    ]);
+};
+
+// Function to open the image library for additional images
+const openImageLibraryForAdditionalImages = async () => {
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
+    if (!result.canceled) {
+        const newImageUri = result.assets[0].uri;
+        setAdditionalImages(prevImages => [...prevImages, newImageUri]);
+        uploadAdditionalImages(newImageUri);
+    }
+};
+
+// Function to open the camera for additional images
+const openCameraForAdditionalImages = async () => {
+    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+    if (!result.canceled) {
+        const newImageUri = result.assets[0].uri;
+        setAdditionalImages(prevImages => [...prevImages, newImageUri]);
+        uploadAdditionalImages(newImageUri);
+    }
+};
+
+const uploadAdditionalImages = async (uri) => {
+  if (!uri) return;
+
+  setUploading(true);
+  const storageRef = ref(
+    storage,
+    `images/${user.uid}/pets/${pet.name}/additional/${Date.now()}`
+  );
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const snapshot = await uploadBytes(storageRef, blob);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    // Ensure the Firestore document is being referenced correctly
+    const petDocRef = doc(db, 'Pets', id);  // Make sure 'id' is the correct pet document ID
+
+    // Add the image URL to Firestore using arrayUnion to append the URL to additionalImages
+    await updateDoc(petDocRef, {
+      additionalImages: arrayUnion(downloadURL),  // Ensure 'additionalImages' is an array in Firestore
+    });
+
+    setPet((prevState) => ({
+      ...prevState,
+      additionalImages: [...(prevState.additionalImages || []), downloadURL], // Update local state to reflect the new image URL
+    }));
+
+    Alert.alert('Success', 'Additional image uploaded successfully.');
+  } catch (error) {
+    Alert.alert('Error', 'Failed to upload image. Please try again.');
+    console.error('Error uploading image: ', error);
+  } finally {
+    setUploading(false);
+  }
+};
+
+
+  const fetchAdditionalImages = async () => {
+    try {
+      const petDocRef = doc(db, 'Pets', id);  
+      const docSnap = await getDoc(petDocRef);
+
+      if (docSnap.exists()) {
+        const petData = docSnap.data();
+        setAdditionalImages(petData.additionalImages || []);  
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error fetching additional images: ", error);
+    }
+  };
+
+useEffect(() => {
+  fetchAdditionalImages();
+}, []);
+
 
   if (loading) {
     return (
@@ -576,6 +693,25 @@ const PetDetail = () => {
                     setPet(prevPet => ({...prevPet, adoptingConditions: text})) // Update adoptingConditions with new text
                 }
               />
+                                    <TouchableOpacity
+                        style={styles.additionalImagePicker}
+                        onPress={pickAdditionalImages}>
+                        <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
+                      </TouchableOpacity>
+                      <View style={styles.additionalImagesContainer}>
+                              {additionalImages.length > 0 ? (
+                                additionalImages.map((uri, index) => (
+                                  <Image
+                                    key={index}
+                                    source={{ uri }}
+                                    style={styles.additionalImage}
+                                  />
+                                ))
+                              ) : (
+                                <Text>No additional images available.</Text>
+                              )}
+                            </View>
+
             </View>
           )}
         </View>
@@ -588,6 +724,7 @@ const PetDetail = () => {
             onPress={() => handleDelete()}>
             <Text>Delete</Text>
           </TouchableOpacity>
+          
         </View>
         {error && <Text style={styles.errorText}>Error: {error}</Text>}
         {uploading && <ActivityIndicator size="small" color="#0000ff" />}
@@ -730,6 +867,16 @@ const styles = StyleSheet.create({
   },
   field: {
     fontFamily: 'InterRegular',
+  },
+  additionalImagesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  additionalImage: {
+    width: 100,
+    height: 100,
+    margin: 10,
   },
 });
 
