@@ -264,9 +264,6 @@ export default function ChatRoom1({navigation}) {
     }
   };
   const handleImagePicked = url => {
-    const filename = url.split('/').pop();
-    textRef.current = filename;
-    if (inputRef) inputRef.current?.setNativeProps({text: filename});
     handleSendMessage(url, 'image');
   };
 

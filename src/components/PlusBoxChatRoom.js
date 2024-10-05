@@ -11,7 +11,7 @@ import {
 import React, { useState, useCallback } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFirestore, collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
-import { launchImageLibrary } from 'react-native-image-picker';
+import { launchImageLibrary ,launchCamera } from 'react-native-image-picker';
 import { auth } from '../configs/firebaseConfig';
 import Keymanagement from './Keymanagement';
 import { useNavigation } from '@react-navigation/native';
@@ -97,19 +97,53 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
     }
   };
   const pickImage = async () => {
-    const result = await launchImageLibrary({
-      mediaType: 'photo',
-      quality: 1,
-    });
-
-    if (result.didCancel) {
-      console.log('User cancelled image picker');
-    } else if (result.error) {
-      console.log('ImagePicker Error: ', result.error);
-    } else {
-      const { uri } = result.assets[0];
-      onImagePicked(uri);
-    }
+    Alert.alert(
+      'Select Image Source',
+      'Choose an image from the library or take a new photo.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Library',
+          onPress: async () => {
+            const result = await launchImageLibrary({
+              mediaType: 'photo',
+              quality: 1,
+            });
+  
+            if (result.didCancel) {
+              console.log('User cancelled image picker');
+            } else if (result.error) {
+              console.log('ImagePicker Error: ', result.error);
+            } else {
+              const { uri } = result.assets[0];
+              onImagePicked(uri);
+            }
+          },
+        },
+        {
+          text: 'Camera',
+          onPress: async () => {
+            const result = await launchCamera({
+              mediaType: 'photo',
+              quality: 1,
+            });
+  
+            if (result.didCancel) {
+              console.log('User cancelled image picker');
+            } else if (result.error) {
+              console.log('ImagePicker Error: ', result.error);
+            } else {
+              const { uri } = result.assets[0];
+              onImagePicked(uri);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const fetchPetData = useCallback(async () => {
