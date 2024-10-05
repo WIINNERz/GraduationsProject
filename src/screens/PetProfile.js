@@ -3,10 +3,12 @@ import {
   Text,
   Image,
   StyleSheet,
+  FlatList,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   useFocusEffect,
   useNavigation,
@@ -16,31 +18,32 @@ import {
   getFirestore,
   doc,
   getDoc,
-  updateDoc,
-  deleteDoc,
-  setDoc,
 } from 'firebase/firestore';
-import {auth, firestore, storage} from '../configs/firebaseConfig';
+import { firestore } from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AdoptBar from '../components/AdoptBar';
+
+const { width } = Dimensions.get('window');
 
 export default function PetProfile() {
   const navigate = useNavigation();
   const [pet, setPet] = useState(null);
   const route = useRoute();
-  const {id} = route.params;
+  const { id } = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
       navigate.getParent()?.setOptions({
-        tabBarStyle: {display: 'none'},
+        tabBarStyle: { display: 'none' },
       });
 
       return () => {
         navigate.getParent()?.setOptions({
-          tabBarStyle: [styles.tabBar, {backgroundColor: '#F0DFC8'}], // Reset tabBarStyle to default
+          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
         });
       };
     }, [navigate]),
@@ -51,7 +54,7 @@ export default function PetProfile() {
       try {
         const petDoc = await getDoc(doc(firestore, 'Pets', id));
         if (petDoc.exists()) {
-          const petData = {id: petDoc.id, ...petDoc.data()};
+          const petData = { id: petDoc.id, ...petDoc.data() };
           setPet(petData);
         } else {
           setError('Pet not found');
@@ -65,6 +68,15 @@ export default function PetProfile() {
 
     fetchPet();
   }, [id]);
+
+  const renderImage = ({ item }) => {
+    return <Image source={{ uri: item }} style={styles.image} />;
+  };
+
+  const imageData = pet?.additionalImages && pet.additionalImages.length > 0
+    ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
+    : [pet?.photoURL].filter(url => url);
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -76,23 +88,39 @@ export default function PetProfile() {
             color="#D27C2C"
             onPress={() => navigate.goBack()}
           />
-          {pet?.photoURL ? (
-            <Image source={{uri: pet.photoURL}} style={styles.image} />
-          ) : (
-            <MaterialCommunityIcons name="account" size={50} color="gray" />
+          <FlatList
+            data={imageData}
+            renderItem={renderImage}
+            keyExtractor={(item, index) => index.toString()}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled
+            snapToAlignment="center"
+            snapToInterval={width}
+            ref={flatListRef}
+            onScroll={event => {
+              const index = Math.round(
+                event.nativeEvent.contentOffset.x / width,
+              );
+              setCurrentIndex(index);
+            }}
+            contentContainerStyle={styles.flatListContainer}
+          />
+          {pet?.additionalImages && pet.additionalImages.length > 0 && (
+            <View style={styles.pagination}>
+              {imageData.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    { opacity: index === currentIndex ? 1 : 0.5 },
+                  ]}
+                />
+              ))}
+            </View>
           )}
         </View>
-
-        <Text
-          style={{
-            fontSize: 24,
-            color: 'black',
-            paddingVertical: 10,
-            paddingHorizontal: 30,
-            fontFamily: 'InterSemiBold',
-          }}>
-          {pet?.name}
-        </Text>
+        <Text style={styles.petName}>{pet?.name}</Text>
         <View style={styles.panelData}>
           <View style={styles.row}>
             <View style={styles.leftcolum}>
@@ -104,7 +132,6 @@ export default function PetProfile() {
               <Text style={styles.valuePet}>{pet?.gender}</Text>
             </View>
           </View>
-
           <View style={styles.row}>
             <View style={styles.leftcolum}>
               <Text style={styles.categoryPet}>Type</Text>
@@ -125,7 +152,6 @@ export default function PetProfile() {
               <Text style={styles.valuePet}>{pet?.birthday}</Text>
             </View>
           </View>
-
           <View style={styles.row}>
             <View style={styles.leftcolum}>
               <Text style={styles.categoryPet}>Weight</Text>
@@ -145,7 +171,6 @@ export default function PetProfile() {
               <Text style={styles.categoryPet}>Current Owner</Text>
               <Text style={styles.valuePet}>{pet?.username}</Text>
             </View>
-            <View style={styles.rightcolum}></View>
           </View>
         </View>
         <View style={styles.healtbook}>
@@ -153,7 +178,7 @@ export default function PetProfile() {
             <Text style={styles.healtbooktitle}>Health Book</Text>
           </View>
           <View style={styles.healtData}>
-            <View style={{paddingVertical: 5, paddingBottom: '10%'}}>
+            <View style={{ paddingVertical: 5, paddingBottom: '10%' }}>
               <Text style={styles.categoryPet}>Health Conditions</Text>
               <Text style={styles.valuePet}></Text>
             </View>
@@ -167,23 +192,15 @@ export default function PetProfile() {
                 <Text style={styles.valuePet}>{pet?.chronic}</Text>
               </View>
             </View>
-            <View style={{paddingVertical: 5, paddingTop: '10%'}}>
+            <View style={{ paddingVertical: 5, paddingTop: '10%' }}>
               <Text style={styles.categoryPet}>Vaccination list</Text>
               <Text style={styles.valuePet}> 1.</Text>
               <Text style={styles.valuePet}> 2.</Text>
               <Text style={styles.valuePet}> 3.</Text>
               <Text style={styles.valuePet}> 4.</Text>
             </View>
-            <View style={{paddingVertical: 5}}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: 'gray',
-                  fontFamily: 'InterSemiBold',
-                  paddingBottom: 10,
-                }}>
-                Medical History
-              </Text>
+            <View style={{ paddingVertical: 5 }}>
+              <Text style={styles.medicalHistoryTitle}>Medical History</Text>
               <TouchableOpacity style={styles.medrec}>
                 <Text>Record 1 </Text>
               </TouchableOpacity>
@@ -214,6 +231,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  flatListContainer: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
   },
   healtbook: {
     marginTop: 20,
@@ -255,26 +276,14 @@ const styles = StyleSheet.create({
     left: 20,
     backgroundColor: 'white',
     borderRadius: 100,
-
-    zIndex: 1,
-  },
-  edit: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    backgroundColor: 'white',
-    borderRadius: 100,
     zIndex: 1,
   },
   image: {
-    width: '100%',
-    height: '100%',
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    width: width - 40,
+    height: 300,
+    borderRadius: 10,
+    marginHorizontal: 10,
     backgroundColor: 'gray',
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   categoryPet: {
     fontSize: 18,
@@ -293,7 +302,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     overflow: 'hidden',
   },
-
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -325,5 +333,30 @@ const styles = StyleSheet.create({
     height: '8%',
     position: 'absolute',
     overflow: 'hidden',
+  },
+  petName: {
+    fontSize: 24,
+    color: 'black',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    fontFamily: 'InterSemiBold',
+  },
+  medicalHistoryTitle: {
+    fontSize: 18,
+    color: 'gray',
+    fontFamily: 'InterSemiBold',
+    paddingBottom: 10,
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  dot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#D27C2C',
+    marginHorizontal: 5,
   },
 });

@@ -51,7 +51,7 @@ const ChatItem = React.memo(({ item, roomId }) => {
         if (latestMessage.text === "") {
             if (Array.isArray(latestMessage.selectedPets) && latestMessage.selectedPets.length > 0) {
                 return `Send a pet's profile`;
-            } else if (latestMessage.imageURL) {
+            } else if (latestMessage.imageUrl) {
                 return `Sent an image`;
             } else if (latestMessage.location) {
                 return `Sent a location`;

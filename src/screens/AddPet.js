@@ -323,29 +323,23 @@ const AddPet = () => {
     }
   };
 
-  const uploadAdditionalImages = async petDocRef => {
+  const uploadAdditionalImages = async (petDocRef) => {
     setUploading(true);
     try {
-      for (const uri of additionalImages) {
-        if (!uri) continue;
-
-        const storageRef = ref(
-          storage,
-          `imageP/${user.uid}/pets/${name}/additional/${Date.now()}`,
-        );
-        const response = await fetch(uri);
-        const blob = await response.blob();
-
-        const snapshot = await uploadBytes(storageRef, blob);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-
-        await updateDoc(petDocRef, {
-          additionalImages: arrayUnion(downloadURL),
-        });
-      }
+      const uploadedImageUrls = await Promise.all(
+        additionalImages.map(async (uri) => {
+          const storageRef = ref(storage, `additionalImages/${user.uid}/pets/${name}/${Date.now()}`);
+          const response = await fetch(uri);
+          const blob = await response.blob();
+          const snapshot = await uploadBytes(storageRef, blob);
+          return await getDownloadURL(snapshot.ref);
+        })
+      );
+  
+      await updateDoc(petDocRef, { additionalImages: uploadedImageUrls });
     } catch (error) {
+      Alert.alert('Error', 'Failed to upload additional images. Please try again.');
       console.error('Error uploading additional images: ', error);
-      throw error;
     } finally {
       setUploading(false);
     }
