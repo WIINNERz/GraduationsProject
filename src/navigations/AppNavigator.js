@@ -10,6 +10,7 @@ import HomeStack from '../stacks/HomeStack';
 import ChatStack from '../stacks/ChatStack';
 import MyPetStack from '../stacks/MyPetStack'; // Ensure this import is correct
 import WaitVerifyStack from '../stacks/WaitVerifyStack';
+import TermStack from '../stacks/TermStack'; // Ensure this import is correct
 import PropTypes from 'prop-types';
 
 const Tab = createBottomTabNavigator();
@@ -65,6 +66,8 @@ const ProfileTabIcon = () => {
 
 const AppNavigator = ({ initialRouteName, userDocExists }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [userDocExists, setUserDocExists] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
@@ -74,6 +77,31 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    const db = getFirestore();
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      const userDocRef = doc(db, "Users", user.uid);
+
+      const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setUserDocExists(true);
+        } else {
+          setUserDocExists(false);
+        }
+      }, (error) => {
+        console.error("Error fetching user document:", error);
+        setUserDocExists(false);
+      });
+
+      return () => unsubscribe();
+    } else {
+      setUserDocExists(false);
+    }
   }, []);
 
   return (
@@ -86,66 +114,77 @@ const AppNavigator = ({ initialRouteName, userDocExists }) => {
       }}
     >
       {userDocExists ? (
-        <>
+        termsAccepted ? (
+          <>
+            <Tab.Screen
+              name="MyPetStack"
+              component={MyPetStack}
+              options={{
+                tabBarLabel: ({ color }) => (
+                  <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                    Home
+                  </Text>
+                ),
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons name="home" color={color} size={40} />
+                ),
+                headerShown: false,
+              }}
+            />
+            <Tab.Screen
+              name="Pet"
+              component={PetStack}
+              options={{
+                tabBarLabel: ({ color }) => (
+                  <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                    Find Pet
+                  </Text>
+                ),
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons name="paw-outline" color={color} size={40} />
+                ),
+                headerShown: false
+              }}
+            />
+            <Tab.Screen
+              name="Chat"
+              component={ChatStack}
+              options={{
+                tabBarLabel: ({ color }) => (
+                  <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                    Chat
+                  </Text>
+                ),
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons name="chat" color={color} size={40} />
+                ),
+                headerShown: false,
+              }}
+            />
+            <Tab.Screen
+              name="Profile"
+              component={ProfileStack}
+              options={{
+                headerShown: false,
+                tabBarLabel: ({ color }) => (
+                  <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
+                    Settings
+                  </Text>
+                ),
+                tabBarIcon: (props) => <ProfileTabIcon {...props} />
+              }}
+            />
+          </>
+        ) : (
           <Tab.Screen
-            name="MyPetStack"
-            component={MyPetStack}
+            name="TermStack"
+            component={TermStack}
             options={{
-              tabBarLabel: ({ color }) => (
-                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
-                  Home
-                </Text>
-              ),
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="home" color={color} size={40} />
-              ),
+              tabBarButton: () => null, 
               headerShown: false,
             }}
           />
-          <Tab.Screen
-            name="Pet"
-            component={PetStack}
-            options={{
-              tabBarLabel: ({ color }) => (
-                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
-                  Find Pet
-                </Text>
-              ),
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="paw-outline" color={color} size={40} />
-              ),
-              headerShown: false
-            }}
-          />
-          <Tab.Screen
-            name="Chat"
-            component={ChatStack}
-            options={{
-              tabBarLabel: ({ color }) => (
-                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
-                  Chat
-                </Text>
-              ),
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="chat" color={color} size={40} />
-              ),
-              headerShown: false,
-            }}
-          />
-          <Tab.Screen
-            name="Profile"
-            component={ProfileStack}
-            options={{
-              headerShown: false,
-              tabBarLabel: ({ color }) => (
-                <Text style={{ fontFamily: 'InterRegular', fontSize: 16 , color: color }}>
-                  Settings
-                </Text>
-              ),
-              tabBarIcon: (props) => <ProfileTabIcon {...props} />
-            }}
-          />
-        </>
+        )
       ) : (
         <Tab.Screen
           name="WaitVerifyStack"

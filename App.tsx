@@ -12,8 +12,10 @@ const App = () => {
   const [initialRouteName, setInitialRouteName] = useState<'MyPetStack' | 'WaitVerifyStack' | null>(null);
 
   useEffect(() => {
-    setInitialRouteName(userDocExists ? 'MyPetStack' : 'WaitVerifyStack');
-  }, [userDocExists]);
+    if (initialRouteName === null) {
+      setInitialRouteName(userDocExists ? 'MyPetStack' : 'WaitVerifyStack');
+    }
+  }, [userDocExists, initialRouteName]);
 
   if (loading || initialRouteName === null) {
     return (
