@@ -1,15 +1,31 @@
-import React from 'react';
+import React,{useState} from 'react';
 import * as Components from '../component/Authencomponent';
 import '../CSS/Authen.css';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import {signInWithEmailAndPassword } from 'firebase/auth';
+import auth from '../firebase-config'; // Import the initialized Firebase app
+
 function Authen() {
   const navigate = useNavigate();
   const [signIn, toggle] = React.useState(true);
-  
-  const handlesignin = () => {
-    console.log('sign in');
-    navigate('/home');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = useState('');
+
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // Successful sign-in
+      console.log('Signed in successfully');
+      navigate('/home');
+    } catch (error) {
+      // Handle errors
+      setError(error.message);
+    }
   };
+
   return (
     <Components.Container>
       <Components.SignUpContainer signingIn={signIn}>
@@ -24,10 +40,20 @@ function Authen() {
       <Components.SignInContainer signingIn={signIn}>
         <Components.Form>
           <Components.Title>Sign in</Components.Title>
-          <Components.Input type="email" placeholder="Email" />
-          <Components.Input type="password" placeholder="Password" />
+          <Components.Input 
+            type="email" 
+            placeholder="Email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Components.Input 
+            type="password" 
+            placeholder="Password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <Components.Anchor href="#">Forgot your password?</Components.Anchor>
-          <Components.Button onClick={handlesignin}>Sign In</Components.Button>
+          <Components.Button onClick={handleSignIn}>Sign In</Components.Button>
         </Components.Form>
       </Components.SignInContainer>
 
@@ -56,8 +82,5 @@ function Authen() {
     </Components.Container>
   );
 }
-
-// const rootElement = document.getElementById("root");
-// credit https://codesandbox.io/p/sandbox/loginsignup-form-with-slider-animation-5xdnb?file=%2Fsrc%2FComponents.js%3A13%2C1
 
 export default Authen;
