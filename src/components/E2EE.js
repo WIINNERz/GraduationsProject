@@ -3,11 +3,8 @@ import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import * as Keychain from 'react-native-keychain';
-import Aes, {encrypt} from 'react-native-aes-crypto';
-import {Alert} from 'react-native';
 import {auth, firestore} from '../configs/firebaseConfig';
 import {getDoc, doc, updateDoc} from 'firebase/firestore';
-import crypto from 'rn-crypto-js';
 import Keymanagement from './Keymanagement';
 
 
