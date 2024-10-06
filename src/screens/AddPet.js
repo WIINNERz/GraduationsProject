@@ -305,8 +305,8 @@ const AddPet = () => {
       quality: 1,
       selectionLimit: 0,
     });
-
-    if (!result.canceled) {
+  
+    if (!result.canceled && result.assets && result.assets.length > 0) {
       setAdditionalImages(prevImages => [
         ...prevImages,
         ...result.assets.map(asset => asset.uri),
@@ -317,9 +317,13 @@ const AddPet = () => {
 
   const openAdditionalCamera = async () => {
     const result = await launchCamera({mediaType: 'photo', quality: 1});
-
-    if (!result.canceled) {
-      setAdditionalImages(prevImages => [...prevImages, result.assets[0].uri]);
+  
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setAdditionalImages(prevImages => [
+        ...prevImages,
+        ...result.assets.map(asset => asset.uri),
+      ]);
+      Alert.alert('Success', 'Additional images uploaded successfully.');
     }
   };
 
