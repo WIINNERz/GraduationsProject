@@ -1,22 +1,43 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const TermOfService = () => {
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const navigation = useNavigation();
 
-  const handleAccept = () => {
-    Alert.alert('Accepted', 'You have accepted the terms of service.');
-    navigation.navigate('Home');
-  };
+  const handleAccept = async () => {
+    const db = getFirestore();
+    const auth = getAuth();
+    const user = auth.currentUser;
 
+    if (user) {
+      const userDocRef = doc(db, "Users", user.uid);
+      await updateDoc(userDocRef, { termsAccepted: true });
+      Alert.alert('Accepted', 'You have accepted the terms of service.');
+      navigation.navigate('MyPetStack');
+    } else {
+      Alert.alert('Error', 'No user is currently signed in.');
+    }
+  };
 
   const handleScroll = (event) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const isEndReached = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
     setIsScrolledToEnd(isEndReached);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
+
+      return () => {
+        navigation.getParent()?.setOptions({ tabBarStyle: { display: 'flex' } });
+      };
+    }, [navigation])
+  );
 
   return (
     <View style={styles.container}>
@@ -79,10 +100,7 @@ const TermOfService = () => {
           {'\n'}- limit any of our or your liabilities in any way that is not permitted under applicable law; or
           {'\n'}- exclude any of our or your liabilities that may not be excluded under applicable law.
         </Text>
-        <Text style={styles.paragraph}>
-          The limitations and exclusions of liability set out in this Section and elsewhere in this disclaimer: (a) are subject to the preceding paragraph; and (b) govern all liabilities arising under the disclaimer or in relation to the subject matter of this disclaimer, including liabilities arising in contract, in tort (including negligence) and for breach of statutory duty.
-        </Text>
-        <Text style={styles.paragraph}>
+        <Text style={[styles.paragraph,{marginBottom:30}]}>
           To the extent that the app and the information and services on the app are provided free of charge, we will not be liable for any loss or damage of any nature.
         </Text>
       </ScrollView>

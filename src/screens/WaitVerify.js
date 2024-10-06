@@ -27,6 +27,7 @@ const WaitVerify = ({ route }) => {
                 await user.reload();
                 if (user.emailVerified) {
                     clearInterval(checkVerificationInterval);
+                    navigation.navigate('TermOfService'); // Navigate to TermOfService
                 }
             }
         }, 3000);
