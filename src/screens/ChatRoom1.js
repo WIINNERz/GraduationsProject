@@ -68,29 +68,6 @@ export default function ChatRoom1({navigation}) {
     }, [navigation]),
   );
 
-  // useEffect(() => {
-  //   if (user) {
-  //     createRoomIfNotExists();
-  //     fetchUserProfile();
-
-  //     let roomId = getRoomId(user.uid, uid);
-  //     const docRef = doc(db, 'Rooms', roomId);
-  //     const messageRef = collection(docRef, 'Messages');
-  //     const q = query(messageRef, orderBy('createdAt', 'asc'));
-
-  //     let unsubscribe = onSnapshot(q, snapshot => {
-  //       let allMessages = snapshot.docs.map(doc => {
-  //         return {id: doc.id, ...doc.data()};
-  //       });
-  //       setMessages([...allMessages]);
-  //     });
-  //     setRoomId(roomId);
-  //     return unsubscribe;
-  //   } else {
-  //     console.error('User is not authenticated');
-  //   }
-  // }, [user]);
-
   useEffect(() => {
     if (user) {
       createRoomIfNotExists();

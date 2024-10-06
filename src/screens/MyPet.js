@@ -119,10 +119,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   back: {
-
     backgroundColor: 'white',
     borderRadius: 100,
-
     zIndex: 1,
   },
   header: {
