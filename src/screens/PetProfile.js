@@ -77,6 +77,8 @@ export default function PetProfile() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        
+      <View style={styles.panel} >
           <MaterialCommunityIcons
             style={styles.back}
             name="arrow-left"
@@ -84,7 +86,6 @@ export default function PetProfile() {
             color="#D27C2C"
             onPress={() => navigate.goBack()}
           />
-          <View style={styles.FlatList} >
           <FlatList
             data={imageData}
             renderItem={renderImage}
@@ -101,7 +102,6 @@ export default function PetProfile() {
               const index = Math.round(event.nativeEvent.contentOffset.x / width);
               setCurrentIndex(index);
             }}
-            contentContainerStyle={styles.flatListContainer}
           />
        
           {pet?.additionalImages && pet.additionalImages.length > 0 && (
@@ -222,30 +222,18 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
-  // panel: {
-  //   height: 350,
-  //   backgroundColor: 'white',
-  //   borderBottomLeftRadius: 50,
-  //   borderBottomRightRadius: 50,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  // },
-  // flatListContainer: {
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
-  FlatList: {
-    width: '100%',
+  panel: {
     height: height * 0.4,
-    // paddingHorizontal: 20,
-    // paddingVertical: 10,
-    marginTop: 20,
+    width: '100%',
+    // backgroundColor: 'white',
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   image: {
     width: width,
-    height: 320 ,
-    borderRadius: 10,
-    // marginHorizontal: 20,
+    height: "100%",
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
     backgroundColor: 'gray',
   },
   healtbook: {

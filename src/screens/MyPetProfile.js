@@ -4,9 +4,11 @@ import {
   Image,
   StyleSheet,
   ScrollView,
+  FlatList,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, useRef ,useEffect} from 'react';
 import {
   useFocusEffect,
   useNavigation,
@@ -17,17 +19,22 @@ import {firestore} from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from '../components/Keymanagement';
 
+const {width} = Dimensions.get('window');
+
 export default function PetProfile() {
   const navigate = useNavigation();
   const [pet, setPet] = useState(null);
   const route = useRoute();
-  const {id} = route.params;
+  const { id } = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [status, setStatus] = useState(null);
+  const flatListRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const KeymanagementInstance = new Keymanagement();
   const navigation = useNavigation();
+
   useFocusEffect(
     useCallback(() => {
       navigate.getParent()?.setOptions({
@@ -50,7 +57,7 @@ export default function PetProfile() {
     try {
       const petDoc = await getDoc(doc(firestore, 'Pets', id));
       if (petDoc.exists()) {
-        const petData = {id: petDoc.id, ...petDoc.data()};
+        const petData = { id: petDoc.id, ...petDoc.data() };
         if (petData.status === 'have_owner') {
           try {
             const decryptedPetData = {
@@ -96,6 +103,7 @@ export default function PetProfile() {
               setIsFavorite(true);
             }
           } catch (err) {
+            console.error('Error decrypting pet data:', err);
           }
         } else {
           setPet(petData);
@@ -129,6 +137,16 @@ export default function PetProfile() {
       });
     }
   };
+  const renderImage = ({item}) => {
+    console.log('Rendering image:', item); // Debugging: Log the image URL
+    return <Image source={{uri: item}} style={styles.image} />;
+  };
+
+  const imageData =
+    pet?.additionalImages && pet.additionalImages.length > 0
+      ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
+      : [pet?.photoURL].filter(url => url);
+  console.log('Image data:', imageData); // Debugging: Log the image data
 
   return (
     <View style={styles.container}>
@@ -147,14 +165,42 @@ export default function PetProfile() {
             name="circle-edit-outline"
             size={35}
             color="#D27C2C"
-            onPress={() => navigation.navigate('PetDetail', {id: pet?.id})}
+            onPress={() => navigate.navigate('PetDetail', {id: pet?.id})}
           />
-          {pet?.photoURL ? (
-            <Image source={{uri: pet.photoURL}} style={styles.image} />
-          ) : (
-            <MaterialCommunityIcons name="account" size={150} color="gray" />
+          <FlatList
+            data={imageData}
+            renderItem={renderImage}
+            keyExtractor={(item, index) => index.toString()}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled={true}
+            snapToAlignment="center"
+            snapToInterval={width}
+            decelerationRate="fast"
+            ref={flatListRef}
+            initialScrollIndex={0}
+            onMomentumScrollEnd={event => {
+              const index = Math.round(
+                event.nativeEvent.contentOffset.x / width,
+              );
+              setCurrentIndex(index);
+            }}
+          />
+          {pet?.additionalImages && pet.additionalImages.length > 0 && (
+            <View style={styles.pagination}>
+              {imageData.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    {opacity: index === currentIndex ? 1 : 0.5},
+                  ]}
+                />
+              ))}
+            </View>
           )}
         </View>
+
         <View style={styles.namesection}>
           <Text
             style={{
@@ -174,6 +220,7 @@ export default function PetProfile() {
             />
           </TouchableOpacity>
         </View>
+
         <View style={styles.panelData}>
           <View style={styles.row}>
             <View style={styles.leftcolum}>
@@ -278,7 +325,7 @@ export default function PetProfile() {
     </View>
   );
 }
-
+const {height} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
@@ -289,12 +336,14 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   panel: {
-    height: 350,
-    backgroundColor: 'white',
+    height: height * 0.4,
+    width: '100%',
+  },
+  image: {
+    width: width,
+    height: '100%',
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   healtbook: {
     marginTop: 20,
@@ -338,6 +387,7 @@ const styles = StyleSheet.create({
 
     zIndex: 1,
   },
+
   edit: {
     position: 'absolute',
     top: 20,
@@ -346,16 +396,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     zIndex: 1,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
-    backgroundColor: 'gray',
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   categoryPet: {
     fontSize: 18,
     color: 'gray',
@@ -419,5 +460,17 @@ const styles = StyleSheet.create({
     padding: 5,
     borderWidth: 1,
     borderColor: '#D27C2C',
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  dot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#D27C2C',
+    marginHorizontal: 5,
   },
 });
