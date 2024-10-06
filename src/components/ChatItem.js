@@ -79,7 +79,6 @@ const ChatItem = React.memo(({ item, roomId }) => {
                     unsubscribeLatestMessage = onSnapshot(latestMessageQuery, (querySnapshot) => {
                         const latestMessageDoc = querySnapshot.docs[0];
                         const latestMessageData = latestMessageDoc ? { id: latestMessageDoc.id, ...latestMessageDoc.data() } : null;
-                        console.log("Latest message data: ", latestMessageData);
                         setLatestMessage(latestMessageData);
                     });
                 } catch (error) {

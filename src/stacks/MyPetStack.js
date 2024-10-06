@@ -6,8 +6,6 @@ import PetDetail from '../screens/PetDetail';
 import MyPetProfile from '../screens/MyPetProfile';
 import Home from '../screens/Home';
 import Location1 from '../screens/Location1';
-import Testpage from '../screens/testpage';
-
 const Stack = createNativeStackNavigator();
 
 export default function MyPetStack() {
@@ -43,11 +41,11 @@ export default function MyPetStack() {
         component={Location1}
         options={{headerShown: false}}
       />
-        <Stack.Screen
+        {/* <Stack.Screen
         name="Testpage"
         component={Testpage}
         options={{headerShown: false}}
-      />
+      /> */}
     </Stack.Navigator>
   );
 }
