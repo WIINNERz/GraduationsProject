@@ -1,16 +1,23 @@
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,800");
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 * {
   box-sizing: border-box;
 }
 
 body {
-  background: #f6f5f7;
+  background: hsl(270, 11%, 96%);
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  font-family: "Montserrat", sans-serif;
+  font-family: Inter;
+  font-weight: 400;
   height: 100vh;
   margin: -20px 0 50px;
+}
+.donthaveacc{
+  font-size: 12px;
+  font-family: inter;
+  font-weight: 400;
+  margin-top: 10px;
 }

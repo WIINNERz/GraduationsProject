@@ -27,7 +27,8 @@ function Authen() {
   };
 
   return (
-    <Components.Container>
+    <div className='home'>
+        <Components.Container>
       <Components.SignUpContainer signingIn={signIn}>
         <Components.Form>
           <Components.Title>Create Account</Components.Title>
@@ -56,23 +57,25 @@ function Authen() {
           <Components.Button onClick={handleSignIn}>Sign In</Components.Button>
         </Components.Form>
       </Components.SignInContainer>
-
       <Components.OverlayContainer signingIn={signIn}>
         <Components.Overlay signingIn={signIn}>
           <Components.LeftOverlayPanel signingIn={signIn}>
-            <Components.Title>Welcome Back!</Components.Title>
+            <Components.Title>Hello, Friend!</Components.Title>
             <Components.Paragraph>
-              To keep connected with us please login with your personal info
+              Enter your personal details and start journey with us
             </Components.Paragraph>
+            <text className='donthaveacc' >Already have an account?</text>
             <Components.GhostButton onClick={() => toggle(true)}>
               Sign In
             </Components.GhostButton>
           </Components.LeftOverlayPanel>
           <Components.RightOverlayPanel signingIn={signIn}>
-            <Components.Title>Hello, Friend!</Components.Title>
+            <Components.Title>Pet Paw </Components.Title>
+            <Components.Title>for Vet!</Components.Title>
             <Components.Paragraph>
-              Enter your personal details and start journey with us
+              To keep connected with us please login with your personal info
             </Components.Paragraph>
+            <text className='donthaveacc' >Don't have an account?</text> 
             <Components.GhostButton onClick={() => toggle(false)}>
               Sign Up
             </Components.GhostButton>
@@ -80,7 +83,11 @@ function Authen() {
         </Components.Overlay>
       </Components.OverlayContainer>
     </Components.Container>
+    </div>
   );
 }
 
 export default Authen;
+
+// credit https://codesandbox.io/p/sandbox/loginsignup-form-with-slider-animation-5xdnb?file=%2Fsrc%2FComponents.js%3A13%2C1
+

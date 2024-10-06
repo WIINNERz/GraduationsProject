@@ -44,6 +44,8 @@ export const SignInContainer = styled.div`
 
 export const Form = styled.form`
   background-color: #ffffff;
+  font-family: "Inter";
+  font-weight: 400;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,12 +56,13 @@ export const Form = styled.form`
 `;
 
 export const Title = styled.h1`
-  font-weight: bold;
+  font-weight: 800;
   margin: 0;
 `;
 
 export const Input = styled.input`
   background-color: #eee;
+  border-radius: 10px;
   border: none;
   padding: 12px 15px;
   margin: 8px 0;
@@ -68,11 +71,13 @@ export const Input = styled.input`
 
 export const Button = styled.button`
   border-radius: 20px;
-  border: 1px solid #ff4b2b;
-  background-color: #ff4b2b;
+  margin-top: 20px;
+  border: 1px solid #E16539;
+  background-color: #E16539;
   color: #ffffff;
+  font-family: "Inter";
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 800;
   padding: 12px 45px;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -87,12 +92,15 @@ export const Button = styled.button`
 
 export const GhostButton = styled(Button)`
   background-color: transparent;
+  font-weight: 400;
+  font-family: "Inter";
   border-color: #ffffff;
 `;
 
 export const Anchor = styled.a`
   color: #333;
   font-size: 14px;
+  font-weight: 200;
   text-decoration: none;
   margin: 15px 0;
 `;
@@ -111,9 +119,9 @@ export const OverlayContainer = styled.div`
 `;
 
 export const Overlay = styled.div`
-  background: #ff416c;
-  background: -webkit-linear-gradient(to right, #ff4b2b, #ff416c);
-  background: linear-gradient(to right, #ff4b2b, #ff416c);
+  background: #D27C2C;
+  background: -webkit-linear-gradient(to right, #E16539, #D27C2C);
+  background: linear-gradient(to right, #E16539, #D27C2C);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 0 0;
@@ -154,7 +162,7 @@ export const RightOverlayPanel = styled(OverlayPanel)`
 `;
 export const Paragraph = styled.p`
   font-size: 14px;
-  font-weight: 100;
+  font-weight: 400;
   line-height: 20px;
   letter-spacing: 0.5px;
   margin: 20px 0 30px;
