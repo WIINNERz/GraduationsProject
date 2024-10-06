@@ -5,15 +5,14 @@ import PetProfile from "../screens/PetProfile";
 import MyPet from "../screens/MyPet";
 import PetStack from "./PetStack";
 
-export default function HomeStack(){
+export default function HomeStack() {
     const Stack = createNativeStackNavigator();
     return (
         <Stack.Navigator>
-
-        <Stack.Screen
-            name="MyPets"
-            component={PetStack}
-            options={{ headerShown: false }}/>
+            <Stack.Screen
+                name="MyPets"
+                component={PetStack}
+                options={{ headerShown: false }} />
         </Stack.Navigator>
 
     );

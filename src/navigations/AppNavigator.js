@@ -10,6 +10,7 @@ import HomeStack from '../stacks/HomeStack';
 import ChatStack from '../stacks/ChatStack';
 import MyPetStack from '../stacks/MyPetStack'; // Ensure this import is correct
 import WaitVerifyStack from '../stacks/WaitVerifyStack';
+import PropTypes from 'prop-types';
 
 const Tab = createBottomTabNavigator();
 
@@ -62,9 +63,8 @@ const ProfileTabIcon = () => {
   );
 };
 
-const AppNavigator = ({ initialRouteName }) => {
+const AppNavigator = ({ initialRouteName, userDocExists }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const [userDocExists, setUserDocExists] = useState(false);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
@@ -74,31 +74,6 @@ const AppNavigator = ({ initialRouteName }) => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
-  }, []);
-
-  useEffect(() => {
-    const db = getFirestore();
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (user) {
-      const userDocRef = doc(db, "Users", user.uid);
-
-      const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
-        if (docSnap.exists()) {
-          setUserDocExists(true);
-        } else {
-          setUserDocExists(false);
-        }
-      }, (error) => {
-        console.error("Error fetching user document:", error);
-        setUserDocExists(false);
-      });
-
-      return () => unsubscribe();
-    } else {
-      setUserDocExists(false);
-    }
   }, []);
 
   return (
@@ -183,6 +158,11 @@ const AppNavigator = ({ initialRouteName }) => {
       )}
     </Tab.Navigator>
   );
+};
+
+AppNavigator.propTypes = {
+  initialRouteName: PropTypes.oneOf(['MyPetStack', 'WaitVerifyStack']).isRequired,
+  userDocExists: PropTypes.bool.isRequired,
 };
 
 const styles = StyleSheet.create({

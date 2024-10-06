@@ -254,8 +254,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
         <TouchableOpacity style={styles.buttonStyle} onPress={fetchTelephoneNumber}>
           <MaterialCommunityIcons name="phone" size={30} color="#E16539" />
         </TouchableOpacity>
-          <Text style={styles.menuname}>Telephone</Text>
-          <Text style={styles.menuname}>Number</Text>
+          <Text style={styles.menuname}>Telephone Number</Text>
       </View>
       <View style={styles.button}>
         <TouchableOpacity style={styles.buttonStyle} onPress={pickPet}>
@@ -325,7 +324,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#EDE6E6',
-    height: 120,
+    height: 'auto',
+    padding:10,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     flexDirection: 'row',
@@ -439,6 +439,7 @@ const styles = StyleSheet.create({
   menuname: {
     marginTop: 5,
     color: 'black',
+    textAlign: 'center',
     fontFamily: 'InterRegular',
   },
 });
