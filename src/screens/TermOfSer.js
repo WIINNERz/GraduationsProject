@@ -42,66 +42,77 @@ const TermOfService = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} onScroll={handleScroll} scrollEventThrottle={16}>
-        <Text style={styles.title}>Terms of Service</Text>
+      <Text style={styles.title}>PetPal Terms of Service</Text>
         <Text style={styles.paragraph}>
-          Welcome to our application. These terms of service outline the rules and regulations for the use of our app.
+          Welcome to PetPal! These Terms of Service ("Terms") govern your use of our mobile application ("App") and services provided through the App ("Services"). By accessing or using the PetPal App, you agree to comply with and be bound by these Terms. If you do not agree to these Terms, please do not use the App.
         </Text>
+
+        <Text style={styles.heading}>1. Acceptance of Terms</Text>
         <Text style={styles.paragraph}>
-          By accessing this app we assume you accept these terms of service in full. Do not continue to use the app if you do not accept all of the terms of service stated on this page.
+          By creating an account or using PetPal, you acknowledge that you have read, understood, and agree to be bound by these Terms, along with our Privacy Policy.
         </Text>
-        <Text style={styles.heading}>License</Text>
+
+        <Text style={styles.heading}>2. Use of the App</Text>
         <Text style={styles.paragraph}>
-          Unless otherwise stated, we own the intellectual property rights for all material on the app. All intellectual property rights are reserved. You may view and/or print pages from the app for your own personal use subject to restrictions set in these terms of service.
+          You must be at least 13 years old to use PetPal. You agree to use the App for its intended purpose of pet care management and adoption services, and to abide by all applicable laws and regulations.
         </Text>
+
+        <Text style={styles.heading}>3. User Accounts</Text>
         <Text style={styles.paragraph}>
-          You must not:
-          {'\n'}- Republish material from the app
-          {'\n'}- Sell, rent or sub-license material from the app
-          {'\n'}- Reproduce, duplicate or copy material from the app
+          You are responsible for keeping your account credentials confidential. Any activity that occurs under your account is your responsibility, and you agree to notify us immediately of any unauthorized use.
         </Text>
-        <Text style={styles.heading}>User Comments</Text>
+
+        <Text style={styles.heading}>4. Managing Pet Information</Text>
         <Text style={styles.paragraph}>
-          This Agreement shall begin on the date hereof.
+          PetPal allows you to add and manage information about your pets. You are responsible for the accuracy and appropriateness of the content you post, including health and adoption status of pets.
         </Text>
+
+        <Text style={styles.heading}>5. Veterinary and Adoption Services</Text>
         <Text style={styles.paragraph}>
-          Certain parts of this app offer the opportunity for users to post and exchange opinions, information, material and data ('Comments') in areas of the app. We do not screen, edit, publish or review Comments prior to their appearance on the app and Comments do not reflect our views or opinions.
+          PetPal offers access to veterinary visit place and pet adoption management. PetPal does not guarantee the availability or accuracy of veterinary services or the outcome of any adoption process facilitated through the App.
         </Text>
+
+        <Text style={styles.heading}>6. Prohibited Activities</Text>
         <Text style={styles.paragraph}>
-          To the extent permitted by applicable laws, we shall not be responsible or liable for the Comments or for any loss cost, liability, damages or expenses caused and or suffered as a result of any use of and/or posting of and/or appearance of the Comments on this app.
+          You agree not to engage in any of the following activities while using PetPal:
+          {'\n'}- Violating any local, state, or national law.
+          {'\n'}- Providing false information about pets, including health conditions or adoption eligibility.
+          {'\n'}- Misusing the App to harm animals or deceive users.
         </Text>
-        <Text style={styles.heading}>Hyperlinking to our Content</Text>
+
+        <Text style={styles.heading}>7. Intellectual Property</Text>
         <Text style={styles.paragraph}>
-          The following organizations may link to our app without prior written approval:
-          {'\n'}- Government agencies;
-          {'\n'}- Search engines;
-          {'\n'}- News organizations;
-          {'\n'}- Online directory distributors when they list us in the directory may link to our app in the same manner as they hyperlink to the websites of other listed businesses.
+          PetPal retains ownership of all content and material on the App, including text, images, logos, and trademarks. Users are not allowed to copy, distribute, or modify any material without prior consent from PetPal.
         </Text>
-        <Text style={styles.heading}>iFrames</Text>
+
+        <Text style={styles.heading}>8. Termination</Text>
         <Text style={styles.paragraph}>
-          Without prior approval and express written permission, you may not create frames around our app or use other techniques that alter in any way the visual presentation or appearance of our app.
+          PetPal reserves the right to terminate or suspend your account if you violate these Terms or misuse the App. Upon termination, your right to access the App will cease immediately.
         </Text>
-        <Text style={styles.heading}>Reservation of Rights</Text>
+
+        <Text style={styles.heading}>9. Disclaimer of Warranties</Text>
         <Text style={styles.paragraph}>
-          We reserve the right at any time and in its sole discretion to request that you remove all links or any particular link to our app. You agree to immediately remove all links to our app upon such request. We also reserve the right to amend these terms of service and its linking policy at any time. By continuing to link to our app, you agree to be bound to and abide by these linking terms of service.
+          The App is provided "AS IS" without warranties of any kind. We do not guarantee that the App will meet your requirements or be available without interruption or error. 
         </Text>
-        <Text style={styles.heading}>Removal of links from our app</Text>
+
+        <Text style={styles.heading}>10. Limitation of Liability</Text>
         <Text style={styles.paragraph}>
-          If you find any link on our app or any linked website objectionable for any reason, you may contact us about this. We will consider requests to remove links but will have no obligation to do so or to respond directly to you.
+          In no event shall PetPal be liable for any damages (including indirect or consequential damages) arising out of the use or inability to use the App.
         </Text>
+
+        <Text style={styles.heading}>11. Changes to Terms</Text>
         <Text style={styles.paragraph}>
-          Whilst we endeavour to ensure that the information on this app is correct, we do not warrant its completeness or accuracy; nor do we commit to ensuring that the app remains available or that the material on the app is kept up to date.
+          PetPal reserves the right to modify these Terms at any time. We will notify users of any changes via the App, and continued use after such changes implies acceptance of the new Terms.
         </Text>
-        <Text style={styles.heading}>Disclaimer</Text>
+
+        <Text style={styles.heading}>12. Governing Law</Text>
         <Text style={styles.paragraph}>
-          To the maximum extent permitted by applicable law, we exclude all representations, warranties and conditions relating to our app and the use of this app (including, without limitation, any warranties implied by law in respect of satisfactory quality, fitness for purpose and/or the use of reasonable care and skill). Nothing in this disclaimer will:
-          {'\n'}- limit or exclude our or your liability for death or personal injury resulting from negligence;
-          {'\n'}- limit or exclude our or your liability for fraud or fraudulent misrepresentation;
-          {'\n'}- limit any of our or your liabilities in any way that is not permitted under applicable law; or
-          {'\n'}- exclude any of our or your liabilities that may not be excluded under applicable law.
+          These Terms are governed by and construed in accordance with the laws PDPA of Thailand. Any disputes arising from these Terms will be subject to the exclusive jurisdiction of the courts in [Your Country/State].
         </Text>
-        <Text style={[styles.paragraph,{marginBottom:30}]}>
-          To the extent that the app and the information and services on the app are provided free of charge, we will not be liable for any loss or damage of any nature.
+
+        <Text style={styles.heading}>13. Contact Us</Text>
+        <Text style={styles.paragraph}>
+          If you have any questions or concerns about these Terms, please contact us at support@petpal.com.
         </Text>
       </ScrollView>
       <View style={styles.buttonContainer}>
@@ -120,6 +131,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     padding: 20,
+    marginBottom: 60,
   },
   title: {
     fontSize: 24,
@@ -135,7 +147,7 @@ const styles = StyleSheet.create({
   paragraph: {
     fontSize: 16,
     lineHeight: 24,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
