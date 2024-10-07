@@ -6,7 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 export const SavePButton = ({ onPress }) => {
     return (
       <TouchableOpacity style={styles.SavePButton} onPress={onPress}>
-        <Text style={styles.buttonText}>Save</Text>
+        <Text style={styles.SavebuttonText}>Save</Text>
       </TouchableOpacity>
     );
   };
@@ -15,14 +15,16 @@ export const CancelPButton= () => {
     return (
         <View>
             <TouchableOpacity style={styles.CancelPButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={styles.CancelbuttonText}>Cancel</Text>
             </TouchableOpacity>
         </View>
     );
 }
 const styles = StyleSheet.create({
     SavePButton :{
-        backgroundColor: '#E16539',
+        backgroundColor: '#34A853',
+        borderWidth: 1,
+        borderColor: '#34A853',
         width: 100,
         padding: 10,
         margin: 10,
@@ -32,6 +34,8 @@ const styles = StyleSheet.create({
     },
     CancelPButton :{
         backgroundColor: '#E16539',
+        borderWidth: 1,
+        borderColor: '#E16539',
         width: 100,
         padding: 10,
         margin: 10,
@@ -39,10 +43,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    buttonText: {
+
+    SavebuttonText: {
         color: 'white',
         fontFamily: 'InterRegular',
     },
+    CancelbuttonText: {
+        color: 'white',
+        fontFamily: 'InterRegular',
+    },
+    
 });
 
 
