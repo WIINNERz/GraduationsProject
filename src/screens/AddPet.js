@@ -139,6 +139,7 @@ const AddPet = () => {
           color: encryptField(color),
           gender: encryptField(gender),
           birthday: encryptField(birthday.toISOString().substring(0, 10)),
+          additionalImages,
         };
       } else {
         dataToStore = {
@@ -511,6 +512,23 @@ const AddPet = () => {
               value={chronic}
               onChangeText={setChronic}
             />
+
+            <TouchableOpacity
+              style={styles.additionalImagePicker}
+              onPress={pickAdditionalImages}>
+                <Text style={styles.additionalImagePickerText}>
+                  Pick Additional Images
+                </Text>
+            </TouchableOpacity>
+              <View style={styles.additionalImagesContainer}>
+                {additionalImages.map((uri, index) => (
+                  <Image
+                    key={index}
+                    source={{uri}}
+                    style={styles.additionalImage}
+                  />
+                        ))}
+              </View>
             {userData?.verify ? (
               <>
                 <View style={styles.checkboxContainer}>
@@ -540,22 +558,6 @@ const AddPet = () => {
                         value={conditions}
                         onChangeText={setConditions}
                       />
-                      <TouchableOpacity
-                        style={styles.additionalImagePicker}
-                        onPress={pickAdditionalImages}>
-                        <Text style={styles.additionalImagePickerText}>
-                          Pick Additional Images
-                        </Text>
-                      </TouchableOpacity>
-                      <View style={styles.additionalImagesContainer}>
-                        {additionalImages.map((uri, index) => (
-                          <Image
-                            key={index}
-                            source={{uri}}
-                            style={styles.additionalImage}
-                          />
-                        ))}
-                      </View>
                     </>
                   )}
                 </View>

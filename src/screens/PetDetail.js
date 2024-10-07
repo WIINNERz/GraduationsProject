@@ -274,6 +274,7 @@ const PetDetail = () => {
           birthday: birthday
             ? CryptoJS.AES.encrypt(birthday, key).toString()
             : null,
+          additionalImages : additionalImages,
           updatedAt: Timestamp.now(),
         };
       }
@@ -317,7 +318,7 @@ const PetDetail = () => {
           // Wrap the async function in a synchronous function
           (async () => {
             try {
-              await deletePet(); // Replace with your actual async function
+              await deletePet(); 
               navigation.navigate('MyPets');
             } catch (error) {
               console.error('Error deleting pet:', error);
@@ -334,7 +335,7 @@ const PetDetail = () => {
 
   const deletePet = async () => {
     try {
-      const petDocRef = doc(firestore, 'Pets', pet.id); // Replace 'petId' with the actual pet ID
+      const petDocRef = doc(firestore, 'Pets', pet.id); 
       await deleteDoc(petDocRef);
     } catch (error) {
       console.error('Error deleting pet:', error);
@@ -401,16 +402,16 @@ const PetDetail = () => {
       const downloadURL = await getDownloadURL(snapshot.ref);
     
       // Ensure the Firestore document is being referenced correctly
-      const petDocRef = doc(db, 'Pets', id);  // Make sure 'id' is the correct pet document ID
+      const petDocRef = doc(db, 'Pets', id);  
     
       // Add the image URL to Firestore using arrayUnion to append the URL to additionalImages
       await updateDoc(petDocRef, {
-        additionalImages: arrayUnion(downloadURL),  // Ensure 'additionalImages' is an array in Firestore
+        additionalImages: arrayUnion(downloadURL),  
       });
     
       setPet((prevState) => ({
         ...prevState,
-        additionalImages: [...(prevState.additionalImages || []), downloadURL], // Update local state to reflect the new image URL
+        additionalImages: [...(prevState.additionalImages || []), downloadURL], 
       }));
     
       Alert.alert('Success', 'Additional image uploaded successfully.');
@@ -477,16 +478,15 @@ const uploadAdditionalImages = async (uri) => {
     const downloadURL = await getDownloadURL(snapshot.ref);
 
     // Ensure the Firestore document is being referenced correctly
-    const petDocRef = doc(db, 'Pets', id);  // Make sure 'id' is the correct pet document ID
+    const petDocRef = doc(db, 'Pets', id);  
 
-    // Add the image URL to Firestore using arrayUnion to append the URL to additionalImages
     await updateDoc(petDocRef, {
-      additionalImages: arrayUnion(downloadURL),  // Ensure 'additionalImages' is an array in Firestore
+      additionalImages: arrayUnion(downloadURL),  
     });
 
     setPet((prevState) => ({
       ...prevState,
-      additionalImages: [...(prevState.additionalImages || []), downloadURL], // Update local state to reflect the new image URL
+      additionalImages: [...(prevState.additionalImages || []), downloadURL], 
     }));
 
     Alert.alert('Success', 'Additional image uploaded successfully.');
@@ -664,6 +664,24 @@ useEffect(() => {
               />
             </View>
           </View>
+          <TouchableOpacity
+                        style={styles.additionalImagePicker}
+                        onPress={pickAdditionalImages}>
+                        <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
+                      </TouchableOpacity>
+                      <View style={styles.additionalImagesContainer}>
+                              {additionalImages.length > 0 ? (
+                                additionalImages.map((uri, index) => (
+                                  <Image
+                                    key={index}
+                                    source={{ uri }}
+                                    style={styles.additionalImage}
+                                  />
+                                ))
+                              ) : (
+                                <Text>No additional images available.</Text>
+                              )}
+                            </View>
           <Checkbox
             text="Find Home"
             onPress={onPress}
@@ -693,24 +711,6 @@ useEffect(() => {
                     setPet(prevPet => ({...prevPet, adoptingConditions: text})) // Update adoptingConditions with new text
                 }
               />
-                                    <TouchableOpacity
-                        style={styles.additionalImagePicker}
-                        onPress={pickAdditionalImages}>
-                        <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
-                      </TouchableOpacity>
-                      <View style={styles.additionalImagesContainer}>
-                              {additionalImages.length > 0 ? (
-                                additionalImages.map((uri, index) => (
-                                  <Image
-                                    key={index}
-                                    source={{ uri }}
-                                    style={styles.additionalImage}
-                                  />
-                                ))
-                              ) : (
-                                <Text>No additional images available.</Text>
-                              )}
-                            </View>
 
             </View>
           )}
