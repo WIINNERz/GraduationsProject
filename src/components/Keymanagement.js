@@ -52,6 +52,7 @@ const Keymanagement = () => {
     try {
       const credentials = await Keychain.getGenericPassword({ service: 'masterkey' });
       if (credentials) {
+        console.log('Credentials successfully loaded' + credentials.password);
         return credentials.password;
       } else {
         return '';
@@ -66,6 +67,7 @@ const Keymanagement = () => {
     try {
       const passkey = await getpasskey(password);
       const decmaster = await getmasterkey(passkey);
+      console.log(decmaster);
       await storeKey(decmaster);
     } catch (error) {
       console.error('Could not retrieve and store key', error);

@@ -251,7 +251,7 @@ const openMaps = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
-            // onPress={() => navigation.navigate('Testpage')}
+            onPress={() => navigation.navigate('Pond')}
             >
             <MaterialCommunityIcons
               name="file-question"

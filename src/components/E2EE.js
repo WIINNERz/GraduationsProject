@@ -1,31 +1,32 @@
 import 'react-native-get-random-values';
 import nacl from 'tweetnacl';
-import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
-import { TextEncoder, TextDecoder } from 'text-encoding';
+import {encodeBase64, decodeBase64} from 'tweetnacl-util';
+import {TextEncoder, TextDecoder} from 'text-encoding';
 import * as Keychain from 'react-native-keychain';
 import {auth, firestore} from '../configs/firebaseConfig';
 import {getDoc, doc, updateDoc} from 'firebase/firestore';
 import Keymanagement from './Keymanagement';
 
-
 const E2EE = () => {
   const KeymanagementInstance = Keymanagement();
-  
-  
-  const generateKeyPair = async (uid) => {
-  
+
+  const generateKeyPair = async uid => {
     try {
       const keyPairA = nacl.box.keyPair();
       const publicKeyA = encodeBase64(keyPairA.publicKey);
       const secretKeyA = encodeBase64(keyPairA.secretKey);
-      await Keychain.setGenericPassword('Private key', secretKeyA , { service : 'privatekey' });
+      await Keychain.setGenericPassword('Private key', secretKeyA, {
+        service: 'privatekey',
+      });
       const userDocRef = doc(firestore, 'Users', uid);
-      const encryptedPrivateKey = await KeymanagementInstance.encryptData(secretKeyA);
+      const encryptedPrivateKey = await KeymanagementInstance.encryptData(
+        secretKeyA,
+      );
+      console.log('Generated key pair successfully');
       await updateDoc(userDocRef, {
         publicKey: publicKeyA,
         encPrivateKey: encryptedPrivateKey,
       });
-
     } catch (error) {
       console.log('Could not generate key pair', error);
     }
@@ -36,13 +37,17 @@ const E2EE = () => {
       const userRef = doc(firestore, 'Users', currentUser.uid);
       const userDoc = await getDoc(userRef); // Use getDoc to fetch a single document
       const userData = userDoc.data();
-      const { encPrivateKey } = userData;
-      const decryptedPrivateKey = await KeymanagementInstance.decryptData(encPrivateKey);
+      const {encPrivateKey} = userData;
+      const decryptedPrivateKey = await KeymanagementInstance.decryptData(
+        encPrivateKey,
+      );
       if (!decryptedPrivateKey) {
         throw new Error('Decrypted private key is empty or null');
       }
 
-      await Keychain.setGenericPassword('privatekey', decryptedPrivateKey, { service: 'privatekey' });
+      await Keychain.setGenericPassword('privatekey', decryptedPrivateKey, {
+        service: 'privatekey',
+      });
       console.log('Secret key stored successfully');
     } catch (error) {
       console.error('Could not get key', error);
@@ -51,17 +56,18 @@ const E2EE = () => {
   }
   const clearSecretKey = async () => {
     try {
-      await Keychain.resetGenericPassword({service:'privatekey'});
+      await Keychain.resetGenericPassword({service: 'privatekey'});
       console.log('SKey cleared successfully');
-    } 
-    catch (error) {
+    } catch (error) {
       console.error('Could not clear key', error);
     }
-  }
+  };
 
   const getMySecretKey = async () => {
     try {
-      const credentials = await Keychain.getGenericPassword({service:'privatekey'});
+      const credentials = await Keychain.getGenericPassword({
+        service: 'privatekey',
+      });
       if (credentials) {
         return credentials.password;
       } else {
@@ -71,7 +77,7 @@ const E2EE = () => {
       console.log('Could not load credentials. ', error);
       return '';
     }
-  }
+  };
 
   const computeSharedSecret = (mySecretKey, theirPublicKey) => {
     const secretKey = decodeBase64(mySecretKey);
