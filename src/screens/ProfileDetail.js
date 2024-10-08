@@ -79,37 +79,6 @@ const ProfileDetail = ({ navigation }) => {
     fetchUserData();
   }, [user]);
 
-  // const handleSave = async () => {
-  //   if (user) {
-  //     const key = await KeymanagementInstance.retrievemasterkey();
-      
-  //     const userDoc = doc(firestore, 'Users', user.uid);
-  //     const updatedData = {
-  //       // firstname: firstname || null,
-  //       firstname : KeymanagementInstance.encryptData(firstname) || null,
-  //       lastname: lastname || null,
-  //       username: username || null,
-  //       email: email || null,
-  //       tel: tel || null,
-  //       telEmergency: telEmergency || null,
-  //       address: address || null,
-  //       district: district || null,
-  //       province: province || null,
-  //       zipcode: zipcode || null
-  //     };
-  //     console.log('Encrypted Firstname: ', firstname);
-  
-  //     try {
-  //       await updateDoc(userDoc, updatedData);
-  //       navigation.navigate('Profiles');
-  //     } catch (error) {
-  //       Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
-  //       console.error('Error updating document: ', error);
-  //     }
-  //   } else {
-  //     Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
-  //   }
-  // };
   const handleSave = async () => {
   if (user) {
     const userDoc = doc(firestore, 'Users', user.uid);

@@ -1,15 +1,30 @@
 import styled from "styled-components";
 
+export const Screen = styled.div`
+  background: hsl(270, 11%, 96%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: Inter;
+  font-weight: 400;
+  height: 100vh;
+  margin: -20px 0 50px;
+  box-sizing: border-box;
+
+`;
 
 export const Container = styled.div`
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  position: relative;
-  overflow: hidden;
-  width: 678px;
-  max-width: 100%;
-  min-height: 400px;
+   background-color: #fff;
+   border-radius: 10px;
+   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+   position: relative;
+   overflow: hidden;
+   width: 678px;
+   max-width: 100%;
+   min-height: 400px;
+  
+
 `;
 
 export const SignUpContainer = styled.div`
@@ -166,4 +181,10 @@ export const Paragraph = styled.p`
   line-height: 20px;
   letter-spacing: 0.5px;
   margin: 20px 0 30px;
+`;
+export const Accounttext = styled.text`
+  font-size: 12px;
+  font-family: inter;
+  font-weight: 400;
+  margin-top: 10px;
 `;
