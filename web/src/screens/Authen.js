@@ -5,11 +5,11 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
-import {getDocs,  doc, updateDoc, collection , setDoc} from 'firebase/firestore';
+import {getDocs, doc, updateDoc, collection, setDoc} from 'firebase/firestore';
 import {auth, firestore} from '../firebase-config';
 import styles from '../CSS/Authen.module.css';
 import securedFunction from '../Function/securefunction';
-import CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js'; // ใช้อย่นะจ๊ะ
 
 function Authen() {
   const navigate = useNavigate();
@@ -62,30 +62,33 @@ function Authen() {
       //   if (hashExists) {
       //     console.log('This ID card number has already been used');
       //   } else {
-          const tempUser = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password,
-          );
-          const uid = tempUser.user.uid;
-          // Successful sign-up
-          await setDoc(doc(firestore, 'Users', uid), {
-            firstname: firstname,
-            lastname: lastname,
-            email: email,
-            // hashedID: hash,
-            uid,
-            role : 'vet'
-          });
-          console.log('Signed up successfully');
-          navigate('/home');
-        }
+      const tempUser = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const uid = tempUser.user.uid;
+      // Successful sign-up
+      const { publicKey, secretKey } = await sec.generateKeyPair();
+
+      await setDoc(doc(firestore, 'Users', uid), {
+        firstname: firstname,
+        lastname: lastname,
+        email: email,
+        // hashedID: hash,
+        uid,
+        publicKey: publicKey,
+        encPrivateKey: secretKey,
+        role: 'vet',
+      });
+      console.log('Signed up successfully');
+      navigate('/home');
+    } catch (error) {
       // } else {
       //   console.log('Thai ID is invalid');
       //   return;
       // }
-    //}
-     catch (error) {
+      //}
       console.error('Error signing up:', error);
     }
   };
@@ -126,7 +129,9 @@ function Authen() {
               value={id}
               onChange={e => setID(e.target.value)}
             />
-            <Components.Button onClick={handleSignUp} >Sign Up</Components.Button>
+            <Components.Button onClick={handleSignUp}>
+              Sign Up
+            </Components.Button>
           </Components.Form>
         </Components.SignUpContainer>
         <Components.SignInContainer signingIn={signIn}>

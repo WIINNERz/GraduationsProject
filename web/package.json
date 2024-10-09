@@ -13,6 +13,8 @@
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "styled-components": "^6.1.13",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1",
     "web": "file:",
     "web-vitals": "^2.1.4"
   },
