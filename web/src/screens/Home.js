@@ -17,15 +17,21 @@ const Home = () => {
           <div className={styles.nav}>
             <ul>
               <li>
-                <h2>table of content</h2>
+                <p className={styles.headtext}>table of content</p>
               </li>
               <li>
-                <button onClick={() => navigate('/user-form')}> form</button>
+                <button className={styles.sidemenubtn} onClick={() => navigate('/user-form')}> form</button>
               </li>
               <li>
-                <button onClick={handlelogout}>Logout</button>
+                <button className={styles.sidemenubtn}>Blank</button>
               </li>
-            
+              <li>
+                <button className={styles.sidemenubtn}>Blank</button>
+              </li>
+              <li>
+                <button className={styles.sidemenubtn} onClick={handlelogout}>Logout</button>
+              </li>
+
             </ul>
           </div>
           <div className={styles.article}>

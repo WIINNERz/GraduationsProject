@@ -30,10 +30,40 @@ const generateKeyPair = async () => {
   return { publicKey, secretKey };
 }
 
+const computeSharedSecret = (mySecretKey, theirPublicKey) => {
+  const secretKey = decodeBase64(mySecretKey);
+  const publicKey = decodeBase64(theirPublicKey);
+  const sharedSecret = nacl.box.before(publicKey, secretKey);
+  return encodeBase64(sharedSecret);
+};
+const encryptData = async (data, sharekey) => {
+  const nonce = nacl.randomBytes(24);
+  const secret = decodeBase64(sharekey);
+  const dataUint8 = new TextEncoder().encode(data);
+  const encrypted = nacl.secretbox(dataUint8, nonce, secret);
+  return {
+    cipherText: encodeBase64(encrypted),
+    nonce: encodeBase64(nonce),
+  };
+}
+const decryptData = async (cipherText, nonce, sharekey) => {
+  const secret = decodeBase64(sharekey);
+  const message = decodeBase64(cipherText);
+  const nonceUint8 = decodeBase64(nonce);
+  const decrypted = nacl.secretbox.open(message, nonceUint8, secret);
+  if (!decrypted) {
+    throw new Error('Decryption failed');
+  }
+  const decryptedString = new TextDecoder().decode(decrypted);
+  return decryptedString;
+}
 
   return {
     validateThaiId,
     generateKeyPair,
+    computeSharedSecret,
+    encryptData,
+    decryptData,
   };
 };
 
