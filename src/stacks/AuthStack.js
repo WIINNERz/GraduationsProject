@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {View, StyleSheet, Animated} from 'react-native';
+import {View, StyleSheet, Animated, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {
   signInWithEmailAndPassword,
@@ -143,7 +143,8 @@ const AuthStack = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{marginTop: '75%'}}>
+      <View style={{marginTop: '50%'}}>
+      <Image source={require('../assets/image.png')} style={styles.logo} />
         <ToggleButton
           isSignIn={isSignIn}
           setIsSignIn={setIsSignIn}
@@ -191,6 +192,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     color: "black",
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
   },
 });
 

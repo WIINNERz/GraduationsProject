@@ -189,8 +189,6 @@ const PetDetail = () => {
         console.error('No user is currently logged in.');
         return;
       }
-
-      const id = name; // Ensure you have a valid document ID
       const dateTime = Timestamp.now();
       const username = await fetchUsername(user.uid);
       const key = await KeymanagementInstance.retrievemasterkey();
@@ -287,9 +285,17 @@ const PetDetail = () => {
       });
 
       // Ensure the document reference has an even number of segments
-      const petDocRef = doc(db, 'Pets', name);
-      await updateDoc(petDocRef, dataToStore);
-      navigation.goBack();
+      const petDocRef = doc(db, 'Pets', pet.id.trim());
+    
+    // Check if document exists
+    const petDoc = await getDoc(petDocRef);
+    if (!petDoc.exists()) {
+      Alert.alert('Error', 'Pet document does not exist.');
+      return;
+    }
+
+    await updateDoc(petDocRef, dataToStore);
+    navigation.goBack();
     } catch (err) {
       setError(err.message);
       console.error('Error saving pet data:', err);
@@ -404,9 +410,8 @@ const PetDetail = () => {
       // Ensure the Firestore document is being referenced correctly
       const petDocRef = doc(db, 'Pets', id);  
     
-      // Add the image URL to Firestore using arrayUnion to append the URL to additionalImages
       await updateDoc(petDocRef, {
-        additionalImages: arrayUnion(downloadURL),  
+        photoURL: downloadURL 
       });
     
       setPet((prevState) => ({

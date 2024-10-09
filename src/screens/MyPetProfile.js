@@ -138,7 +138,6 @@ export default function PetProfile() {
     }
   };
   const renderImage = ({item}) => {
-    console.log('Rendering image:', item); // Debugging: Log the image URL
     return <Image source={{uri: item}} style={styles.image} />;
   };
 
@@ -146,7 +145,6 @@ export default function PetProfile() {
     pet?.additionalImages && pet.additionalImages.length > 0
       ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
       : [pet?.photoURL].filter(url => url);
-  console.log('Image data:', imageData); // Debugging: Log the image data
 
   return (
     <View style={styles.container}>

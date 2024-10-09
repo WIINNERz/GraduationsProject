@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,16 +9,17 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {auth, firestore, storage} from '../configs/firebaseConfig';
-import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {doc, updateDoc, onSnapshot} from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
+import { auth, firestore, storage } from '../configs/firebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import Keymanagement from '../components/Keymanagement';
 import E2EE from '../components/E2EE';
 import { verify } from 'tweetnacl';
 import Notiverify from '../components/Notiverify';
+import FullScreenModal from '../components/FullScreenModal';
 
 const Profiles = () => {
   const navigation = useNavigation();
@@ -27,6 +28,7 @@ const Profiles = () => {
   const [lastname, setLastname] = useState('');
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
   const [uploading, setUploading] = useState(false);
   const user = auth.currentUser;
   const KeymanagementInstance = Keymanagement();
@@ -57,7 +59,7 @@ const Profiles = () => {
             setFirstname('');
             setLastname('');
           }
-        } 
+        }
         setLoading(false);
       },
       error => {
@@ -78,22 +80,22 @@ const Profiles = () => {
       .catch(error => {
         console.error('Error signing out:', error);
       });
-      KeymanagementInstance.clearKey();
-      E2EEInstance.clearSecretKey();
-      
+    KeymanagementInstance.clearKey();
+    E2EEInstance.clearSecretKey();
+
 
   };
 
   const pickImage = () => {
     Alert.alert('Select Image', 'Choose an option', [
-      {text: 'Camera', onPress: () => {openCamera();}},
-      {text: 'Gallery', onPress: () => {openImageLibrary();}},
-      {text: 'Cancel', style: 'cancel'},
+      { text: 'Camera', onPress: () => { openCamera(); } },
+      { text: 'Gallery', onPress: () => { openImageLibrary(); } },
+      { text: 'Cancel', style: 'cancel' },
     ]);
   };
 
   const openImageLibrary = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -102,7 +104,7 @@ const Profiles = () => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({mediaType: 'photo', quality: 1});
+    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -124,7 +126,7 @@ const Profiles = () => {
       const downloadURL = await getDownloadURL(snapshot.ref);
 
       const userDoc = doc(firestore, 'Users', user.uid);
-      await updateDoc(userDoc, {photoURL: downloadURL});
+      await updateDoc(userDoc, { photoURL: downloadURL });
 
       setUserData(prevState => ({
         ...prevState,
@@ -158,11 +160,14 @@ const Profiles = () => {
   }
 
   return (
+    <>
     <View style={styles.container}>
       <View style={styles.Content}>
         <View style={{paddingRight: 30}}>
           {userData.photoURL ? (
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Image source={{uri: userData.photoURL}} style={styles.image} />
+            </TouchableOpacity>
           ) : (
             <MaterialCommunityIcons name="account" size={50} color="gray" />
           )}
@@ -304,6 +309,13 @@ const Profiles = () => {
       </TouchableOpacity>
     </View>
     </View>
+    <FullScreenModal 
+  imageUri={userData.photoURL} 
+  thumbnailStyle={styles.image} 
+  modalVisible={modalVisible}
+  setModalVisible={setModalVisible}
+/>
+  </>
   );
 };
 
@@ -313,12 +325,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   verify: {
-    color : 'black',
-    fontFamily : 'InterRegular',
+    color: 'black',
+    fontFamily: 'InterRegular',
   },
   notiverify: {
-    color : 'black',
-    fontFamily : 'InterRegular',
+    color: 'black',
+    fontFamily: 'InterRegular',
     opacity: 0.5,
   },
 
@@ -358,7 +370,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     padding: 10,
-  
+
     width: '83%',
   },
   image: {
@@ -394,7 +406,7 @@ const styles = StyleSheet.create({
   },
   menudes: {
     fontSize: 14,
-    fontFamily: 'InterItalic',  
+    fontFamily: 'InterItalic',
     color: 'black',
     opacity: 0.5,
   },
@@ -411,13 +423,13 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },  
+  },
   myaccount: {
     alignContent: 'flex-start',
   },
   rightContent: {
     width: '7%',
-  },  
+  },
 });
 
 export default Profiles;
