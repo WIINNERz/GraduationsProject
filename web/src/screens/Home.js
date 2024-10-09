@@ -1,69 +1,54 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
-import * as Components from '../component/Homecss';
+import styles from '../CSS/Home.module.css';
+
 const Home = () => {
   const navigate = useNavigate();
   const handlelogout = () => {
     navigate('/');
   };
   return (
+    <div className={styles.screen}>
 
-    <Components.Screen>
-      <Components.Container>
-        <Components.Header>
+        <div className={styles.header}>
           <h2>PetPaw for Vet</h2>
-        </Components.Header>
-        <Components.Section>
-          <Components.Nav>
-            <Components.Navul>
+        </div>
+        <div className={styles.section}>
+          <div className={styles.nav}>
+            <ul>
               <li>
                 <h2>table of content</h2>
               </li>
               <li>
-                <button onClick={handlelogout}>Logout</button>
-              </li>
-              <li>
                 <button onClick={() => navigate('/user-form')}> form</button>
               </li>
-            </Components.Navul>
-          </Components.Nav>
-          <Components.Article>
+              <li>
+                <button onClick={handlelogout}>Logout</button>
+              </li>
+            
+            </ul>
+          </div>
+          <div className={styles.article}>
             <h1>Welcome to the Home Page</h1>
             <p>
-              London is the capital city of England. It is the most populous
-              city in the United Kingdom, with a metropolitan area of over 13
-              million inhabitants.
+              Got confused about the pet's health? Don't worry, we are here to
+              help you. PetPaw for Vet is a platform where you can get the
+              solution to your pet's health problems. We have a team of
+              experienced veterinarians who are always ready to help you. You can
+              ask your queries and get the solution from our experts. We also
+              provide the facility to book an appointment with our veterinarians.
+              So, what are you waiting for? Just sign in and get the solution to
+              your pet's health problems.  
             </p>
-            <p>
-              Standing on the River Thames, London has been a major settlement
-              for two millennia, its history going back to its founding by the
-              Romans, who named it Londinium. Lorem Ipsum is simply dummy text of
-              the printing and typesetting industry. Lorem Ipsum has been the
-              industry's standard dummy text ever since the 1500s, when an
-              unknown printer took a galley of type and scrambled it to make a
-              type specimen book. It has survived not only five centuries, but
-              also the leap into electronic typesetting, remaining essentially
-              unchanged. It was popularised in the 1960s with the release of
-              Letraset sheets containing Lorem Ipsum passages, and more recently
-              with desktop publishing software like Aldus PageMaker including
-              versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the
-              printing and typesetting industry. Lorem Ipsum has been the
-              industry's standard dummy text ever since the 1500s, when an
-              unknown printer took a galley of type and scrambled it to make a
-              type specimen book. It has survived not only five centuries, but
-              also the leap into electronic typesetting, remaining essentially
-              unchanged. It was popularised in the 1960s with the release of
-              Letraset sheets containing Lorem Ipsum passages, and more recently
-              with desktop publishing software like Aldus PageMaker including
-              versions of Lorem Ipsum.
-            </p>
-          </Components.Article>
-        </Components.Section>
-        <Components.Footer>
+            
+
+          </div>
+        </div>
+        <div className={styles.footer}>
           <p>Powered by We have only Seaweed(™)</p>
-        </Components.Footer>
-      </Components.Container>
-    </Components.Screen>
+        </div>
+      </div>
+
   );
 };
 

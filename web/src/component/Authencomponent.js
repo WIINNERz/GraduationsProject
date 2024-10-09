@@ -171,7 +171,7 @@ export const LeftOverlayPanel = styled(OverlayPanel)`
 `;
 
 export const RightOverlayPanel = styled(OverlayPanel)`
-  right: 0;
+   right: 0;
   transform: translateX(0);
   ${props => (props.signingIn !== true ? `transform: translateX(20%);` : null)}
 `;
