@@ -49,8 +49,8 @@ const PetDetail = () => {
     location,
     conditions: '',
     birthday: '',
-    adoptingConditions,
-    //additionalImages: [],
+    adoptingConditions:'',
+    additionalImages: [],
   });
   const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
   const [adoptingConditions, setAdoptingConditions] = useState('');
@@ -167,6 +167,7 @@ const PetDetail = () => {
                     CryptoJS.enc.Utf8,
                   )
                 : '',
+              additionalImages: petData.additionalImages || [],
             };
           }
           setPet(petData);
@@ -257,12 +258,9 @@ const PetDetail = () => {
           chronic: chronic
             ? CryptoJS.AES.encrypt(String(chronic), key).toString()
             : null,
-          conditions:
-            conditions.length > 0
-              ? conditions.map(condition =>
-                  CryptoJS.AES.encrypt(String(condition), key).toString(),
-                )
-              : [],
+          conditions: conditions
+              ? CryptoJS.AES.encrypt(String(conditions), key).toString()
+              : null,
           color: color
             ? CryptoJS.AES.encrypt(String(color), key).toString()
             : null,

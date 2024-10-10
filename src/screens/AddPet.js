@@ -39,6 +39,22 @@ const AddPet = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const [pet, setPet] = useState({
+    name: '',
+    age: '',
+    breeds: '',
+    weight: '',
+    height: '',
+    gender: '',
+    color: '',
+    characteristics: '',
+    chronic: '',
+    location:'',
+    conditions: '',
+    birthday: '',
+    adoptingConditions: '',
+    additionalImages: [],
+  });
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [type, setType] = useState('');
@@ -333,7 +349,7 @@ const AddPet = () => {
     try {
       const uploadedImageUrls = await Promise.all(
         additionalImages.map(async (uri) => {
-          const storageRef = ref(storage, `additionalImages/${user.uid}/pets/${name}/${Date.now()}`);
+          const storageRef = ref(storage, `images/${user.uid}/pets/${pet.name}/additional/${Date.now()}`);
           const response = await fetch(uri);
           const blob = await response.blob();
           const snapshot = await uploadBytes(storageRef, blob);
