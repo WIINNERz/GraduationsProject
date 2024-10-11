@@ -52,7 +52,6 @@ const Keymanagement = () => {
     try {
       const credentials = await Keychain.getGenericPassword({ service: 'masterkey' });
       if (credentials) {
-        console.log('Credentials successfully loaded' + credentials.password);
         return credentials.password;
       } else {
         return '';
