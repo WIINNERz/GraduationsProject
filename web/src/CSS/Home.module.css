@@ -42,6 +42,7 @@
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
+
 }
 
 .nav ul {
@@ -67,7 +68,7 @@
   width: 70%;
   margin-top: 5px;
   margin-bottom: 5px;
-  border-radius: 5px;
+  border-radius: 10px;
   text-align: center;
 }
 
