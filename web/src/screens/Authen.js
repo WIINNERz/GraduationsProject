@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
 } from 'firebase/auth';
 import {getDocs, doc, updateDoc, collection, setDoc} from 'firebase/firestore';
 import {auth, firestore} from '../firebase-config';
@@ -68,6 +69,9 @@ function Authen() {
         password,
       );
       const uid = tempUser.user.uid;
+      await updateProfile(tempUser.user, {
+        displayName: `${firstname} ${lastname}`,
+      });
       // Successful sign-up
       const { publicKey, secretKey } = await sec.generateKeyPair();
 

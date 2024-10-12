@@ -29,7 +29,6 @@
 
 .footer {
   background-color: #777;
-  /* padding: 20px; */
   text-align: center;
   color: white;
   box-sizing: border-box;
@@ -38,7 +37,7 @@
 
 /* Navigation styles */
 .nav {
-  width: 15%;
+  width:  20%;
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -52,9 +51,9 @@
 }
 
 /* Article styles */
-.article {
-  width: 85%;
-  background-color: #f1f1f1;
+.panel {
+  width: 80%;
+  flex-direction: column;
   padding-left: 20px;
   padding-right: 20px;
   box-sizing: border-box;
@@ -105,7 +104,48 @@
   text-align: center;
   font-family: Inter;
 }
+/* Light mode styles */
+.light {
+  background-color: #ffffff;
+  color: #000000;
+}
 
+.light .header {
+  background-color: #E16539;
+}
+
+.light .section {
+  background-color: #D27C2C;
+}
+
+.light .footer {
+  background-color: #777;
+}
+.light .panel {
+  background-color: #f6f5f7;
+}
+
+/* Dark mode styles */
+.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.dark .header {
+  background-color: #333;
+}
+
+.dark .section {
+  background-color: #444;
+}
+
+.dark .footer {
+  background-color: #555;
+}
+
+.dark .panel {
+  background-color: #121212;
+}
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .screen {

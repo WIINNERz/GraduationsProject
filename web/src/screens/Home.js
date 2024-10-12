@@ -1,5 +1,5 @@
-import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {useNavigate , useLocation} from 'react-router-dom';
 import styles from '../CSS/Home.module.css';
 import {
   getFirestore,
@@ -13,35 +13,34 @@ import {auth, firestore} from '../firebase-config';
 const Home = () => {
   const [petid, setIDtosearch] = React.useState('');
   const [petdata, setPetdata] = React.useState('');
+  const [isDarkMode, setIsDarkMode] = React.useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.isDarkMode !== undefined) {
+      setIsDarkMode(location.state.isDarkMode);
+    } else {
+      const savedTheme = localStorage.getItem('isDarkMode');
+      if (savedTheme !== null) {
+        setIsDarkMode(JSON.parse(savedTheme));
+      }
+    }
+  }, [location.state]);
 
   const handlelogout = () => {
     navigate('/');
   };
 
-  const handlesearch = event => {
-    event.preventDefault(); // Prevent form submission
-    const petRef = query(
-      collection(firestore, 'Pets'),
-      where('id', '==', petid),
-    );
-    onSnapshot(petRef, snapshot => {
-      if (snapshot.empty) {
-        alert('No pet found');
-        setPetdata('');
-      } else {
-        snapshot.forEach(doc => {
-          setPetdata(doc.data());
-        });
-      }
-    });
-  };
-  const clearpetdata = () => {
-    setPetdata('');
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem('isDarkMode', JSON.stringify(newTheme));
   };
 
   return (
-    <div className={styles.screen}>
+    <div
+      className={`${styles.screen} ${isDarkMode ? styles.dark : styles.light}`}>
       <div className={styles.header}>
         <h2>PetPaw for Vet</h2>
       </div>
@@ -60,10 +59,12 @@ const Home = () => {
               </button>
             </li>
             <li>
-              <button className={styles.sidemenubtn}>Blank</button>
+              <button className={styles.sidemenubtn} onClick={() => navigate('/petdetail' , {state: {isDarkMode}})}>Search Pet</button>
             </li>
             <li>
-              <button className={styles.sidemenubtn}>Blank</button>
+              <button onClick={toggleTheme} className={styles.sidemenubtn}>
+                {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              </button>
             </li>
             <li>
               <button className={styles.sidemenubtn} onClick={handlelogout}>
@@ -72,40 +73,11 @@ const Home = () => {
             </li>
           </ul>
         </div>
-        <div className={styles.article}>
-          <form onSubmit={handlesearch}>
-            <h1>Find pet by name</h1>
-            <input
-              className={styles.input}
-              type="text"
-              placeholder="Pet's name"
-              required
-              value={petid}
-              onChange={e => setIDtosearch(e.target.value)}></input>
-              
-            <button type="submit" className={styles.Searchbut}>
-              Search
-            </button>
-            <button type="cancel" className={styles.Clearbut} onClick={clearpetdata}>
-              Clear
-            </button>
-          </form>
+        <div className={styles.panel}>
+         
+          </div>
         </div>
-        <div className={styles.article}>
-          <h1>Pet data</h1>
-          <p>Name: {petdata.id}</p>
-          <p>Owner: {petdata.username}</p>
-          <p>Age: {petdata.age}</p>
-          <p>type: {petdata.type}</p>
-          <p>Gender: {petdata.gender}</p>
-          <p>Breed: {petdata.breeds}</p>
-          <p>Conditions: {petdata.conditions}</p>
-          <p>Weight: {petdata.weight} gram</p>
-          <p>Height: {petdata.height} cm.</p>
-          <p>Chronic: {petdata.chronic} </p>
-        </div>
-      </div>
-      <div className={styles.footer}>
+        <div className={styles.footer}>
         <p>Powered by We have only Seaweed(™)</p>
       </div>
     </div>
