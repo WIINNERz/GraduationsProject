@@ -54,6 +54,7 @@ const Home = () => {
       vaccine: vaccine,
       treatment: treatment,
       doctor: doctor,
+      date: `${day}-${month}-${year}`, // Add date in DD-MM-YYYY format
     };
     await setDoc(newRecordRef, newRecord);
     setCondiotion('');
