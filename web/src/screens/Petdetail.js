@@ -1,8 +1,8 @@
-import React, {useEffect} from 'react';
-import {useNavigate, useLocation} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../CSS/Petdetail.module.css';
-import {collection, onSnapshot, query, where, doc , setDoc} from 'firebase/firestore';
-import {auth, firestore} from '../firebase-config';
+import { collection, onSnapshot, query, where, doc, setDoc } from 'firebase/firestore';
+import { auth, firestore } from '../firebase-config';
 
 const Home = () => {
   const [petid, setIDtosearch] = React.useState('');
@@ -37,10 +37,17 @@ const Home = () => {
     return () => unsubscribe();
   }, [location.state, navigate]);
 
-   const handleaddnewrecord =  async event => {
+  const handleaddnewrecord = async event => {
     event.preventDefault(); // Prevent form submission
     const petRef = collection(firestore, 'Pets', petid, 'MedicalHistory');
-    const timestamp = new Date().getTime().toString();
+
+    const currentDate = new Date();
+    const year = currentDate.getFullYear().toString();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const day = currentDate.getDate().toString().padStart(2, '0');
+
+    // Create a timestamp in the format YYYYMMDD
+    const timestamp = `${year}${month}${day}`;
     const newRecordRef = doc(petRef, timestamp);
     const newRecord = {
       conditions: condition,
@@ -104,7 +111,7 @@ const Home = () => {
             <li>
               <button
                 className={styles.sidemenubtn}
-                onClick={() => navigate('/Home', {state: {isDarkMode}})}>
+                onClick={() => navigate('/Home', { state: { isDarkMode } })}>
                 Home
               </button>
             </li>
