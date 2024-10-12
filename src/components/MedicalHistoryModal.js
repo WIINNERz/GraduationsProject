@@ -2,12 +2,11 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 
 const MedicalHistoryModal = ({ visible, record, onClose }) => {
-  const formatDate = (dateString) => {
-    const year = dateString.substring(0, 4);
-    const month = dateString.substring(4, 6);
-    const day = dateString.substring(6, 8);
-    return `${year}/${month}/${day}`;
-  };
+    const formatDate = (dateString) => {
+        // สมมติว่า dateString มีรูปแบบเป็น DD-MM-YYYY
+        const [day, month, year] = dateString.split('-');
+        return `${day}-${month}-${year}`;
+      };
 
   return (
     <Modal

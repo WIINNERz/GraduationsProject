@@ -8,35 +8,33 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import React, { useCallback, useState, useRef, useEffect } from 'react';
+import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react';
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import { doc, getDoc, updateDoc, collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { doc, updateDoc, collection, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from '../components/Keymanagement';
 import MedicalHistoryModal from '../components/MedicalHistoryModal';
-const { width } = Dimensions.get('window');
+
+const { width, height } = Dimensions.get('window');
 
 export default function PetProfile() {
   const navigate = useNavigation();
-  const [pet, setPet] = useState(null);
   const route = useRoute();
   const { id } = route.params;
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [status, setStatus] = useState(null);
-  const flatListRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const KeymanagementInstance = new Keymanagement();
-  const navigation = useNavigation();
+  const [pet, setPet] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef(null);
+  const KeymanagementInstance = useMemo(() => new Keymanagement(), []);
 
   useFocusEffect(
     useCallback(() => {
@@ -46,21 +44,15 @@ export default function PetProfile() {
 
       return () => {
         navigate.getParent()?.setOptions({
-          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }], // Reset tabBarStyle to default
+          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
         });
       };
     }, [navigate]),
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchPet();
-    }, [id]),
-  );
-
-  const fetchPet = () => {
+  useEffect(() => {
     const petDocRef = doc(firestore, 'Pets', id);
-    onSnapshot(petDocRef, async (petDoc) => {
+    const unsubscribe = onSnapshot(petDocRef, async (petDoc) => {
       if (petDoc.exists()) {
         const petData = { id: petDoc.id, ...petDoc.data() };
         if (petData.status === 'have_owner') {
@@ -69,7 +61,7 @@ export default function PetProfile() {
               id: petDoc.id,
               name: petData.name,
               photoURL: petData.photoURL,
-              additionalImages: petData.additionalImages ? petData.additionalImages : null,
+              additionalImages: petData.additionalImages || null,
               type: petData.type,
               status: petData.status,
               gender: petData.gender ? KeymanagementInstance.decryptData(petData.gender) : null,
@@ -84,89 +76,80 @@ export default function PetProfile() {
             };
             setPet(decryptedPetData);
             setStatus('My pet');
-            if (petData.favorite) {
-              setIsFavorite(true);
-            }
+            setIsFavorite(!!petData.favorite);
           } catch (err) {
             console.error('Error decrypting pet data:', err);
           }
         } else {
           setPet(petData);
           setStatus('Adoptable');
-          if (petData.favorite) {
-            setIsFavorite(true);
-          }
+          setIsFavorite(!!petData.favorite);
         }
-        fetchMedicalHistory(); // Call fetchMedicalHistory to set up real-time listener
       } else {
-        setError('Pet not found');
+        setPet(null);
+        setStatus(null);
       }
-      setLoading(false);
     });
-  };
 
-  const fetchMedicalHistory = async () => {
-    try {
-      console.log('Fetching medical history...');
-      const medicalHistoryRef = collection(firestore, 'Pets', id, 'MedicalHistory');
-      console.log('Medical History Reference Path:', medicalHistoryRef.path); // Log the reference path
-      const medicalHistorySnapshot = await getDocs(medicalHistoryRef);
-      console.log('Medical History Snapshot Size:', medicalHistorySnapshot.size); // Log the number of documents
-      const medicalHistoryList = medicalHistorySnapshot.docs.map(doc => {
+    const medicalHistoryRef = collection(firestore, 'Pets', id, 'MedicalHistory');
+    const unsubscribeMedicalHistory = onSnapshot(medicalHistoryRef, snapshot => {
+      const medicalHistoryList = snapshot.docs.map(doc => {
         const data = doc.data();
-        const date = doc.id; // Use document ID as date
-        console.log('Medical History Document:', doc.id, data); // Log each document
-        console.log('Date Field:', date); // Log the date field specifically
+        const date = doc.id;
         return { id: doc.id, date, ...data };
       });
-      console.log('Medical History List:', medicalHistoryList); // Log the medical history list
       setMedicalHistory(medicalHistoryList);
-    } catch (error) {
-      console.error('Error fetching medical history:', error);
-    }
-  };
+    });
+
+    return () => {
+      unsubscribe();
+      unsubscribeMedicalHistory();
+    };
+  }, [id, KeymanagementInstance]);
+
   const formatDate = (dateString) => {
-    // Assuming the dateString is in the format YYYYMMDD
-    const year = dateString.substring(0, 4);
-    const month = dateString.substring(4, 6);
-    const day = dateString.substring(6, 8);
-    return `${year}/${month}/${day}`;
+    const [day, month, year] = dateString.split('-');
+    return `${day}-${month}-${year}`;
   };
 
   const toggleFavorite = () => {
-    if (isFavorite === false) {
-      setIsFavorite(true);
-      const petRef = doc(firestore, 'Pets', id);
-      updateDoc(petRef, {
-        favorite: true,
-      });
-    } else {
-      setIsFavorite(false);
-      const petRef = doc(firestore, 'Pets', id);
-      updateDoc(petRef, {
-        favorite: false,
-      });
-    }
+    setIsFavorite(prev => !prev);
+    const petRef = doc(firestore, 'Pets', id);
+    updateDoc(petRef, {
+      favorite: !isFavorite,
+    });
   };
 
-  const renderImage = ({ item }) => {
-    return <Image source={{ uri: item }} style={styles.image} />;
-  };
+  const renderImage = ({ item }) => (
+    <Image source={{ uri: item }} style={styles.image} />
+  );
 
-  const imageData =
+  const imageData = useMemo(() => (
     pet?.additionalImages && pet.additionalImages.length > 0
       ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
-      : [pet?.photoURL].filter(url => url);
+      : [pet?.photoURL].filter(url => url)
+  ), [pet]);
+
   const handleRecordClick = (record) => {
     setSelectedRecord(record);
     setModalVisible(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setModalVisible(false);
     setSelectedRecord(null);
   };
+
+  const vaccineCounts = useMemo(() => {
+    const counts = {};
+    medicalHistory.forEach(record => {
+      const { vaccine } = record;
+      if (vaccine) {
+        counts[vaccine] = (counts[vaccine] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [medicalHistory]);
 
   return (
     <View style={styles.container}>
@@ -222,16 +205,7 @@ export default function PetProfile() {
         </View>
 
         <View style={styles.namesection}>
-          <Text
-            style={{
-              fontSize: 24,
-              color: 'black',
-              paddingVertical: 10,
-              paddingLeft: 30,
-              fontFamily: 'InterSemiBold',
-            }}>
-            {pet?.name}
-          </Text>
+          <Text style={styles.petName}>{pet?.name}</Text>
           <TouchableOpacity style={styles.favbutton} onPress={toggleFavorite}>
             <MaterialCommunityIcons
               name={isFavorite ? 'heart' : 'heart-outline'}
@@ -317,30 +291,31 @@ export default function PetProfile() {
             </View>
             <View style={{ paddingVertical: 5, paddingTop: '10%' }}>
               <Text style={styles.categoryPet}>Vaccination list</Text>
-              <Text style={styles.valuePet}> 1. </Text>
-              <Text style={styles.valuePet}> 2. </Text>
-              <Text style={styles.valuePet}> 3. </Text>
-              <Text style={styles.valuePet}> 4. </Text>
+              {medicalHistory.length === 0 ? (
+                <Text>No vaccination records found.</Text>
+              ) : (
+                Object.entries(vaccineCounts).map(([vaccine, count], index) => (
+                  <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.valuePet}>{index + 1}. {vaccine}</Text>
+                    <Text style={styles.valuePet}>{count}</Text>
+                  </View>
+                ))
+              )}
             </View>
-            <View style={{ paddingVertical: 5 }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: 'gray',
-                  fontFamily: 'InterSemiBold',
-                  paddingBottom: 10,
-                }}>
-                Medical History
-              </Text>
+            <View style={styles.paddingVertical}>
+              <Text style={styles.medicalHistoryTitle}>Medical History</Text>
               {medicalHistory.length === 0 ? (
                 <Text>No medical history records found.</Text>
               ) : (
-                medicalHistory.map((record, index) => (
-                  <TouchableOpacity key={record.id} style={styles.medrec} onPress={() => handleRecordClick(record)}>
-                    <Text style={styles.valuePet}>Record : {index + 1}</Text>
-                    <Text style={styles.Date}>Date: {formatDate(record.date)}</Text>
-                  </TouchableOpacity>
-                ))
+                medicalHistory.map((record, index) => {
+                  const { id, date } = record;
+                  return (
+                    <TouchableOpacity key={id} style={styles.medrec} onPress={() => handleRecordClick(record)}>
+                      <Text style={styles.valuePet}>Record : {index + 1}</Text>
+                      <Text style={styles.date}>Date: {formatDate(date)}</Text>
+                    </TouchableOpacity>
+                  );
+                })
               )}
             </View>
             <MedicalHistoryModal
@@ -355,7 +330,6 @@ export default function PetProfile() {
   );
 }
 
-const { height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
@@ -441,11 +415,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     overflow: 'hidden',
   },
-  adoptbar: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -500,10 +469,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#D27C2C',
     marginHorizontal: 5,
   },
-  Date: {
+  date: {
     fontSize: 16,
     color: 'black',
     fontFamily: 'InterRegular',
     opacity: 0.5,
+  },
+  petName: {
+    fontSize: 24,
+    color: 'black',
+    paddingVertical: 10,
+    paddingLeft: 30,
+    fontFamily: 'InterSemiBold',
   },
 });

@@ -45,17 +45,21 @@ const Home = () => {
     const year = currentDate.getFullYear().toString();
     const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
     const day = currentDate.getDate().toString().padStart(2, '0');
+    const hours = currentDate.getHours().toString().padStart(2, '0');
+    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
 
     // Create a timestamp in the format YYYYMMDD
-    const timestamp = `${year}${month}${day}`;
+    const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
     const newRecordRef = doc(petRef, timestamp);
     const newRecord = {
       conditions: condition,
       vaccine: vaccine,
       treatment: treatment,
       doctor: doctor,
-      date: `${day}-${month}-${year}`, // Add date in DD-MM-YYYY format
+      date: `${day}-${month}-${year}`, 
     };
+    console.log('New Record:', newRecord);
     await setDoc(newRecordRef, newRecord);
     setCondiotion('');
     setVaccine('');
