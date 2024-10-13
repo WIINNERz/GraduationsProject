@@ -20,12 +20,12 @@ const MedicalHistoryModal = ({ visible, record, onClose }) => {
           <Text style={styles.modalTitle}>Medical History Details</Text>
           {record && (
             <>
-              <Text style={styles.modalText}>Date: {formatDate(record.date)}</Text>
-              <Text style={styles.modalText}>Time: {record.time}</Text>
-              <Text style={styles.modalText}>Conditions: {record.conditions}</Text>
-              <Text style={styles.modalText}>Doctor: {record.doctor}</Text>
-              <Text style={styles.modalText}>Treatment: {record.treatment}</Text>
-              <Text style={styles.modalText}>Vaccine: {'\n'}
+              <Text style={styles.modalText}><Text style={styles.boldText}>Date:</Text> {formatDate(record.date)}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Time:</Text> {record.time}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Conditions:</Text> {record.conditions}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Doctor:</Text> {record.doctor}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Treatment:</Text> {record.treatment}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Vaccine:</Text> {'\n'}
                 {record.vaccine.map((v, index) => (
                   <Text key={index}>
                     {v.name} - {v.quantity} ml. {'\n'}
@@ -66,6 +66,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'InterRegular',
     marginBottom: 5,
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
   closeButton: {
     marginTop: 20,

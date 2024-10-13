@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   getFirestore,
   doc,
@@ -21,11 +21,12 @@ import {
   Timestamp,
   deleteDoc,
   arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore';
 
-import {auth, storage, firestore} from '../configs/firebaseConfig';
-import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import { auth, storage, firestore } from '../configs/firebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Checkbox from '../components/checkbox';
 import CryptoJS from 'rn-crypto-js';
@@ -49,7 +50,7 @@ const PetDetail = () => {
     location,
     conditions: '',
     birthday: '',
-    adoptingConditions:'',
+    adoptingConditions: '',
     additionalImages: [],
   });
   const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
@@ -62,7 +63,7 @@ const PetDetail = () => {
   const [additionalImages, setAdditionalImages] = useState([]);
   const route = useRoute();
   const [image, setImage] = useState('');
-  const {id} = route.params;
+  const { id } = route.params;
   const navigation = useNavigation();
   const KeymanagementInstance = new Keymanagement();
 
@@ -114,58 +115,58 @@ const PetDetail = () => {
               ...petData,
               age: petData.age
                 ? CryptoJS.AES.decrypt(petData.age, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               breeds: petData.breeds
                 ? CryptoJS.AES.decrypt(petData.breeds, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               weight: petData.weight
                 ? CryptoJS.AES.decrypt(petData.weight, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               height: petData.height
                 ? CryptoJS.AES.decrypt(petData.height, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               characteristics: petData.characteristics
                 ? CryptoJS.AES.decrypt(petData.characteristics, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               chronic: petData.chronic
                 ? CryptoJS.AES.decrypt(petData.chronic, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               location: petData.location
                 ? CryptoJS.AES.decrypt(petData.location, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               conditions: petData.conditions
                 ? CryptoJS.AES.decrypt(petData.conditions, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               color: petData.color
                 ? CryptoJS.AES.decrypt(petData.color, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               gender: petData.gender
                 ? CryptoJS.AES.decrypt(petData.gender, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               birthday: petData.birthday
                 ? CryptoJS.AES.decrypt(petData.birthday, key).toString(
-                    CryptoJS.enc.Utf8,
-                  )
+                  CryptoJS.enc.Utf8,
+                )
                 : '',
               additionalImages: petData.additionalImages || [],
             };
@@ -259,8 +260,8 @@ const PetDetail = () => {
             ? CryptoJS.AES.encrypt(String(chronic), key).toString()
             : null,
           conditions: conditions
-              ? CryptoJS.AES.encrypt(String(conditions), key).toString()
-              : null,
+            ? CryptoJS.AES.encrypt(String(conditions), key).toString()
+            : null,
           color: color
             ? CryptoJS.AES.encrypt(String(color), key).toString()
             : null,
@@ -270,7 +271,7 @@ const PetDetail = () => {
           birthday: birthday
             ? CryptoJS.AES.encrypt(birthday, key).toString()
             : null,
-          additionalImages : additionalImages,
+          additionalImages: additionalImages,
           updatedAt: Timestamp.now(),
         };
       }
@@ -284,16 +285,16 @@ const PetDetail = () => {
 
       // Ensure the document reference has an even number of segments
       const petDocRef = doc(db, 'Pets', pet.id.trim());
-    
-    // Check if document exists
-    const petDoc = await getDoc(petDocRef);
-    if (!petDoc.exists()) {
-      Alert.alert('Error', 'Pet document does not exist.');
-      return;
-    }
 
-    await updateDoc(petDocRef, dataToStore);
-    navigation.goBack();
+      // Check if document exists
+      const petDoc = await getDoc(petDocRef);
+      if (!petDoc.exists()) {
+        Alert.alert('Error', 'Pet document does not exist.');
+        return;
+      }
+
+      await updateDoc(petDocRef, dataToStore);
+      navigation.goBack();
     } catch (err) {
       setError(err.message);
       console.error('Error saving pet data:', err);
@@ -322,7 +323,7 @@ const PetDetail = () => {
           // Wrap the async function in a synchronous function
           (async () => {
             try {
-              await deletePet(); 
+              await deletePet();
               navigation.navigate('MyPets');
             } catch (error) {
               console.error('Error deleting pet:', error);
@@ -339,7 +340,7 @@ const PetDetail = () => {
 
   const deletePet = async () => {
     try {
-      const petDocRef = doc(firestore, 'Pets', pet.id); 
+      const petDocRef = doc(firestore, 'Pets', pet.id);
       await deleteDoc(petDocRef);
     } catch (error) {
       console.error('Error deleting pet:', error);
@@ -359,12 +360,12 @@ const PetDetail = () => {
           openImageLibrary();
         },
       },
-      {text: 'Cancel', style: 'cancel'},
+      { text: 'Cancel', style: 'cancel' },
     ]);
   };
 
   const openImageLibrary = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
     if (!result.canceled) {
       setImage(result.assets[0].uri);
       uploadImage(result.assets[0].uri);
@@ -372,7 +373,7 @@ const PetDetail = () => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({mediaType: 'photo', quality: 1});
+    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
     if (!result.canceled) {
       setImage(result.assets[0].uri);
       uploadImage(result.assets[0].uri);
@@ -389,34 +390,34 @@ const PetDetail = () => {
     );
     try {
       const response = await fetch(uri);
-    
+
       // Check if the response is OK (status code 200-299)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-    
+
       const blob = await response.blob();
-    
+
       // Ensure the blob is not empty
       if (!blob.size) {
         throw new Error('Blob is empty');
       }
-    
+
       const snapshot = await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(snapshot.ref);
-    
+
       // Ensure the Firestore document is being referenced correctly
-      const petDocRef = doc(db, 'Pets', id);  
-    
+      const petDocRef = doc(db, 'Pets', id);
+
       await updateDoc(petDocRef, {
-        photoURL: downloadURL 
+        photoURL: downloadURL
       });
-    
+
       setPet((prevState) => ({
         ...prevState,
-        additionalImages: [...(prevState.additionalImages || []), downloadURL], 
+        additionalImages: [...(prevState.additionalImages || []), downloadURL],
       }));
-    
+
       Alert.alert('Success', 'Additional image uploaded successfully.');
     } catch (error) {
       Alert.alert('Error', 'Failed to upload image. Please try again.');
@@ -430,86 +431,86 @@ const PetDetail = () => {
 
   const pickAdditionalImages = () => {
     Alert.alert('Select Images', 'Choose an option', [
-        {
-            text: 'Camera',
-            onPress: () => {
-                openCameraForAdditionalImages();
-            },
+      {
+        text: 'Camera',
+        onPress: () => {
+          openCameraForAdditionalImages();
         },
-        {
-            text: 'Gallery',
-            onPress: () => {
-                openImageLibraryForAdditionalImages();
-            },
+      },
+      {
+        text: 'Gallery',
+        onPress: () => {
+          openImageLibraryForAdditionalImages();
         },
-        { text: 'Cancel', style: 'cancel' },
+      },
+      { text: 'Cancel', style: 'cancel' },
     ]);
-};
+  };
 
-// Function to open the image library for additional images
-const openImageLibraryForAdditionalImages = async () => {
+  // Function to open the image library for additional images
+  const openImageLibraryForAdditionalImages = async () => {
     const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
     if (!result.canceled) {
-        const newImageUri = result.assets[0].uri;
-        setAdditionalImages(prevImages => [...prevImages, newImageUri]);
-        uploadAdditionalImages(newImageUri);
+      const newImageUri = result.assets[0].uri;
+      setAdditionalImages(prevImages => [...prevImages, newImageUri]);
+      uploadAdditionalImages(newImageUri);
     }
-};
+  };
 
-// Function to open the camera for additional images
-const openCameraForAdditionalImages = async () => {
+  // Function to open the camera for additional images
+  const openCameraForAdditionalImages = async () => {
     const result = await launchCamera({ mediaType: 'photo', quality: 1 });
     if (!result.canceled) {
-        const newImageUri = result.assets[0].uri;
-        setAdditionalImages(prevImages => [...prevImages, newImageUri]);
-        uploadAdditionalImages(newImageUri);
+      const newImageUri = result.assets[0].uri;
+      setAdditionalImages(prevImages => [...prevImages, newImageUri]);
+      uploadAdditionalImages(newImageUri);
     }
-};
+  };
 
-const uploadAdditionalImages = async (uri) => {
-  if (!uri) return;
+  const uploadAdditionalImages = async (uri) => {
+    if (!uri) return;
 
-  setUploading(true);
-  const storageRef = ref(
-    storage,
-    `images/${user.uid}/pets/${pet.name}/additional/${Date.now()}`
-  );
-  try {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const snapshot = await uploadBytes(storageRef, blob);
-    const downloadURL = await getDownloadURL(snapshot.ref);
+    setUploading(true);
+    const storageRef = ref(
+      storage,
+      `images/${user.uid}/pets/${pet.name}/additional/${Date.now()}`
+    );
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const snapshot = await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
-    // Ensure the Firestore document is being referenced correctly
-    const petDocRef = doc(db, 'Pets', id);  
+      // Ensure the Firestore document is being referenced correctly
+      const petDocRef = doc(db, 'Pets', id);
 
-    await updateDoc(petDocRef, {
-      additionalImages: arrayUnion(downloadURL),  
-    });
+      await updateDoc(petDocRef, {
+        additionalImages: arrayUnion(downloadURL),
+      });
 
-    setPet((prevState) => ({
-      ...prevState,
-      additionalImages: [...(prevState.additionalImages || []), downloadURL], 
-    }));
+      setPet((prevState) => ({
+        ...prevState,
+        additionalImages: [...(prevState.additionalImages || []), downloadURL],
+      }));
 
-    Alert.alert('Success', 'Additional image uploaded successfully.');
-  } catch (error) {
-    Alert.alert('Error', 'Failed to upload image. Please try again.');
-    console.error('Error uploading image: ', error);
-  } finally {
-    setUploading(false);
-  }
-};
+      Alert.alert('Success', 'Additional image uploaded successfully.');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to upload image. Please try again.');
+      console.error('Error uploading image: ', error);
+    } finally {
+      setUploading(false);
+    }
+  };
 
 
   const fetchAdditionalImages = async () => {
     try {
-      const petDocRef = doc(db, 'Pets', id);  
+      const petDocRef = doc(db, 'Pets', id);
       const docSnap = await getDoc(petDocRef);
 
       if (docSnap.exists()) {
         const petData = docSnap.data();
-        setAdditionalImages(petData.additionalImages || []);  
+        setAdditionalImages(petData.additionalImages || []);
       } else {
         console.log("No such document!");
       }
@@ -518,9 +519,29 @@ const uploadAdditionalImages = async (uri) => {
     }
   };
 
-useEffect(() => {
-  fetchAdditionalImages();
-}, []);
+  useEffect(() => {
+    fetchAdditionalImages();
+  }, []);
+  const handleDeleteAdditionalImage = async (index) => {
+    console.log("Index to delete:", index);
+    console.log("Additional images before deletion:", additionalImages);
+  
+    // สร้างสำเนาของ additionalImages เพื่อหลีกเลี่ยงการเปลี่ยนแปลงโดยตรง
+    const updatedImages = additionalImages.filter((_, i) => i !== index); // ลบภาพที่ต้องการออกจากสำเนา
+  
+    console.log("Additional images after deletion:", updatedImages);
+  
+    try {
+      const petDocRef = doc(db, 'Pets', id);
+      await updateDoc(petDocRef, {
+        additionalImages: updatedImages
+      });
+      setAdditionalImages(updatedImages); // อัปเดตสถานะด้วยสำเนาที่ถูกลบภาพแล้ว
+      console.log("Updated additional images in Firestore:", updatedImages);
+    } catch (error) {
+      console.error("Error deleting additional image: ", error);
+    }
+  };
 
 
   if (loading) {
@@ -551,7 +572,7 @@ useEffect(() => {
         contentContainerStyle={styles.scrollViewContent}
         style={styles.container}>
         {pet?.photoURL ? (
-          <Image source={{uri: pet.photoURL}} style={styles.image} />
+          <Image source={{ uri: pet.photoURL }} style={styles.image} />
         ) : (
           <MaterialCommunityIcons name="account" size={50} color="gray" />
         )}
@@ -568,7 +589,7 @@ useEffect(() => {
                 style={styles.input}
                 placeholder="Name"
                 value={pet?.name || ''}
-                onChangeText={text => setPet({...pet, name: text})}
+                onChangeText={text => setPet({ ...pet, name: text })}
               />
             </View>
             <View style={styles.containerwh}>
@@ -587,9 +608,9 @@ useEffect(() => {
             style={styles.input}
             placeholder="Breed"
             value={pet?.breeds || ''}
-            onChangeText={text => setPet({...pet, breeds: text})}
+            onChangeText={text => setPet({ ...pet, breeds: text })}
           />
-         <Text style={styles.field}> Birthday </Text>
+          <Text style={styles.field}> Birthday </Text>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -599,42 +620,42 @@ useEffect(() => {
           </View>
           <View style={styles.whContainer}>
             <View style={styles.containerwh}>
-            <Text style={styles.field}>Weight</Text>
+              <Text style={styles.field}>Weight</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Weight"
                 keyboardType="numeric"
                 value={pet?.weight ? `${pet.weight}` || '' : ''}
                 onChangeText={text =>
-                  setPet({...pet, weight: parseFloat(text)})
+                  setPet({ ...pet, weight: parseFloat(text) })
                 }
               />
             </View>
             <View style={styles.containerwh}>
-            <Text style={styles.field}>Height</Text>
+              <Text style={styles.field}>Height</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Height"
                 keyboardType="numeric"
                 value={pet?.height ? `${pet.height}` || '' : ''}
                 onChangeText={text =>
-                  setPet({...pet, height: parseFloat(text)})
+                  setPet({ ...pet, height: parseFloat(text) })
                 }
               />
             </View>
           </View>
           <View style={styles.whContainer}>
             <View style={styles.containerwh}>
-            <Text style={styles.field}>Color</Text>
+              <Text style={styles.field}>Color</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Color"
                 value={pet?.color ? `${pet.color}` || '' : ''}
-                onChangeText={text => setPet({...pet, color: text})}
+                onChangeText={text => setPet({ ...pet, color: text })}
               />
             </View>
             <View style={styles.containerwh}>
-            <Text style={styles.field}>Gender</Text>
+              <Text style={styles.field}>Gender</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Gender"
@@ -645,78 +666,88 @@ useEffect(() => {
           </View>
           <View style={styles.whContainer}>
             <View style={styles.container}>
-            <Text style={styles.field}>Characteristics</Text>
+              <Text style={styles.field}>Characteristics</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Characteristics"
                 value={
                   pet?.characteristics ? `${pet.characteristics}` || '' : ''
                 }
-                onChangeText={text => setPet({...pet, characteristics: text})}
+                onChangeText={text => setPet({ ...pet, characteristics: text })}
               />
             </View>
           </View>
           <View style={styles.whContainer}>
             <View style={styles.container}>
-            <Text style={styles.field}>Chronic</Text>
+              <Text style={styles.field}>Chronic</Text>
               <TextInput
                 style={styles.inputwh}
                 placeholder="Chronic"
                 value={pet?.chronic ? `${pet.chronic}` || '' : ''}
-                onChangeText={text => setPet({...pet, chronic: text})}
+                onChangeText={text => setPet({ ...pet, chronic: text })}
               />
             </View>
           </View>
           <TouchableOpacity
-                        style={styles.additionalImagePicker}
-                        onPress={pickAdditionalImages}>
-                        <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
-                      </TouchableOpacity>
-                      <View style={styles.additionalImagesContainer}>
-                              {additionalImages.length > 0 ? (
-                                additionalImages.map((uri, index) => (
-                                  <Image
-                                    key={index}
-                                    source={{ uri }}
-                                    style={styles.additionalImage}
-                                  />
-                                ))
-                              ) : (
-                                <Text>No additional images available.</Text>
-                              )}
-                            </View>
-          <Checkbox
-            text="Find Home"
-            onPress={onPress}
-            value={pet?.status ? `${pet.status}` || '' : ''}
-            isChecked={isFindHomeChecked}
-          />
-
-          {isFindHomeChecked && (
-            <View style={styles.adoptionDetailsContainer}>
-              <Text style={styles.field}>Location</Text>
-              <TextInput
-                style={styles.inputwh}
-                placeholder="Location"
-                placeholderTextColor={'gray'}
-                value={pet?.location ? pet.location || '' : ''}
-                onChangeText={text =>
-                  setPet(prevPet => ({...prevPet, location: text}))
-                }
-              />
-              <Text style={styles.field}>Adopting Conditions</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Adopting Conditions"
-                value={pet?.adoptingConditions || ''} // Fallback to empty string if pet.adoptingConditions is null or undefined
-                onChangeText={
-                  text =>
-                    setPet(prevPet => ({...prevPet, adoptingConditions: text})) // Update adoptingConditions with new text
-                }
+            style={styles.additionalImagePicker}
+            onPress={pickAdditionalImages}>
+            <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
+          </TouchableOpacity>
+          <View style={styles.additionalImagesContainer}>
+            {additionalImages.length > 0 ? (
+              additionalImages.map((uri, index) => (
+                <View key={index} style={styles.additionalImageWrapper}>
+                  <Image
+                    key={index}
+                    source={{ uri }}
+                    style={styles.additionalImage}
+                  />
+                  <TouchableOpacity style={styles.deleteButton}
+                    onPress={() => handleDeleteAdditionalImage(index)}>
+                    <Text style={styles.deleteButtonText}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            ) : (
+              <Text>No additional images available.</Text>
+            )}
+          </View>
+          {userData?.verify ? (
+            <>
+              <Checkbox
+                text="Find Home"
+                onPress={onPress}
+                value={pet?.status ? `${pet.status}` || '' : ''}
+                isChecked={isFindHomeChecked}
               />
 
-            </View>
-          )}
+              {isFindHomeChecked && (
+                <View style={styles.adoptionDetailsContainer}>
+                  <Text style={styles.field}>Location</Text>
+                  <TextInput
+                    style={styles.inputwh}
+                    placeholder="Location"
+                    placeholderTextColor={'gray'}
+                    value={pet?.location ? pet.location || '' : ''}
+                    onChangeText={text =>
+                      setPet(prevPet => ({ ...prevPet, location: text }))
+                    }
+                  />
+                  <Text style={styles.field}>Adopting Conditions</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Adopting Conditions"
+                    value={pet?.adoptingConditions || ''} // Fallback to empty string if pet.adoptingConditions is null or undefined
+                    onChangeText={
+                      text =>
+                        setPet(prevPet => ({ ...prevPet, adoptingConditions: text })) // Update adoptingConditions with new text
+                    }
+                  />
+
+                </View>
+              )}
+            </>
+          ) : null}
         </View>
         <View style={styles.buttonPanel}>
           <TouchableOpacity style={styles.buttonS} onPress={() => handleSave()}>
@@ -727,7 +758,7 @@ useEffect(() => {
             onPress={() => handleDelete()}>
             <Text>Delete</Text>
           </TouchableOpacity>
-          
+
         </View>
         {error && <Text style={styles.errorText}>Error: {error}</Text>}
         {uploading && <ActivityIndicator size="small" color="#0000ff" />}
@@ -735,7 +766,7 @@ useEffect(() => {
     </View>
   );
 };
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const titleSize = width / 17;
 const styles = StyleSheet.create({
