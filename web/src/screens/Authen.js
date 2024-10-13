@@ -31,7 +31,9 @@ function Authen() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(firestore, 'Users', auth.currentUser.uid));
+      const userDoc = await getDoc(
+        doc(firestore, 'Users', auth.currentUser.uid),
+      );
       if (userDoc.exists()) {
         const userData = userDoc.data();
         if (userData.role !== 'vet') {
@@ -45,7 +47,7 @@ function Authen() {
         return;
       }
       // Successful sign-in
-      navigate('/home');
+      navigate('/petdetail');
     } catch (error) {
       alert('Failed to sign in. Please check your email and password.');
     }
@@ -59,51 +61,53 @@ function Authen() {
       return;
     }
     try {
-      // const idcheck = await sec.validateThaiId(id);
-      // if (idcheck === true) {
-      //   const hash = CryptoJS.SHA256(id).toString();
-      //   const usersSnapshot = await getDocs(collection(firestore, 'Users'));
-      //   let hashExists = false;
+      const idcheck = await sec.validateThaiId(id);
+      if (idcheck === true) {
+        const hash = CryptoJS.SHA256(id).toString();
+        const usersSnapshot = await getDoc(collection(firestore, 'Users'));
+        let hashExists = false;
 
-      //   usersSnapshot.forEach(userDoc => {
-      //     const userData = userDoc.data();
-      //     if (userData.hashedID === hash) {
-      //       hashExists = true;
-      //     }
-      //   });
-      //   if (hashExists) {
-      //     console.log('This ID card number has already been used');
-      //   } else {
-      const tempUser = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const uid = tempUser.user.uid;
-      await updateProfile(tempUser.user, {
-        displayName: `${firstname} ${lastname}`,
-      });
-      // Successful sign-up
-      const { publicKey, secretKey } = await sec.generateKeyPair();
+        usersSnapshot.forEach(userDoc => {
+          const userData = userDoc.data();
+          if (userData.hashedID === hash) {
+            hashExists = true;
+          }
+        });
+        if (hashExists) {
+          console.log('This ID card number has already been used');
+        } else {
+          const tempUser = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          const uid = tempUser.user.uid;
+          await updateProfile(tempUser.user, {
+            displayName: `${firstname} ${lastname}`,
+          });
+          // Successful sign-up
+          const {publicKey, secretKey} = await sec.generateKeyPair();
 
-      await setDoc(doc(firestore, 'Users', uid), {
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        // hashedID: hash,
-        uid,
-        publicKey: publicKey,
-        encPrivateKey: secretKey,
-        role: 'vet',
-      });
-      console.log('Signed up successfully');
-      navigate('/home');
+          await setDoc(doc(firestore, 'Users', uid), {
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            // hashedID: hash,
+            uid,
+            publicKey: publicKey,
+            encPrivateKey: secretKey,
+            role: 'vet',
+          });
+          console.log('Signed up successfully');
+          navigate('/home');
+        }
+      }
     } catch (error) {
       // } else {
       //   console.log('Thai ID is invalid');
       //   return;
       // }
-      //}
+      // }
       alert('Error', error.message);
     }
   };

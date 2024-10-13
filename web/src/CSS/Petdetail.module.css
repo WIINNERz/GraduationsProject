@@ -6,12 +6,25 @@
 
 .header {
     background-color: #E16539;
-
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    flex-direction: row;
     text-align: center;
     box-sizing: border-box;
     flex: 0.5;
 }
+.docname {
+   
+    font-family: Inter;
+    font-weight: bold;
+}
+.profile {
+    
+    position: absolute;
+    right: 10px;
 
+}
 .headtext {
     color: white;
     font-size: 18px;
@@ -274,6 +287,10 @@
 .dark .footer {
     background-color: #555;
 }
+.light .sidemenubtn {
+    background-color: #ffd5b9;
+  }
+  
 
 .dark .mainsection {
     background-color: #121212;
@@ -291,7 +308,9 @@
     max-width: 500px;
     border-radius: 10px;
 }
-
+.dark .sidemenubtn {
+    background-color: #acacac;
+  }
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .screen {

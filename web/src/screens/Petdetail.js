@@ -8,13 +8,17 @@ import {
   where,
   doc,
   setDoc,
+  getDoc,
 } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import {auth, firestore} from '../firebase-config';
 
-const Home = () => {
+
+const PetDetail = () => {
   const [petid, setIDtosearch] = React.useState('');
   const [petdata, setPetdata] = React.useState('');
   const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [userProfile, setUserProfile] = React.useState('');
 
   const [condition, setCondiotion] = React.useState('');
   const [vaccine, setVaccine] = React.useState('');
@@ -28,12 +32,14 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = useState(false);
-  const openAddRecordModal = () => {
-    setIsAddRecordModalOpen(true);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const profilemodaltoggle = () => {
+    setIsProfileModalOpen(!isProfileModalOpen);
   };
-  const closeAddRecordModal = () => {
-    setIsAddRecordModalOpen(false);
+  const AddrecordModaltoggle = () => {
+    setIsAddRecordModalOpen(!isAddRecordModalOpen);
   };
+
   const openModal = record => {
     setSelectedRecord(record);
     setIsModalOpen(true);
@@ -140,6 +146,30 @@ const Home = () => {
       }
     });
   };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        const docRef = doc(firestore, 'Users', user.uid);
+        try {
+          getDoc(docRef).then(docSnap => {
+            if (docSnap.exists()) {
+              setUserProfile(docSnap.data());
+            } else {
+              console.log('No such document!');
+            }
+          });
+        } catch (error) {
+          console.log('Error getting document:', error);
+        }
+      } else {
+        console.log('No user is signed in');
+        navigate('/login'); // Redirect to login if no user is signed in
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [navigate]);
+
 
   const clearpetdata = () => {
     setPetdata('');
@@ -155,22 +185,32 @@ const Home = () => {
   return (
     <div
       className={`${styles.screen} ${isDarkMode ? styles.dark : styles.light}`}>
+      {isProfileModalOpen && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <span className={styles.close} onClick={profilemodaltoggle}>
+              &times;
+            </span>
+            <h2>Profile</h2>
+            <p>
+              Name: {userProfile.firstname} {userProfile.lastname}
+            </p>
+            <p>Email: {userProfile.email}</p>
+            <p>Role: {userProfile.role}</p>
+          </div>
+        </div>
+      )}
       <div className={styles.header}>
-        <h2>PetPaw for Vet</h2>
+        <h2>Search Pet</h2>
+        <div onClick={profilemodaltoggle} className={styles.profile}>
+          <h4 className={styles.docname}>Doctor {userProfile.firstname} {userProfile.lastname}</h4>
+        </div>
       </div>
       <div className={styles.section}>
         <div className={styles.nav}>
-          <h4>Doctor {doctor}</h4>
           <ul>
             <li>
               <h3>table of content</h3>
-            </li>
-            <li>
-              <button
-                className={styles.sidemenubtn}
-                onClick={() => navigate('/Home', {state: {isDarkMode}})}>
-                Home
-              </button>
             </li>
             <li>
               <button onClick={toggleTheme} className={styles.sidemenubtn}>
@@ -210,19 +250,13 @@ const Home = () => {
             <h1>Pet data</h1>
             <p>Name: {petdata.id}</p>
             <p>Owner: {petdata.username}</p>
-            {/* <p>Age: {petdata.age}</p> */}
             <p>type: {petdata.type}</p>
-            {/* <p>Gender: {petdata.gender}</p> */}
             <p>Breed: {petdata.breeds}</p>
-            {/* <p>Conditions: {petdata.conditions}</p> */}
-            {/* <p>Weight: {petdata.weight} gram</p>
-            <p>Height: {petdata.height} cm.</p>
-            <p>Chronic: {petdata.chronic} </p> */}
           </div>
           <div className={styles.rightcontainer}>
             <div className={styles.medicalhistory}>
               <h1>Medical History</h1>
-              <button onClick={openAddRecordModal} className={styles.recordbut}>
+              <button onClick={AddrecordModaltoggle} className={styles.recordbut}>
                 Add New Record
               </button>
               <div className={styles.medicalhistorylist}>
@@ -275,11 +309,11 @@ const Home = () => {
             {isAddRecordModalOpen && (
               <div className={styles.modal}>
                 <div className={styles.modalContent}>
-                  <span className={styles.close} onClick={closeAddRecordModal}>
+                  <span className={styles.close} onClick={AddrecordModaltoggle}>
                     &times;
                   </span>
                   <div className={styles.addnewrecord}>
-                  <h2>Add new record to {petdata.name} </h2>
+                    <h2>Add new record to {petdata.name} </h2>
                     <form onSubmit={handleaddnewrecord} className={styles.form}>
                       <input
                         className={styles.modalinputnote}
@@ -356,8 +390,6 @@ const Home = () => {
                 </div>
               </div>
             )}
-
-
           </div>
         </div>
       </div>
@@ -368,4 +400,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default PetDetail;
