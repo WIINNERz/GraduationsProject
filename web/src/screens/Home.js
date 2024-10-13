@@ -11,8 +11,7 @@ import {
 import {auth, firestore} from '../firebase-config';
 
 const Home = () => {
-  const [petid, setIDtosearch] = React.useState('');
-  const [petdata, setPetdata] = React.useState('');
+
   const [isDarkMode, setIsDarkMode] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,10 +56,9 @@ const Home = () => {
       </div>
       <div className={styles.section}>
         <div className={styles.nav}>
-        <h4>Doctor {doctor}</h4>
           <ul>
             <li>
-              <p className={styles.headtext}>table of content</p>
+              <h3>table of content</h3>
 
             </li>
             <li>
@@ -87,6 +85,7 @@ const Home = () => {
           </ul>
         </div>
         <div className={styles.panel}>
+          <h1>Welcome Docter {doctor}</h1>
          
           </div>
         </div>

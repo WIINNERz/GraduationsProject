@@ -24,6 +24,25 @@ const Home = () => {
   const [Note, setNote] = React.useState('');
   const [vaccineList, setVaccineList] = useState([]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [isAddRecordModalOpen, setIsAddRecordModalOpen] = useState(false);
+  const openAddRecordModal = () => {
+    setIsAddRecordModalOpen(true);
+  };
+  const closeAddRecordModal = () => {
+    setIsAddRecordModalOpen(false);
+  };
+  const openModal = record => {
+    setSelectedRecord(record);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedRecord(null);
+    setIsModalOpen(false);
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -75,8 +94,6 @@ const Home = () => {
     setCondiotion('');
     setVaccine('');
     setTreatment('');
-    setPetdata('');
-    setIDtosearch('');
     setVaccineList([]);
     setDose('');
     setNote('');
@@ -97,6 +114,7 @@ const Home = () => {
       collection(firestore, 'Pets'),
       where('id', '==', petid),
     );
+    const pethealthRef = collection(firestore, 'Pets', petid, 'MedicalHistory');
     onSnapshot(petRef, snapshot => {
       if (snapshot.empty) {
         alert('No pet found');
@@ -107,10 +125,20 @@ const Home = () => {
         });
       }
     });
+    onSnapshot(pethealthRef, snapshot => {
+      if (!snapshot.empty) {
+        const medicalHistory = [];
+        snapshot.forEach(doc => {
+          medicalHistory.push(doc.data());
+        });
+        setPetdata(prevData => ({...prevData, medicalHistory}));
+      }
+    });
   };
 
   const clearpetdata = () => {
     setPetdata('');
+    setIDtosearch('');
   };
 
   const toggleTheme = () => {
@@ -130,7 +158,7 @@ const Home = () => {
           <h4>Doctor {doctor}</h4>
           <ul>
             <li>
-              <p className={styles.headtext}>table of content</p>
+              <h3>table of content</h3>
             </li>
             <li>
               <button
@@ -189,65 +217,137 @@ const Home = () => {
           <div className={styles.rightcontainer}>
             <div className={styles.medicalhistory}>
               <h1>Medical History</h1>
+              <div className={styles.medicalhistorylist}>
+                {petdata.medicalHistory && petdata.medicalHistory.length > 0 ? (
+                  petdata.medicalHistory.map((record, index) => (
+                    <button
+                      key={index}
+                      onClick={() => openModal(record)}
+                      className={styles.recordbut}>
+                      View Record {index + 1}
+                    </button>
+                  ))
+                ) : (
+                  <p>No medical history records found.</p>
+                )}
+              </div>
             </div>
+            {/* Modal */}
+            {isModalOpen && (
+              <div className={styles.modal}>
+                <div className={styles.modalContent}>
+                  <span className={styles.close} onClick={closeModal}>
+                    &times;
+                  </span>
+                  <h1>Medical Record</h1>
+                  <p>Conditions: {selectedRecord.conditions}</p>
+                  <p>Treatment: {selectedRecord.treatment}</p>
+                  <p>Doctor: {selectedRecord.doctor}</p>
+                  <p>Note: {selectedRecord.note}</p>
+                  <p>Date: {selectedRecord.date}</p>
+                  <p>Time: {selectedRecord.time}</p>
+                  <div>
+                    <h2>Vaccine</h2>
+                    {selectedRecord.vaccine &&
+                    selectedRecord.vaccine.length > 0 ? (
+                      selectedRecord.vaccine.map((v, index) => (
+                        <p key={index}>
+                          {index + 1} {v.name} - {v.quantity} ml.
+                        </p>
+                      ))
+                    ) : (
+                      <p>No vaccine.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* Add new record */}
+
+            {isAddRecordModalOpen && (
+              <div className={styles.modal}>
+                <div className={styles.modalContent}>
+                  <span className={styles.close} onClick={closeAddRecordModal}>
+                    &times;
+                  </span>
+                  <div className={styles.addnewrecord}>
+                    <form onSubmit={handleaddnewrecord} className={styles.form}>
+                      <input
+                        className={styles.input}
+                        type="text"
+                        placeholder="health condition"
+                        required
+                        value={condition}
+                        onChange={e => setCondiotion(e.target.value)}></input>
+                      <div className={styles.vaccine}>
+                        <input
+                          className={styles.input}
+                          type="text"
+                          placeholder="Vaccine"
+                          value={vaccine}
+                          onChange={e => setVaccine(e.target.value)}></input>
+                        <input
+                          className={styles.input}
+                          type="number"
+                          placeholder="quantity"
+                          value={quantity}
+                          onChange={e => setDose(e.target.value)}></input>
+                        <button
+                          type="button"
+                          onClick={handleAddVaccine}
+                          className={styles.submitbut}>
+                          Add Vaccine
+                        </button>
+                      </div>
+                      <input
+                        className={styles.input}
+                        type="text"
+                        placeholder="Treatment"
+                        value={treatment}
+                        onChange={e => setTreatment(e.target.value)}></input>
+
+                      <input
+                        className={styles.input}
+                        type="text"
+                        placeholder="Note"
+                        value={Note}
+                        onChange={e => setNote(e.target.value)}></input>
+
+                      <div className={styles.vaccineList}>
+                        <div className={styles.vaccineListTitle}>
+                          Vaccine List
+                        </div>
+                        {vaccineList.map((v, index) => (
+                          <div key={index}>
+                            <span>
+                              {index + 1} {v.name} - {v.quantity} ml.
+                            </span>
+                            &nbsp;
+                            <button
+                              onClick={() =>
+                                setVaccineList(
+                                  vaccineList.filter((_, i) => i !== index),
+                                )
+                              }>
+                              X
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <button type="submit" className={styles.submitbut}>
+                        Add record
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className={styles.formaddnewrecord}>
               <h1>Add new record</h1>
-              <form onSubmit={handleaddnewrecord} className={styles.form}>
-                <input
-                  className={styles.input}
-                  type="text"
-                  placeholder="health condition"
-                  required
-                  value={condition}
-                  onChange={e => setCondiotion(e.target.value)}></input>
-                  <div className={styles.vaccine}>
-                <input
-                  className={styles.input}
-                  type="text"
-                  placeholder="Vaccine"
-                  value={vaccine}
-                  onChange={e => setVaccine(e.target.value)}></input>
-                <input
-                  className={styles.input}
-                  type="number"
-                  placeholder="quantity"
-                  value={quantity}
-                  onChange={e => setDose(e.target.value)}></input>
-                <button
-                  type="button"
-                  onClick={handleAddVaccine}
-                  className={styles.submitbut}>
-                  Add Vaccine
-                </button>
-                </div>
-                <input
-                  className={styles.input}
-                  type="text"
-                  placeholder="Treatment"
-                  value={treatment}
-                  onChange={e => setTreatment(e.target.value)}></input>
-
-                <input
-                  className={styles.input}
-                  type="text"
-                  placeholder="Note"
-                  value={Note}
-                  onChange={e => setNote(e.target.value)}></input>
-
-                <button type="submit" className={styles.submitbut}>
-                  Add record
-                </button>
-              </form>
-              <div className={styles.vaccineList}>
-                <div className={styles.vaccineListTitle}>Vaccine List</div>
-                {vaccineList.map((v, index) => (
-                  <div key={index}>
-                    <span>{index + 1} {v.name} - {v.quantity} ml.</span>
-                    &nbsp;
-                    <button onClick={() => setVaccineList(vaccineList.filter((_, i) => i !== index))}>X</button>
-                  </div>
-                ))}
-              </div>
+              <button onClick={openAddRecordModal} className={styles.recordbut}>
+                Add New Record
+              </button>
             </div>
           </div>
         </div>
