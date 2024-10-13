@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
-import {getDocs, doc, updateDoc, collection, setDoc} from 'firebase/firestore';
+import {getDoc, doc, updateDoc, collection, setDoc} from 'firebase/firestore';
 import {auth, firestore} from '../firebase-config';
 import styles from '../CSS/Authen.module.css';
 import securedFunction from '../Function/securefunction';
@@ -31,11 +31,22 @@ function Authen() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      const userDoc = await getDoc(doc(firestore, 'Users', auth.currentUser.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        if (userData.role !== 'vet') {
+          await auth.signOut();
+          alert('Access denied. Only vets are allowed.');
+          return;
+        }
+      } else {
+        await auth.signOut();
+        alert('User data not found.');
+        return;
+      }
       // Successful sign-in
-      console.log('Signed in successfully');
       navigate('/home');
     } catch (error) {
-      // Handle errors
       alert('Failed to sign in. Please check your email and password.');
     }
   };

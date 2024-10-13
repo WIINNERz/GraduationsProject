@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import {useNavigate , useLocation} from 'react-router-dom';
 import styles from '../CSS/Home.module.css';
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore';
+// import {
+//   getFirestore,
+//   collection,
+//   onSnapshot,
+//   query,
+//   where,
+// } from 'firebase/firestore';
 import {auth, firestore} from '../firebase-config';
 
 const Home = () => {

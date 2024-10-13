@@ -22,6 +22,7 @@ const Home = () => {
   const [doctor, setDoctor] = React.useState('');
   const [quantity, setDose] = React.useState('');
   const [Note, setNote] = React.useState('');
+  const [weight, setWeight] = React.useState('');
   const [vaccineList, setVaccineList] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +69,10 @@ const Home = () => {
 
   const handleaddnewrecord = async event => {
     event.preventDefault(); // Prevent form submission
+    if (!petid) {
+      alert('No pet data found pls search for pet first');
+      return;
+    }
     const petRef = collection(firestore, 'Pets', petid, 'MedicalHistory');
 
     const currentDate = new Date();
@@ -205,18 +210,21 @@ const Home = () => {
             <h1>Pet data</h1>
             <p>Name: {petdata.id}</p>
             <p>Owner: {petdata.username}</p>
-            <p>Age: {petdata.age}</p>
+            {/* <p>Age: {petdata.age}</p> */}
             <p>type: {petdata.type}</p>
-            <p>Gender: {petdata.gender}</p>
+            {/* <p>Gender: {petdata.gender}</p> */}
             <p>Breed: {petdata.breeds}</p>
-            <p>Conditions: {petdata.conditions}</p>
-            <p>Weight: {petdata.weight} gram</p>
+            {/* <p>Conditions: {petdata.conditions}</p> */}
+            {/* <p>Weight: {petdata.weight} gram</p>
             <p>Height: {petdata.height} cm.</p>
-            <p>Chronic: {petdata.chronic} </p>
+            <p>Chronic: {petdata.chronic} </p> */}
           </div>
           <div className={styles.rightcontainer}>
             <div className={styles.medicalhistory}>
               <h1>Medical History</h1>
+              <button onClick={openAddRecordModal} className={styles.recordbut}>
+                Add New Record
+              </button>
               <div className={styles.medicalhistorylist}>
                 {petdata.medicalHistory && petdata.medicalHistory.length > 0 ? (
                   petdata.medicalHistory.map((record, index) => (
@@ -224,7 +232,7 @@ const Home = () => {
                       key={index}
                       onClick={() => openModal(record)}
                       className={styles.recordbut}>
-                      View Record {index + 1}
+                      Record {index + 1}
                     </button>
                   ))
                 ) : (
@@ -271,43 +279,49 @@ const Home = () => {
                     &times;
                   </span>
                   <div className={styles.addnewrecord}>
+                  <h2>Add new record to {petdata.name} </h2>
                     <form onSubmit={handleaddnewrecord} className={styles.form}>
                       <input
-                        className={styles.input}
+                        className={styles.modalinputnote}
                         type="text"
                         placeholder="health condition"
                         required
                         value={condition}
                         onChange={e => setCondiotion(e.target.value)}></input>
+                      <input
+                        className={styles.modalinput}
+                        type="number"
+                        placeholder="Weight (gram)"
+                        value={weight}
+                        onChange={e => setWeight(e.target.value)}></input>
                       <div className={styles.vaccine}>
                         <input
-                          className={styles.input}
+                          className={styles.modalinput}
                           type="text"
                           placeholder="Vaccine"
                           value={vaccine}
                           onChange={e => setVaccine(e.target.value)}></input>
                         <input
-                          className={styles.input}
+                          className={styles.modalinput}
                           type="number"
-                          placeholder="quantity"
+                          placeholder="quantity (ml)"
                           value={quantity}
                           onChange={e => setDose(e.target.value)}></input>
                         <button
                           type="button"
                           onClick={handleAddVaccine}
-                          className={styles.submitbut}>
+                          className={styles.addvac}>
                           Add Vaccine
                         </button>
                       </div>
                       <input
-                        className={styles.input}
+                        className={styles.modalinputnote}
                         type="text"
                         placeholder="Treatment"
                         value={treatment}
                         onChange={e => setTreatment(e.target.value)}></input>
-
                       <input
-                        className={styles.input}
+                        className={styles.modalinputnote}
                         type="text"
                         placeholder="Note"
                         value={Note}
@@ -343,12 +357,7 @@ const Home = () => {
               </div>
             )}
 
-            <div className={styles.formaddnewrecord}>
-              <h1>Add new record</h1>
-              <button onClick={openAddRecordModal} className={styles.recordbut}>
-                Add New Record
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
