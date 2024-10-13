@@ -1,8 +1,15 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useLocation} from 'react-router-dom';
 import styles from '../CSS/Petdetail.module.css';
-import { collection, onSnapshot, query, where, doc, setDoc } from 'firebase/firestore';
-import { auth, firestore } from '../firebase-config';
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+  doc,
+  setDoc,
+} from 'firebase/firestore';
+import {auth, firestore} from '../firebase-config';
 
 const Home = () => {
   const [petid, setIDtosearch] = React.useState('');
@@ -13,6 +20,9 @@ const Home = () => {
   const [vaccine, setVaccine] = React.useState('');
   const [treatment, setTreatment] = React.useState('');
   const [doctor, setDoctor] = React.useState('');
+  const [quantity, setDose] = React.useState('');
+  const [Note, setNote] = React.useState('');
+  const [vaccineList, setVaccineList] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,18 +64,27 @@ const Home = () => {
     const newRecordRef = doc(petRef, timestamp);
     const newRecord = {
       conditions: condition,
-      vaccine: vaccine,
+      vaccine: vaccineList,
       treatment: treatment,
       doctor: doctor,
-      date: `${day}-${month}-${year}`, 
+      note: Note,
+      date: `${day}-${month}-${year}`,
+      time: `${hours}:${minutes}:${seconds}`,
     };
-    console.log('New Record:', newRecord);
     await setDoc(newRecordRef, newRecord);
     setCondiotion('');
     setVaccine('');
     setTreatment('');
     setPetdata('');
     setIDtosearch('');
+    setVaccineList([]);
+    setDose('');
+    setNote('');
+  };
+  const handleAddVaccine = () => {
+    setVaccineList([...vaccineList, {name: vaccine, quantity: quantity}]);
+    setVaccine('');
+    setDose('');
   };
 
   const handlelogout = () => {
@@ -116,7 +135,7 @@ const Home = () => {
             <li>
               <button
                 className={styles.sidemenubtn}
-                onClick={() => navigate('/Home', { state: { isDarkMode } })}>
+                onClick={() => navigate('/Home', {state: {isDarkMode}})}>
                 Home
               </button>
             </li>
@@ -181,24 +200,54 @@ const Home = () => {
                   required
                   value={condition}
                   onChange={e => setCondiotion(e.target.value)}></input>
+                  <div className={styles.vaccine}>
                 <input
                   className={styles.input}
                   type="text"
                   placeholder="Vaccine"
-                  required
                   value={vaccine}
                   onChange={e => setVaccine(e.target.value)}></input>
                 <input
                   className={styles.input}
+                  type="number"
+                  placeholder="quantity"
+                  value={quantity}
+                  onChange={e => setDose(e.target.value)}></input>
+                <button
+                  type="button"
+                  onClick={handleAddVaccine}
+                  className={styles.submitbut}>
+                  Add Vaccine
+                </button>
+                </div>
+                <input
+                  className={styles.input}
                   type="text"
                   placeholder="Treatment"
-                  required
                   value={treatment}
                   onChange={e => setTreatment(e.target.value)}></input>
+
+                <input
+                  className={styles.input}
+                  type="text"
+                  placeholder="Note"
+                  value={Note}
+                  onChange={e => setNote(e.target.value)}></input>
+
                 <button type="submit" className={styles.submitbut}>
                   Add record
                 </button>
               </form>
+              <div className={styles.vaccineList}>
+                <div className={styles.vaccineListTitle}>Vaccine List</div>
+                {vaccineList.map((v, index) => (
+                  <div key={index}>
+                    <span>{index + 1} {v.name} - {v.quantity} ml.</span>
+                    &nbsp;
+                    <button onClick={() => setVaccineList(vaccineList.filter((_, i) => i !== index))}>X</button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

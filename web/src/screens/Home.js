@@ -16,6 +16,7 @@ const Home = () => {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [doctor, setDoctor] = React.useState('');
 
   useEffect(() => {
     if (location.state && location.state.isDarkMode !== undefined) {
@@ -26,7 +27,17 @@ const Home = () => {
         setIsDarkMode(JSON.parse(savedTheme));
       }
     }
-  }, [location.state]);
+
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        setDoctor(user.displayName);
+      } else {
+        navigate('/');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [location.state, navigate]);
 
   const handlelogout = () => {
     navigate('/');
@@ -46,9 +57,11 @@ const Home = () => {
       </div>
       <div className={styles.section}>
         <div className={styles.nav}>
+        <h4>Doctor {doctor}</h4>
           <ul>
             <li>
               <p className={styles.headtext}>table of content</p>
+
             </li>
             <li>
               <button

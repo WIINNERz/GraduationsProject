@@ -21,10 +21,17 @@ const MedicalHistoryModal = ({ visible, record, onClose }) => {
           {record && (
             <>
               <Text style={styles.modalText}>Date: {formatDate(record.date)}</Text>
+              <Text style={styles.modalText}>Time: {record.time}</Text>
               <Text style={styles.modalText}>Conditions: {record.conditions}</Text>
               <Text style={styles.modalText}>Doctor: {record.doctor}</Text>
               <Text style={styles.modalText}>Treatment: {record.treatment}</Text>
-              <Text style={styles.modalText}>Vaccine: {record.vaccine}</Text>
+              <Text style={styles.modalText}>Vaccine: {'\n'}
+                {record.vaccine.map((v, index) => (
+                  <Text key={index}>
+                    {v.name} - {v.quantity} ml. {'\n'}
+                  </Text>
+                ))}
+              </Text>
             </>
           )}
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>

@@ -36,7 +36,7 @@ function Authen() {
       navigate('/home');
     } catch (error) {
       // Handle errors
-      setError(error.message);
+      alert('Failed to sign in. Please check your email and password.');
     }
   };
   const handleSignUp = async e => {
@@ -93,7 +93,7 @@ function Authen() {
       //   return;
       // }
       //}
-      console.error('Error signing up:', error);
+      alert('Error', error.message);
     }
   };
 
