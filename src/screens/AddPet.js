@@ -20,9 +20,12 @@ import {
   setDoc,
   doc,
   getDoc,
+  getDocs,
   updateDoc,
   onSnapshot,
-  arrayUnion,
+  query,
+  collection,
+  where,
   Timestamp,
 } from 'firebase/firestore';
 import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
@@ -117,6 +120,19 @@ const AddPet = () => {
       return '';
     }
   };
+  const generateUniqueRandomNumber = async () => {
+    const checkRandomExists = async (random) => {
+      const petsQuery = query(collection(firestore, 'Pets'), where('nid', '==', random));
+      const querySnapshot = await getDocs(petsQuery);
+      return !querySnapshot.empty;
+    };
+
+    let random;
+    do {
+      random = Math.floor(100000 + Math.random() * 900000); // Ensure 6-digit number
+    } while (await checkRandomExists(random));
+    return random;
+  };
 
   const handleSubmit = async () => {
     try {
@@ -136,7 +152,7 @@ const AddPet = () => {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
-
+      const nid = await generateUniqueRandomNumber();
       let dataToStore = {};
 
       if (status === 'have_owner') {
@@ -177,6 +193,7 @@ const AddPet = () => {
 
       const petDocRef = doc(db, 'Pets', name);
       await setDoc(petDocRef, {
+        nid,
         id,
         uid: user.uid,
         username,
@@ -196,7 +213,23 @@ const AddPet = () => {
       if (additionalImages.length > 0) {
         await uploadAdditionalImages(petDocRef);
       }
-
+      setName('');
+      setAge('');
+      setBreeds('');
+      setWeight('');
+      setHeight('');
+      setGender('');
+      setColor('');
+      setCharacteristics('');
+      setChronic('');
+      setLocation('');
+      setConditions('');
+      setBirthday(new Date());
+      setAdoptingConditions('');
+      setImageP(null);
+      setAdditionalImages([]);
+      setIsChecked(false);
+      setStatus('have_owner');
       navigation.navigate('MyPets');
     } catch (error) {
       console.error('Error adding document: ', error);

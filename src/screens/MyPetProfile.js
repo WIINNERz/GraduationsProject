@@ -66,6 +66,7 @@ export default function PetProfile() {
               photoURL: petData.photoURL,
               additionalImages: petData.additionalImages || null,
               type: petData.type,
+              nid: petData.nid,
               status: petData.status,
               gender: petData.gender
                 ? KeymanagementInstance.decryptData(petData.gender)
@@ -301,7 +302,10 @@ export default function PetProfile() {
               <Text style={styles.categoryPet}>Status</Text>
               <Text style={styles.valuePet}>{status}</Text>
             </View>
-            <View style={styles.rightcolum}></View>
+            <View style={styles.rightcolum}> 
+              <Text style={styles.categoryPet}>ID</Text>
+              <Text style={styles.valuePet}>{pet?.nid}</Text>
+            </View>
           </View>
           <View style={styles.onecolumn}>
             <Text style={styles.categoryPet}>Characteristics</Text>

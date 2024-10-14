@@ -1,4 +1,4 @@
-import React  from 'react';
+import React ,{useState} from 'react';
 import {View, Text, StyleSheet, Button} from 'react-native';
 import 'react-native-get-random-values';
 import nacl from 'tweetnacl';
@@ -8,6 +8,8 @@ import Keymanagement from '../components/Keymanagement';
 
 const Pond = () => {
     const KeymanagementInstance = Keymanagement();
+    const [number, setNumber] = useState(0);
+    const [randomNumber, setRandomNumber] = useState(0);
     const generateKeyPair = async () => {
         try {
             const keyPairA = nacl.box.keyPair();
@@ -19,12 +21,15 @@ const Pond = () => {
             console.log('Could not generate key pair', error);
           }
     }
+ 
 
-
-
+      
     return (
         <View style={styles.container}>
-            <Button title="Generate Key Pair" onPress={generateKeyPair} />
+            <Button title="Generate Key Pair" onPress={readom6digit} />
+            <Button title="Generate Secure Random ID" onPress={generateSecureRandomId} />
+            <Text style={styles.text}>{number}</Text>
+            <Text style={styles.text}>{randomNumber}</Text>
 
         </View>
     );
