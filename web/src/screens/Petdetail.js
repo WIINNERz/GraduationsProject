@@ -9,10 +9,10 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
 } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import {onAuthStateChanged} from 'firebase/auth';
 import {auth, firestore} from '../firebase-config';
-
 
 const PetDetail = () => {
   const [petid, setIDtosearch] = React.useState('');
@@ -75,11 +75,12 @@ const PetDetail = () => {
 
   const handleaddnewrecord = async event => {
     event.preventDefault(); // Prevent form submission
+    const petid = petdata.id;
     if (!petid) {
       alert('No pet data found pls search for pet first');
       return;
     }
-    const petRef = collection(firestore, 'Pets', petid, 'MedicalHistory');
+    const petRef = collection(firestore, 'Pets', petdata.id , 'MedicalHistory');
 
     const currentDate = new Date();
     const year = currentDate.getFullYear().toString();
@@ -102,6 +103,7 @@ const PetDetail = () => {
       time: `${hours}:${minutes}:${seconds}`,
     };
     await setDoc(newRecordRef, newRecord);
+    await handlesearch(event);  
     setCondiotion('');
     setVaccine('');
     setTreatment('');
@@ -119,32 +121,33 @@ const PetDetail = () => {
     navigate('/');
   };
 
-  const handlesearch = event => {
+  const handlesearch = async event => {
     event.preventDefault(); // Prevent form submission
-    const petRef = query(
-      collection(firestore, 'Pets'),
-      where('id', '==', petid),
-    );
-    const pethealthRef = collection(firestore, 'Pets', petid, 'MedicalHistory');
-    onSnapshot(petRef, snapshot => {
-      if (snapshot.empty) {
-        alert('No pet found');
-        setPetdata('');
-      } else {
-        snapshot.forEach(doc => {
-          setPetdata(doc.data());
-        });
-      }
-    });
-    onSnapshot(pethealthRef, snapshot => {
-      if (!snapshot.empty) {
-        const medicalHistory = [];
-        snapshot.forEach(doc => {
-          medicalHistory.push(doc.data());
-        });
-        setPetdata(prevData => ({...prevData, medicalHistory}));
-      }
-    });
+    const petRef = collection(firestore, 'Pets');
+    const petidNumber = Number(petid); // Ensure petid is a number
+    const q = query(petRef, where('nid', '==', petidNumber));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      alert('No pet found');
+      setPetdata('');
+    } else {
+      querySnapshot.forEach(async doc => {
+        const petData = doc.data();
+        setPetdata(petData);
+
+        const pethealthRef = collection(firestore, 'Pets', doc.id, 'MedicalHistory');
+        const healthSnapshot = await getDocs(pethealthRef);
+
+        if (!healthSnapshot.empty) {
+          const medicalHistory = [];
+          healthSnapshot.forEach(doc => {
+            medicalHistory.push(doc.data());
+          });
+          setPetdata(prevData => ({ ...prevData, medicalHistory }));
+        }
+      });
+    }
   };
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
@@ -153,7 +156,7 @@ const PetDetail = () => {
         try {
           getDoc(docRef).then(docSnap => {
             if (docSnap.exists()) {
-              setUserProfile(docSnap.data());
+              (docSnap.data());
             } else {
               console.log('No such document!');
             }
@@ -166,10 +169,9 @@ const PetDetail = () => {
         navigate('/login'); // Redirect to login if no user is signed in
       }
     });
-    
+
     return () => unsubscribe();
   }, [navigate]);
-
 
   const clearpetdata = () => {
     setPetdata('');
@@ -203,7 +205,9 @@ const PetDetail = () => {
       <div className={styles.header}>
         <h2>Search Pet</h2>
         <div onClick={profilemodaltoggle} className={styles.profile}>
-          <h4 className={styles.docname}>Doctor {userProfile.firstname} {userProfile.lastname}</h4>
+          <h4 className={styles.docname}>
+            Doctor {userProfile.firstname} {userProfile.lastname}
+          </h4>
         </div>
       </div>
       <div className={styles.section}>
@@ -231,7 +235,7 @@ const PetDetail = () => {
               <input
                 className={styles.input}
                 type="text"
-                placeholder="Pet's name"
+                placeholder="Pet's ID"
                 required
                 value={petid}
                 onChange={e => setIDtosearch(e.target.value)}></input>
@@ -256,7 +260,9 @@ const PetDetail = () => {
           <div className={styles.rightcontainer}>
             <div className={styles.medicalhistory}>
               <h1>Medical History</h1>
-              <button onClick={AddrecordModaltoggle} className={styles.recordbut}>
+              <button
+                onClick={AddrecordModaltoggle}
+                className={styles.recordbut}>
                 Add New Record
               </button>
               <div className={styles.medicalhistorylist}>
