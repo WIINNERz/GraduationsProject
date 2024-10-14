@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
-import {getDoc, doc, updateDoc, collection, setDoc} from 'firebase/firestore';
+import {getDoc, doc, collection, setDoc,getDocs} from 'firebase/firestore';
 import {auth, firestore} from '../firebase-config';
 import styles from '../CSS/Authen.module.css';
 import securedFunction from '../Function/securefunction';
@@ -64,7 +64,7 @@ function Authen() {
       const idcheck = await sec.validateThaiId(id);
       if (idcheck === true) {
         const hash = CryptoJS.SHA256(id).toString();
-        const usersSnapshot = await getDoc(collection(firestore, 'Users'));
+        const usersSnapshot = await getDocs(collection(firestore, 'Vets'));
         let hashExists = false;
 
         usersSnapshot.forEach(userDoc => {
@@ -88,7 +88,7 @@ function Authen() {
           // Successful sign-up
           const {publicKey, secretKey} = await sec.generateKeyPair();
 
-          await setDoc(doc(firestore, 'Users', uid), {
+          await setDoc(doc(firestore, 'Vets', uid), {
             firstname: firstname,
             lastname: lastname,
             email: email,
@@ -99,7 +99,7 @@ function Authen() {
             role: 'vet',
           });
           console.log('Signed up successfully');
-          navigate('/home');
+          navigate('/petdetail');
         }
       }
     } catch (error) {
@@ -108,6 +108,7 @@ function Authen() {
       //   return;
       // }
       // }
+      console.log(error.message);
       alert('Error', error.message);
     }
   };
