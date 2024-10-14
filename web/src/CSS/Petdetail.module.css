@@ -101,7 +101,7 @@
 
 .input {
     padding: 10px;
-    border: 1px solid #f1f1f1;  
+    border: 1px solid #000000;  
     margin-Bottom: 5px;
     border-width: 1px;
     cursor: text;
@@ -200,7 +200,7 @@
 }
 .modalinput {
     padding: 10px;
-    border: 1px solid #f1f1f1;  
+    
     margin-Bottom: 5px;
     border-width: 1px;
     cursor: text;
@@ -214,7 +214,7 @@
 }
 .modalinputnote {
     padding: 10px;
-    border: 1px solid #f1f1f1;  
+    
     margin-Bottom: 5px;
     border-width: 1px;
     cursor: text;
@@ -254,12 +254,15 @@
 }
 
 .light .mainsection {
-    background-color: #f6f5f7;
+    background-color: #f6f5f7c9;
 }
 .light .modal {
     background-color: rgb(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.4);
 }
+.light .sidemenubtn {
+    background-color: #ffd5b9;
+  }
 .light .modalContent {
     background-color: #fefefe;
     margin: auto;
@@ -269,7 +272,15 @@
     max-width: 500px;
     border-radius: 10px;
 }
-
+.light .modalinputnote {
+    background-color:#fff4ed;
+}
+.light .modalinput {
+    background-color:#fff4ed;
+}
+.light .input {
+    background-color:#fff4ed;
+}
 /* Dark mode styles */
 .dark {
     background-color: #121212;
@@ -287,9 +298,7 @@
 .dark .footer {
     background-color: #555;
 }
-.light .sidemenubtn {
-    background-color: #ffd5b9;
-  }
+
   
 
 .dark .mainsection {
@@ -311,6 +320,15 @@
 .dark .sidemenubtn {
     background-color: #acacac;
   }
+.dark .modalinputnote {
+    background-color:#acacac;
+}
+.dark .modalinput {
+    background-color:#acacac;
+}
+.dark .input {
+    background-color:#acacac;
+}
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .screen {

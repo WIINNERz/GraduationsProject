@@ -81,7 +81,7 @@ export default function PetProfile() {
                 ? KeymanagementInstance.decryptData(petData.age)
                 : null,
               breeds: petData.breeds
-                ? KeymanagementInstance.decryptData(petData.breeds)
+                ? petData.breeds
                 : null,
               characteristics: petData.characteristics
                 ? KeymanagementInstance.decryptData(petData.characteristics)

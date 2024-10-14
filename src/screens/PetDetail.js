@@ -119,9 +119,7 @@ const PetDetail = () => {
                 )
                 : '',
               breeds: petData.breeds
-                ? CryptoJS.AES.decrypt(petData.breeds, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                ?petData.breeds
                 : '',
               weight: petData.weight
                 ? CryptoJS.AES.decrypt(petData.weight, key).toString(
@@ -245,7 +243,7 @@ const PetDetail = () => {
           name: name.trim(),
           age: age ? CryptoJS.AES.encrypt(String(age), key).toString() : null,
           breeds: breeds
-            ? CryptoJS.AES.encrypt(String(breeds), key).toString()
+            ? breeds
             : null,
           weight: weight
             ? CryptoJS.AES.encrypt(String(weight), key).toString()

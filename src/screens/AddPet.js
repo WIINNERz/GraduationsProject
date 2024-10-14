@@ -161,7 +161,6 @@ const AddPet = () => {
 
         dataToStore = {
           age: encryptField(age),
-          breeds: encryptField(breeds),
           weight: encryptField(weight),
           height: encryptField(height),
           characteristics: encryptField(characteristics),
@@ -176,7 +175,6 @@ const AddPet = () => {
       } else {
         dataToStore = {
           age,
-          breeds,
           weight,
           height,
           characteristics,
@@ -195,6 +193,7 @@ const AddPet = () => {
       await setDoc(petDocRef, {
         nid,
         id,
+        breeds : breeds,
         uid: user.uid,
         username,
         name,

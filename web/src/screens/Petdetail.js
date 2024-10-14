@@ -28,11 +28,16 @@ const PetDetail = () => {
   const [Note, setNote] = React.useState('');
   const [weight, setWeight] = React.useState('');
   const [vaccineList, setVaccineList] = useState([]);
+  const [drugAllergy, setDrugAllergy] = useState('');
+  const [ChronicDisease, setChronicDisease] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const profilemodaltoggle = () => {
     setIsProfileModalOpen(!isProfileModalOpen);
   };
@@ -50,8 +55,8 @@ const PetDetail = () => {
     setIsModalOpen(false);
   };
 
-  const navigate = useNavigate();
-  const location = useLocation();
+
+
   useEffect(() => {
     if (location.state && location.state.isDarkMode !== undefined) {
       setIsDarkMode(location.state.isDarkMode);
@@ -69,7 +74,6 @@ const PetDetail = () => {
         navigate('/');
       }
     });
-
     return () => unsubscribe();
   }, [location.state, navigate]);
 
@@ -80,7 +84,7 @@ const PetDetail = () => {
       alert('No pet data found pls search for pet first');
       return;
     }
-    const petRef = collection(firestore, 'Pets', petdata.id , 'MedicalHistory');
+    const petRef = collection(firestore, 'Pets', petdata.id, 'MedicalHistory');
 
     const currentDate = new Date();
     const year = currentDate.getFullYear().toString();
@@ -103,7 +107,7 @@ const PetDetail = () => {
       time: `${hours}:${minutes}:${seconds}`,
     };
     await setDoc(newRecordRef, newRecord);
-    await handlesearch(event);  
+    await handlesearch(event);
     setCondiotion('');
     setVaccine('');
     setTreatment('');
@@ -136,7 +140,12 @@ const PetDetail = () => {
         const petData = doc.data();
         setPetdata(petData);
 
-        const pethealthRef = collection(firestore, 'Pets', doc.id, 'MedicalHistory');
+        const pethealthRef = collection(
+          firestore,
+          'Pets',
+          doc.id,
+          'MedicalHistory',
+        );
         const healthSnapshot = await getDocs(pethealthRef);
 
         if (!healthSnapshot.empty) {
@@ -144,7 +153,7 @@ const PetDetail = () => {
           healthSnapshot.forEach(doc => {
             medicalHistory.push(doc.data());
           });
-          setPetdata(prevData => ({ ...prevData, medicalHistory }));
+          setPetdata(prevData => ({...prevData, medicalHistory}));
         }
       });
     }
@@ -156,7 +165,8 @@ const PetDetail = () => {
         try {
           getDoc(docRef).then(docSnap => {
             if (docSnap.exists()) {
-              (docSnap.data());
+              docSnap.data();
+              setUserProfile(docSnap.data());
             } else {
               console.log('No such document!');
             }
@@ -231,7 +241,7 @@ const PetDetail = () => {
         <div className={styles.mainsection}>
           <div className={styles.leftcontainer}>
             <form onSubmit={handlesearch}>
-              <h1>Find pet by name</h1>
+              <h1>Find pet by ID</h1>
               <input
                 className={styles.input}
                 type="text"
@@ -319,7 +329,9 @@ const PetDetail = () => {
                     &times;
                   </span>
                   <div className={styles.addnewrecord}>
-                    <h2>Add new record to {petdata.name} </h2>
+                    <h2 style={{paddingLeft: 10}}>
+                      Add new record to {petdata.name}{' '}
+                    </h2>
                     <form onSubmit={handleaddnewrecord} className={styles.form}>
                       <input
                         className={styles.modalinputnote}
@@ -366,6 +378,23 @@ const PetDetail = () => {
                         placeholder="Note"
                         value={Note}
                         onChange={e => setNote(e.target.value)}></input>
+                      <p style={{paddingLeft: 10}}>
+                        **fill only new information**
+                      </p>
+                      <input
+                        className={styles.modalinput}
+                        type="text"
+                        placeholder=" New Drug Allergy"
+                        value={drugAllergy}
+                        onChange={e => setDrugAllergy(e.target.value)}
+                      />
+                      <input
+                        className={styles.modalinput}
+                        type="text"
+                        placeholder="New Chronic Disease"
+                        value={ChronicDisease}
+                        onChange={e => setChronicDisease(e.target.value)}
+                      />
 
                       <div className={styles.vaccineList}>
                         <div className={styles.vaccineListTitle}>
