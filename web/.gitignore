@@ -18,10 +18,10 @@
 .env.test.local
 .env.production.local
 .firebaserc
-.firebase.json
+firebase.json
 
 #firebase 
-/firebase
+/.firebase
 
 npm-debug.log*
 yarn-debug.log*
