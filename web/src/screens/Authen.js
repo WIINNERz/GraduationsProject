@@ -32,7 +32,7 @@ function Authen() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const userDoc = await getDoc(
-        doc(firestore, 'Users', auth.currentUser.uid),
+        doc(firestore, 'Vets', auth.currentUser.uid),
       );
       if (userDoc.exists()) {
         const userData = userDoc.data();
@@ -190,7 +190,7 @@ function Authen() {
               </Components.GhostButton>
             </Components.LeftOverlayPanel>
             <Components.RightOverlayPanel signingIn={signIn}>
-              <Components.Title>Pet Paw </Components.Title>
+              <Components.Title>Pet Pal </Components.Title>
               <Components.Title>for Vet!</Components.Title>
               <Components.Paragraph>
                 To keep connected with us please login with your personal info

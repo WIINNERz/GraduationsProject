@@ -6,7 +6,6 @@ import PetDetail from '../screens/PetDetail';
 
 import PetProfile from '../screens/PetProfile';
 import FindPet from '../screens/FindPet';
-import ChatRoom from '../screens/ChatRoom';
 import ChatRoom1 from '../screens/ChatRoom1';
 
 const Stack = createNativeStackNavigator();
