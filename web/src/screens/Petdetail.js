@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useLocation} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../CSS/Petdetail.module.css';
 import {
   collection,
@@ -11,23 +11,23 @@ import {
   getDoc,
   getDocs,
 } from 'firebase/firestore';
-import {onAuthStateChanged} from 'firebase/auth';
-import {auth, firestore} from '../firebase-config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, firestore } from '../firebase-config';
 import axios from 'axios';
 
 const PetDetail = () => {
-  const [petid, setIDtosearch] = React.useState('');
-  const [petdata, setPetdata] = React.useState('');
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
-  const [userProfile, setUserProfile] = React.useState('');
+  const [petid, setIDtosearch] = useState('');
+  const [petdata, setPetdata] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [userProfile, setUserProfile] = useState('');
 
-  const [condition, setCondiotion] = React.useState('');
-  const [vaccine, setVaccine] = React.useState('');
-  const [treatment, setTreatment] = React.useState('');
-  const [doctor, setDoctor] = React.useState('');
-  const [quantity, setDose] = React.useState('');
-  const [Note, setNote] = React.useState('');
-  const [weight, setWeight] = React.useState('');
+  const [condition, setCondiotion] = useState('');
+  const [vaccine, setVaccine] = useState('');
+  const [treatment, setTreatment] = useState('');
+  const [doctor, setDoctor] = useState('');
+  const [quantity, setDose] = useState('');
+  const [Note, setNote] = useState('');
+  const [weight, setWeight] = useState('');
   const [vaccineList, setVaccineList] = useState([]);
   const [drugAllergy, setDrugAllergy] = useState('');
   const [ChronicDisease, setChronicDisease] = useState('');
@@ -36,6 +36,7 @@ const PetDetail = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const API_URL = 'https://petpaw-six.vercel.app/';
@@ -47,9 +48,31 @@ const PetDetail = () => {
     setIsAddRecordModalOpen(!isAddRecordModalOpen);
   };
 
-  const openModal = record => {
-    setSelectedRecord(record);
+  const openModal = async record => {
+    setIsLoading(true);
     setIsModalOpen(true);
+    const decryptedData = {
+      conditions: record.conditions ? await decrypt(record.conditions) : null,
+      vaccine: record.vaccine
+        ? await Promise.all(
+            record.vaccine.map(async v => ({
+              name: v.name ? await decrypt(v.name) : null,
+              quantity: v.quantity ? await decrypt(v.quantity) : null,
+            })),
+          )
+        : null,
+      treatment: record.treatment ? await decrypt(record.treatment) : null,
+      doctor: await decrypt(record.doctor),
+      note: record.note ? await decrypt(record.note) : null,
+      date: await decrypt(record.date),
+      time: await decrypt(record.time),
+      drugallergy: record.drugallergy
+        ? await decrypt(record.drugallergy)
+        : null,
+      chronic: record.chronic ? await decrypt(record.chronic) : null,
+    };
+    setSelectedRecord(decryptedData);
+    setIsLoading(false);
   };
 
   const closeModal = () => {
@@ -92,7 +115,7 @@ const PetDetail = () => {
     const hours = currentDate.getHours().toString().padStart(2, '0');
     const minutes = currentDate.getMinutes().toString().padStart(2, '0');
     const seconds = currentDate.getSeconds().toString().padStart(2, '0');
-    
+
     const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
     const newRecordRef = doc(petRef, timestamp);
     // const newRecord = {
@@ -106,14 +129,19 @@ const PetDetail = () => {
     // };
     const encrecord = {
       conditions: condition ? await encrpyt(condition) : null,
-      vaccine: vaccineList.length > 0 ? await Promise.all(vaccineList.map(async v => ({
-        name: await encrpyt(v.name),
-        quantity: await encrpyt(v.quantity.toString())
-      }))) : null,
+      vaccine:
+        vaccineList.length > 0
+          ? await Promise.all(
+              vaccineList.map(async v => ({
+                name: await encrpyt(v.name),
+                quantity: await encrpyt(v.quantity.toString()),
+              })),
+            )
+          : null,
       treatment: treatment ? await encrpyt(treatment) : null,
       doctor: await encrpyt(doctor),
       note: Note ? await encrpyt(Note) : null,
-      date:  await encrpyt(`${day}-${month}-${year}`),
+      date: await encrpyt(`${day}-${month}-${year}`),
       time: await encrpyt(`${hours}:${minutes}:${seconds}`),
       drugallergy: drugAllergy ? await encrpyt(drugAllergy) : null,
       chronic: ChronicDisease ? await encrpyt(ChronicDisease) : null,
@@ -133,7 +161,7 @@ const PetDetail = () => {
   };
 
   const handleAddVaccine = () => {
-    setVaccineList([...vaccineList, {name: vaccine, quantity: quantity}]);
+    setVaccineList([...vaccineList, { name: vaccine, quantity: quantity }]);
     setVaccine('');
     setDose('');
   };
@@ -166,25 +194,7 @@ const PetDetail = () => {
         const healthSnapshot = await getDocs(pethealthRef);
 
         if (!healthSnapshot.empty) {
-          const medicalHistory = [];
-          for (const doc of healthSnapshot.docs) {
-            const data = doc.data();
-            const decryptedData = {
-              conditions: data.conditions ? await decrypt(data.conditions) : null,
-              vaccine: data.vaccine ? await Promise.all(data.vaccine.map(async v => ({
-                name: v.name ? await decrypt(v.name) : null,
-                quantity: v.quantity ? await decrypt(v.quantity) : null
-              }))) : null,
-              treatment: data.treatment ? await decrypt(data.treatment) : null,
-              doctor: await decrypt(data.doctor),
-              note: data.note ? await decrypt(data.note) : null,
-              date: await decrypt(data.date),
-              time: await decrypt(data.time),
-              drugallergy: data.drugallergy ? await decrypt(data.drugallergy) : null,
-              chronic: data.chronic ? await decrypt(data.chronic) : null
-            };
-            medicalHistory.push(decryptedData);
-          }
+          const medicalHistory = healthSnapshot.docs.map(doc => doc.data());
           setPetdata(prevData => ({ ...prevData, medicalHistory }));
         }
       });
@@ -215,8 +225,7 @@ const PetDetail = () => {
     return () => unsubscribe();
   }, [navigate]);
 
-
-  const encrpyt = async (plaintext) => {
+  const encrpyt = async plaintext => {
     try {
       const response = await axios.post(`${API_URL}encrypt`, { plaintext });
       const { encryptedData } = response.data;
@@ -225,7 +234,7 @@ const PetDetail = () => {
       console.error(error);
     }
   };
-  const decrypt = async (encryptedText) => {
+  const decrypt = async encryptedText => {
     try {
       const response = await axios.post(`${API_URL}decrypt`, { encryptedText });
       const { decrypted } = response.data;
@@ -235,7 +244,6 @@ const PetDetail = () => {
       console.error(error);
     }
   };
-
 
   const clearpetdata = () => {
     setPetdata('');
@@ -292,7 +300,9 @@ const PetDetail = () => {
             </li>
             <li>
               <li>
-                <button onClick={() => navigate('/profile')} className={styles.sidemenubtn}>
+                <button
+                  onClick={() => navigate('/profile')}
+                  className={styles.sidemenubtn}>
                   Test lab
                 </button>
               </li>
@@ -358,26 +368,32 @@ const PetDetail = () => {
                   <span className={styles.close} onClick={closeModal}>
                     &times;
                   </span>
-                  <h1>Medical Record</h1>
-                  <p>Conditions: {selectedRecord.conditions}</p>
-                  <p>Treatment: {selectedRecord.treatment}</p>
-                  <p>Doctor: {selectedRecord.doctor}</p>
-                  <p>Note: {selectedRecord.note}</p>
-                  <p>Date: {selectedRecord.date}</p>
-                  <p>Time: {selectedRecord.time}</p>
-                  <div>
-                    <h2>Vaccine</h2>
-                    {selectedRecord.vaccine &&
-                    selectedRecord.vaccine.length > 0 ? (
-                      selectedRecord.vaccine.map((v, index) => (
-                        <p key={index}>
-                          {index + 1} {v.name} - {v.quantity} ml.
-                        </p>
-                      ))
-                    ) : (
-                      <p>No vaccine.</p>
-                    )}
-                  </div>
+                  {isLoading ? (
+                    <div className={styles.loader}></div>
+                  ) : (
+                    <>
+                      <h1>Medical Record</h1>
+                      <p>Conditions: {selectedRecord.conditions}</p>
+                      <p>Treatment: {selectedRecord.treatment}</p>
+                      <p>Doctor: {selectedRecord.doctor}</p>
+                      <p>Note: {selectedRecord.note}</p>
+                      <p>Date: {selectedRecord.date}</p>
+                      <p>Time: {selectedRecord.time}</p>
+                      <div>
+                        <h2>Vaccine</h2>
+                        {selectedRecord.vaccine &&
+                        selectedRecord.vaccine.length > 0 ? (
+                          selectedRecord.vaccine.map((v, index) => (
+                            <p key={index}>
+                              {index + 1} {v.name} - {v.quantity} ml.
+                            </p>
+                          ))
+                        ) : (
+                          <p>No vaccine.</p>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -390,7 +406,7 @@ const PetDetail = () => {
                     &times;
                   </span>
                   <div className={styles.addnewrecord}>
-                    <h2 style={{paddingLeft: 10}}>
+                    <h2 style={{ paddingLeft: 10 }}>
                       Add new record to {petdata.name}{' '}
                     </h2>
                     <form onSubmit={handleaddnewrecord} className={styles.form}>
@@ -439,7 +455,7 @@ const PetDetail = () => {
                         placeholder="Note"
                         value={Note}
                         onChange={e => setNote(e.target.value)}></input>
-                      <p style={{paddingLeft: 10}}>
+                      <p style={{ paddingLeft: 10 }}>
                         **fill only new information**
                       </p>
                       <input
