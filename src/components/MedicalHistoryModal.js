@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 
 const MedicalHistoryModal = ({ visible, record, onClose }) => {
     const formatDate = (dateString) => {
-        // สมมติว่า dateString มีรูปแบบเป็น DD-MM-YYYY
         const [day, month, year] = dateString.split('-');
         return `${day}-${month}-${year}`;
       };
@@ -25,12 +24,19 @@ const MedicalHistoryModal = ({ visible, record, onClose }) => {
               <Text style={styles.modalText}><Text style={styles.boldText}>Conditions:</Text> {record.conditions}</Text>
               <Text style={styles.modalText}><Text style={styles.boldText}>Doctor:</Text> {record.doctor}</Text>
               <Text style={styles.modalText}><Text style={styles.boldText}>Treatment:</Text> {record.treatment}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Note:</Text> {record.note}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>New Drug Allergy:</Text> {record.drugallergy}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>New Chronic Disease:</Text> {record.chronic}</Text>
               <Text style={styles.modalText}><Text style={styles.boldText}>Vaccine:</Text> {'\n'}
-                {record.vaccine.map((v, index) => (
-                  <Text key={index}>
-                    {v.name} - {v.quantity} ml. {'\n'}
-                  </Text>
-                ))}
+                {record.vaccine && record.vaccine.length > 0 ? (
+                  record.vaccine.map((v, index) => (
+                    <Text key={index}>
+                      {v.name} - {v.quantity} ml. {'\n'}
+                    </Text>
+                  ))
+                ) : (
+                  <Text>No vaccine record</Text>
+                )}
               </Text>
             </>
           )}

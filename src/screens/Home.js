@@ -251,14 +251,13 @@ const openMaps = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => navigation.navigate('Pond')}
             >
             <MaterialCommunityIcons
               name="file-question"
               size={pawsize}
               color="#D27C2C"
             />
-            <Text style={styles.menuText}>Pond's lab</Text>
+            <Text style={styles.menuText}>Blank</Text>
           </TouchableOpacity>
         </View>
       </View>

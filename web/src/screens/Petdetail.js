@@ -39,7 +39,7 @@ const PetDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const API_URL = 'https://petpaw-six.vercel.app/';
+  const API_URL = 'https://petpaw-six.vercel.app/'; 
 
   const profilemodaltoggle = () => {
     setIsProfileModalOpen(!isProfileModalOpen);
@@ -118,15 +118,6 @@ const PetDetail = () => {
 
     const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
     const newRecordRef = doc(petRef, timestamp);
-    // const newRecord = {
-    //   conditions: condition ,
-    //   vaccine: vaccineList,
-    //   treatment: treatment,
-    //   doctor: doctor,
-    //   note: Note,
-    //   date: `${day}-${month}-${year}`,
-    //   time: `${hours}:${minutes}:${seconds}`,
-    // };
     const encrecord = {
       conditions: condition ? await encrpyt(condition) : null,
       vaccine:
@@ -299,13 +290,6 @@ const PetDetail = () => {
               </button>
             </li>
             <li>
-              <li>
-                <button
-                  onClick={() => navigate('/profile')}
-                  className={styles.sidemenubtn}>
-                  Test lab
-                </button>
-              </li>
             </li>
           </ul>
         </div>

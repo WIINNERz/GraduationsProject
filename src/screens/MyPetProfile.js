@@ -33,12 +33,17 @@ export default function PetProfile() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [status, setStatus] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isloading, setLoading] = useState(false);
   let vaccineCounter = 0;
+  let chroniccounter = 0;
+  let drugallergycounter = 0;
   let hasVaccines = false;
-  
+  let hasChronic = false;
+  let hasDrugAllergy = false;
+
   const flatListRef = useRef(null);
   const KeymanagementInstance = useMemo(() => new Keymanagement(), []);
-
+  const keyman = Keymanagement();
   useFocusEffect(
     useCallback(() => {
       navigate.getParent()?.setOptions({
@@ -80,9 +85,7 @@ export default function PetProfile() {
               age: petData.age
                 ? KeymanagementInstance.decryptData(petData.age)
                 : null,
-              breeds: petData.breeds
-                ? petData.breeds
-                : null,
+              breeds: petData.breeds ? petData.breeds : null,
               characteristics: petData.characteristics
                 ? KeymanagementInstance.decryptData(petData.characteristics)
                 : null,
@@ -121,13 +124,54 @@ export default function PetProfile() {
     );
     const unsubscribeMedicalHistory = onSnapshot(
       medicalHistoryRef,
-      snapshot => {
-        const medicalHistoryList = snapshot.docs.map(doc => {
-          const data = doc.data();
-          const date = doc.id;
-          return {id: doc.id, date, ...data};
-        });
+      async snapshot => {
+        setLoading(true);
+        const medicalHistoryList = await Promise.all(
+          snapshot.docs.map(async doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              conditions: data.conditions
+                ? await keyman.decrypthealthdata(data.conditions)
+                : null,
+              vaccine: data.vaccine
+                ? await Promise.all(
+                    data.vaccine.map(async v => ({
+                      name: v.name
+                        ? await keyman.decrypthealthdata(v.name)
+                        : null,
+                      quantity: v.quantity
+                        ? await keyman.decrypthealthdata(v.quantity)
+                        : null,
+                    })),
+                  )
+                : null,
+              treatment: data.treatment
+                ? await keyman.decrypthealthdata(data.treatment)
+                : null,
+              doctor: data.doctor
+                ? await keyman.decrypthealthdata(data.doctor)
+                : null,
+              note: data.note
+                ? await keyman.decrypthealthdata(data.note)
+                : null,
+              date: data.date
+                ? await keyman.decrypthealthdata(data.date)
+                : null,
+              time: data.time
+                ? await keyman.decrypthealthdata(data.time)
+                : null,
+              drugallergy: data.drugallergy
+                ? await keyman.decrypthealthdata(data.drugallergy)
+                : null,
+              chronic: data.chronic
+                ? await keyman.decrypthealthdata(data.chronic)
+                : null,
+            };
+          }),
+        );
         setMedicalHistory(medicalHistoryList);
+        setLoading(false);
       },
     );
 
@@ -171,17 +215,6 @@ export default function PetProfile() {
     setModalVisible(false);
     setSelectedRecord(null);
   };
-
-  // const vaccineCounts = useMemo(() => {
-  //   const counts = {};
-  //   medicalHistory.forEach(record => {
-  //     const {vaccine} = record;
-  //     if (vaccine) {
-  //       counts[vaccine] = (counts[vaccine] || 0) + 1;
-  //     }
-  //   });
-  //   return counts;
-  // }, [medicalHistory]);
 
   return (
     <View style={styles.container}>
@@ -242,7 +275,6 @@ export default function PetProfile() {
             </View>
           )}
         </View>
-
         <View style={styles.namesection}>
           <Text style={styles.petName}>{pet?.name}</Text>
           <TouchableOpacity style={styles.favbutton} onPress={toggleFavorite}>
@@ -253,7 +285,6 @@ export default function PetProfile() {
             />
           </TouchableOpacity>
         </View>
-
         <View style={styles.panelData}>
           <View style={styles.row}>
             <View style={styles.leftcolum}>
@@ -302,7 +333,7 @@ export default function PetProfile() {
               <Text style={styles.categoryPet}>Status</Text>
               <Text style={styles.valuePet}>{status}</Text>
             </View>
-            <View style={styles.rightcolum}> 
+            <View style={styles.rightcolum}>
               <Text style={styles.categoryPet}>ID</Text>
               <Text style={styles.valuePet}>{pet?.nid}</Text>
             </View>
@@ -313,85 +344,123 @@ export default function PetProfile() {
           </View>
         </View>
         <View style={styles.healtbook}>
-          <View style={styles.titlepanel}>
-            <Text style={styles.healtbooktitle}>Health Book</Text>
-          </View>
-          <View style={styles.healtData}>
-            <View style={{paddingVertical: 5, paddingBottom: '10%'}}>
-              <Text style={styles.categoryPet}>Health Conditions</Text>
-              <Text style={styles.valuePet}>
-                {medicalHistory.length > 0 &&
-                medicalHistory[medicalHistory.length - 1].conditions
-                  ? medicalHistory[medicalHistory.length - 1].conditions
-                  : 'No conditions available'}{' '}
-              </Text>
+          {isloading ? (
+            <View style={styles.Loading}>
+              <Text style={styles.loadingtext}>Loading....</Text>
             </View>
-            <View style={styles.row}>
-              <View style={styles.leftcolum}>
-                <Text style={styles.categoryPet}>Drug allergy</Text>
-                <Text style={styles.valuePet}>
-                  {pet?.drugAllergy ? pet.drugAllergy : 'No drug allergy'}
-                </Text>
+          ) : (
+            <>
+              <View style={styles.titlepanel}>
+                <Text style={styles.healtbooktitle}>Health Book</Text>
               </View>
-              <View style={styles.rightcolum}>
-                <Text style={styles.categoryPet}>Chronic</Text>
-                <Text style={styles.valuePet}>
-                  {pet?.chronic ? pet.chronic : 'No chronic'}
-                </Text>
-              </View>
-            </View>
-            <View style={{ paddingVertical: 5, paddingTop: '10%' }}>
-              <Text style={styles.categoryPet}>Vaccination list</Text>
-              {medicalHistory.map((record) => (
-                <View key={record.id} >
-                  {Array.isArray(record.vaccine) && record.vaccine.length > 0 ? (
-                    record.vaccine.map((vaccine) => {
-                      hasVaccines = true;
-                      vaccineCounter++;
-                      return (
-                        <View
-                          key={vaccineCounter}
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}>
-                          <Text style={styles.valuePet}>
-                            {vaccineCounter}. {vaccine.name}
+              <View style={styles.healtData}>
+                <View style={{paddingVertical: 5, paddingBottom: '10%'}}>
+                  <Text style={styles.categoryPet}>Health Conditions</Text>
+                  <Text style={styles.valuePet}>
+                    {medicalHistory.length > 0 &&
+                    medicalHistory[medicalHistory.length - 1].conditions
+                      ? medicalHistory[medicalHistory.length - 1].conditions
+                      : 'No conditions available'}{' '}
+                  </Text>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.leftcolum}>
+                    <Text style={styles.categoryPet}>Drug allergy</Text>
+                    {medicalHistory.map(record => {
+                      if (record.drugallergy) {
+                        hasDrugAllergy = true;
+                        drugallergycounter++;
+                        return (
+                          <Text key={drugallergycounter} style={styles.row2}>
+                            {drugallergycounter}. {record.drugallergy}
                           </Text>
-                          <Text style={styles.valuePet}>{vaccine.quantity}</Text>
-                        </View>
+                        );
+                      }
+                    }
+                    )}
+                    {!hasDrugAllergy && <Text style={styles.row2}>No drug allergy records found</Text>}
+                  </View>
+                  <View style={styles.rightcolum}>
+                    <Text style={styles.categoryPet}>Chronic</Text>
+                    {medicalHistory.map(record => {
+                      if (record.chronic) {
+                        hasChronic = true;
+                        chroniccounter++;
+                        return (
+                          <Text key={chroniccounter} style={styles.row2}>
+                            {chroniccounter}. {record.chronic}
+                          </Text>
+                        );
+                      }
+                    }
+                    )}
+                    {!hasChronic && <Text style={styles.row2} >No chronic{'\n'}records found</Text>}
+                  </View>
+                </View>
+                <View style={{paddingVertical: 5, paddingTop: '10%'}}>
+                  <Text style={styles.categoryPet}>Vaccination list</Text>
+                  {medicalHistory.map(record => (
+                    <View key={record.id}>
+                      {Array.isArray(record.vaccine) &&
+                      record.vaccine.length > 0
+                        ? record.vaccine.map(vaccine => {
+                            hasVaccines = true;
+                            vaccineCounter++;
+                            return (
+                              <View
+                                key={vaccineCounter}
+                                style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'space-between',
+                                }}>
+                                <Text style={styles.row2}>
+                                  {vaccineCounter}. {vaccine.name}
+                                </Text>
+                                <Text style={styles.row2}>
+                                  {vaccine.quantity}
+                                </Text>
+                              </View>
+                            );
+                          })
+                        : null}
+                    </View>
+                  ))}
+                  {!hasVaccines && <Text>No vaccination records found.</Text>}
+                </View>
+                <View style={styles.paddingVertical}>
+                  <Text style={styles.categoryPet}>Medical History</Text>
+                  {medicalHistory.length === 0 ? (
+                    <Text>No medical history records found.</Text>
+                  ) : (
+                    medicalHistory.map((record, index) => {
+                      const {id, date} = record;
+                      return (
+                        <TouchableOpacity
+                          key={id}
+                          style={styles.medrec}
+                          onPress={() => handleRecordClick(record)}>
+                          <Text style={styles.valuePet}>
+                            Record : {index + 1}
+                          </Text>
+                          <Text style={styles.date}>
+                            Date: {formatDate(date)}
+                          </Text>
+                          {/* <Text style={styles.date}>
+                          Date: {date ? date : 'N/A'}
+                        </Text> */}
+                        </TouchableOpacity>
                       );
                     })
-                  ) : null}
+                  )}
                 </View>
-              ))}
-              {!hasVaccines && <Text>No vaccination records found.</Text>}
-            </View>
-            <View style={styles.paddingVertical}>
-              <Text style={styles.categoryPet}>Medical History</Text>
-              {medicalHistory.length === 0 ? (
-                <Text>No medical history records found.</Text>
-              ) : (
-                medicalHistory.map((record, index) => {
-                  const {id, date} = record;
-                  return (
-                    <TouchableOpacity
-                      key={id}
-                      style={styles.medrec}
-                      onPress={() => handleRecordClick(record)}>
-                      <Text style={styles.valuePet}>Record : {index + 1}</Text>
-                      <Text style={styles.date}>Date: {formatDate(date)}</Text>
-                    </TouchableOpacity>
-                  );
-                })
-              )}
-            </View>
-            <MedicalHistoryModal
-              visible={modalVisible}
-              record={selectedRecord}
-              onClose={closeModal}
-            />
-          </View>
+                <MedicalHistoryModal
+                  visible={modalVisible}
+                  record={selectedRecord}
+                  onClose={closeModal}
+                />
+              </View>
+            </>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -402,6 +471,15 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     flex: 1,
+  },
+  Loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingtext: {
+    fontSize: 18,
+    fontFamily: 'InterBold',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -473,6 +551,11 @@ const styles = StyleSheet.create({
   },
   valuePet: {
     fontSize: 20,
+    color: 'black',
+    fontFamily: 'InterRegular',
+  },
+  row2: {
+    fontSize: 18,
     color: 'black',
     fontFamily: 'InterRegular',
   },

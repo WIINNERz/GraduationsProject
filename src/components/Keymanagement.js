@@ -4,14 +4,25 @@ import {Alert} from 'react-native';
 import {auth, firestore} from '../configs/firebaseConfig';
 import {getDoc, doc, updateDoc} from 'firebase/firestore';
 import crypto from 'rn-crypto-js';
+import axios from 'axios';
 
 const Keymanagement = () => {
   const iterations = 5000,
     keyLength = 256,
     hash = 'sha256';
-
+  const API_URL = 'https://petpaw-six.vercel.app/'; 
   const currentUser = auth.currentUser;
   // used for get user key things
+  const decrypthealthdata = async (data) => {
+    try {
+      const response = await axios.post(`${API_URL}decrypt`, { encryptedText: data });
+      const { decrypted } = response.data;
+      return decrypted;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   async function getuserkey() {
     const currentUser = auth.currentUser;
     try {
@@ -305,6 +316,7 @@ const Keymanagement = () => {
     recoveryMaskeyByID,
     clearKey,
     getRecoverykey,
+    decrypthealthdata,
   };
 };
 

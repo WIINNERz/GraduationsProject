@@ -6,7 +6,7 @@ import PetDetail from '../screens/PetDetail';
 import MyPetProfile from '../screens/MyPetProfile';
 import Home from '../screens/Home';
 import Location1 from '../screens/Location1';
-import Pond from '../screens/Pond';
+
 const Stack = createNativeStackNavigator();
 
 export default function MyPetStack() {
@@ -40,11 +40,6 @@ export default function MyPetStack() {
       <Stack.Screen
         name="Location1"
         component={Location1}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Pond"
-        component={Pond}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
