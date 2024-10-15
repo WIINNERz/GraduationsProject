@@ -10,10 +10,13 @@ import {
 } from 'firebase/firestore';
 import {onAuthStateChanged} from 'firebase/auth';
 import {auth, firestore} from '../firebase-config';
+import axios from 'axios';
 
 const Profile = () => {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState('');
+  const [plaintext, setPlaintext] = React.useState('');
+  const [ciphertext, setCiphertext] = React.useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const user = auth.currentUser;
@@ -27,7 +30,6 @@ const Profile = () => {
       }
     }
   }, [location.state, navigate]);
-
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
@@ -53,10 +55,20 @@ const Profile = () => {
         navigate('/login'); // Redirect to login if no user is signed in
       }
     });
-
     return () => unsubscribe();
   }, [navigate]);
-
+  const API_URL = 'https://petpaw-six.vercel.app/';
+  
+  const testenc = async event => {
+    event.preventDefault(); // Prevent form submission
+    try {
+      const response = await axios.post(`${API_URL}encrypt`, { plaintext });
+      const { encryptedData } = response.data; // Extract encryptedData from response
+      setCiphertext(encryptedData); // Set ciphertext state
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div
@@ -75,16 +87,26 @@ const Profile = () => {
                 {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               </button>
             </li>
+            <button
+              onClick={() => navigate('/petdetail')}
+              className={styles.sidemenubtn}>
+              Pet Detail
+            </button>
           </ul>
         </div>
         <div className={styles.panel}>
           <div className={styles.profile}>
-            <h2>Profile</h2>
-            <p>
-              Name: {userProfile.firstname} {userProfile.lastname}
-            </p>
-            <p>Email: {userProfile.email}</p>
-            <p>Role: {userProfile.role}</p>
+            <form className={styles.form} onSubmit={testenc}>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="plaintext"
+                required
+                value={plaintext}
+                onChange={e => setPlaintext(e.target.value)}></input>
+              <button className={styles.button} type="submit" />
+            </form>
+            <p>{ciphertext}</p>
           </div>
         </div>
       </div>

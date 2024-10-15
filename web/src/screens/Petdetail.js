@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import {onAuthStateChanged} from 'firebase/auth';
 import {auth, firestore} from '../firebase-config';
+import axios from 'axios';
 
 const PetDetail = () => {
   const [petid, setIDtosearch] = React.useState('');
@@ -37,6 +38,7 @@ const PetDetail = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const API_URL = 'https://petpaw-six.vercel.app/';
 
   const profilemodaltoggle = () => {
     setIsProfileModalOpen(!isProfileModalOpen);
@@ -54,8 +56,6 @@ const PetDetail = () => {
     setSelectedRecord(null);
     setIsModalOpen(false);
   };
-
-
 
   useEffect(() => {
     if (location.state && location.state.isDarkMode !== undefined) {
@@ -85,7 +85,6 @@ const PetDetail = () => {
       return;
     }
     const petRef = collection(firestore, 'Pets', petdata.id, 'MedicalHistory');
-
     const currentDate = new Date();
     const year = currentDate.getFullYear().toString();
     const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
@@ -93,20 +92,33 @@ const PetDetail = () => {
     const hours = currentDate.getHours().toString().padStart(2, '0');
     const minutes = currentDate.getMinutes().toString().padStart(2, '0');
     const seconds = currentDate.getSeconds().toString().padStart(2, '0');
-
-    // Create a timestamp in the format YYYYMMDD
+    
     const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
     const newRecordRef = doc(petRef, timestamp);
-    const newRecord = {
-      conditions: condition,
-      vaccine: vaccineList,
-      treatment: treatment,
-      doctor: doctor,
-      note: Note,
-      date: `${day}-${month}-${year}`,
-      time: `${hours}:${minutes}:${seconds}`,
+    // const newRecord = {
+    //   conditions: condition ,
+    //   vaccine: vaccineList,
+    //   treatment: treatment,
+    //   doctor: doctor,
+    //   note: Note,
+    //   date: `${day}-${month}-${year}`,
+    //   time: `${hours}:${minutes}:${seconds}`,
+    // };
+    const encrecord = {
+      conditions: condition ? await encrpyt(condition) : null,
+      vaccine: vaccineList.length > 0 ? await Promise.all(vaccineList.map(async v => ({
+        name: await encrpyt(v.name),
+        quantity: await encrpyt(v.quantity.toString())
+      }))) : null,
+      treatment: treatment ? await encrpyt(treatment) : null,
+      doctor: await encrpyt(doctor),
+      note: Note ? await encrpyt(Note) : null,
+      date:  await encrpyt(`${day}-${month}-${year}`),
+      time: await encrpyt(`${hours}:${minutes}:${seconds}`),
+      drugallergy: drugAllergy ? await encrpyt(drugAllergy) : null,
+      chronic: ChronicDisease ? await encrpyt(ChronicDisease) : null,
     };
-    await setDoc(newRecordRef, newRecord);
+    await setDoc(newRecordRef, encrecord);
     await handlesearch(event);
     setCondiotion('');
     setVaccine('');
@@ -114,7 +126,12 @@ const PetDetail = () => {
     setVaccineList([]);
     setDose('');
     setNote('');
+    setWeight('');
+    setDrugAllergy('');
+    setChronicDisease('');
+    AddrecordModaltoggle();
   };
+
   const handleAddVaccine = () => {
     setVaccineList([...vaccineList, {name: vaccine, quantity: quantity}]);
     setVaccine('');
@@ -150,10 +167,25 @@ const PetDetail = () => {
 
         if (!healthSnapshot.empty) {
           const medicalHistory = [];
-          healthSnapshot.forEach(doc => {
-            medicalHistory.push(doc.data());
-          });
-          setPetdata(prevData => ({...prevData, medicalHistory}));
+          for (const doc of healthSnapshot.docs) {
+            const data = doc.data();
+            const decryptedData = {
+              conditions: data.conditions ? await decrypt(data.conditions) : null,
+              vaccine: data.vaccine ? await Promise.all(data.vaccine.map(async v => ({
+                name: v.name ? await decrypt(v.name) : null,
+                quantity: v.quantity ? await decrypt(v.quantity) : null
+              }))) : null,
+              treatment: data.treatment ? await decrypt(data.treatment) : null,
+              doctor: await decrypt(data.doctor),
+              note: data.note ? await decrypt(data.note) : null,
+              date: await decrypt(data.date),
+              time: await decrypt(data.time),
+              drugallergy: data.drugallergy ? await decrypt(data.drugallergy) : null,
+              chronic: data.chronic ? await decrypt(data.chronic) : null
+            };
+            medicalHistory.push(decryptedData);
+          }
+          setPetdata(prevData => ({ ...prevData, medicalHistory }));
         }
       });
     }
@@ -182,6 +214,28 @@ const PetDetail = () => {
 
     return () => unsubscribe();
   }, [navigate]);
+
+
+  const encrpyt = async (plaintext) => {
+    try {
+      const response = await axios.post(`${API_URL}encrypt`, { plaintext });
+      const { encryptedData } = response.data;
+      return encryptedData;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const decrypt = async (encryptedText) => {
+    try {
+      const response = await axios.post(`${API_URL}decrypt`, { encryptedText });
+      const { decrypted } = response.data;
+      console.log('Decrypted data:', decrypted); // Log the decrypted data
+      return decrypted;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
   const clearpetdata = () => {
     setPetdata('');
@@ -235,6 +289,13 @@ const PetDetail = () => {
               <button className={styles.sidemenubtn} onClick={handlelogout}>
                 Logout
               </button>
+            </li>
+            <li>
+              <li>
+                <button onClick={() => navigate('/profile')} className={styles.sidemenubtn}>
+                  Test lab
+                </button>
+              </li>
             </li>
           </ul>
         </div>
