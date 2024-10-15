@@ -3,10 +3,12 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'rea
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import E2EE from '../components/E2EE';
 
 const TermOfService = () => {
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const navigation = useNavigation();
+  const ee2e = E2EE();
 
   const handleAccept = async () => {
     const db = getFirestore();
@@ -15,6 +17,7 @@ const TermOfService = () => {
 
     if (user) {
       const userDocRef = doc(db, "Users", user.uid);
+      await ee2e.generateKeyPair(user.uid);
       await updateDoc(userDocRef, { termsAccepted: true });
       Alert.alert('Accepted', 'You have accepted the terms of service.');
       navigation.navigate('MyPetStack');

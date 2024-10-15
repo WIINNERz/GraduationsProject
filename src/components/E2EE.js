@@ -35,12 +35,13 @@ const E2EE = () => {
     const currentUser = auth.currentUser;
     try {
       const userRef = doc(firestore, 'Users', currentUser.uid);
-      const userDoc = await getDoc(userRef); // Use getDoc to fetch a single document
+      const userDoc = await getDoc(userRef);
       const userData = userDoc.data();
       const {encPrivateKey} = userData;
-      const decryptedPrivateKey = await KeymanagementInstance.decryptData(
-        encPrivateKey,
-      );
+      if (!encPrivateKey) {
+        throw new Error('Encrypted private key is empty or null');
+      }
+      const decryptedPrivateKey = await KeymanagementInstance.decryptData(encPrivateKey);
       if (!decryptedPrivateKey) {
         throw new Error('Decrypted private key is empty or null');
       }

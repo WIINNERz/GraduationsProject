@@ -138,6 +138,7 @@ const Keymanagement = () => {
   async function createAndEncryptMasterKey(passwordReg, uid) {
     try {
       const masterKey = await Aes.randomKey(32);
+      storeKey(masterKey);
       const salt = await Aes.randomKey(16);
       const passkey = await Aes.pbkdf2(
         passwordReg,
@@ -153,6 +154,7 @@ const Keymanagement = () => {
         iv,
         'aes-256-cbc',
       );
+      
       const userRef = doc(firestore, 'Users', uid);
       await updateDoc(userRef, {
         masterKey: encryptedMasterKey,
@@ -290,7 +292,7 @@ const Keymanagement = () => {
     try {
       const masterKey = await retrievemasterkey();
       if (!masterKey) {
-        // throw new Error('Missing master key');
+        throw new Error('Missing master key');
       }
       const decryptedData = crypto.AES.decrypt(data, masterKey).toString(
         crypto.enc.Utf8,
