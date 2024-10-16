@@ -8,27 +8,27 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {getFirestore, doc, getDoc, collection, onSnapshot} from 'firebase/firestore';
-import {firestore} from '../configs/firebaseConfig';
+import { getFirestore, doc, getDoc, collection, onSnapshot } from 'firebase/firestore';
+import { firestore } from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AdoptBar from '../components/AdoptBar';
 import MedicalHistoryModal from '../components/MedicalHistoryModal';
 import Keymanagement from '../components/Keymanagement';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function PetProfile() {
   const navigate = useNavigation();
   const [pet, setPet] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState([]);
   const route = useRoute();
-  const {id} = route.params;
+  const { id } = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,12 +47,12 @@ export default function PetProfile() {
   useFocusEffect(
     useCallback(() => {
       navigate.getParent()?.setOptions({
-        tabBarStyle: {display: 'none'},
+        tabBarStyle: { display: 'none' },
       });
 
       return () => {
         navigate.getParent()?.setOptions({
-          tabBarStyle: [styles.tabBar, {backgroundColor: '#F0DFC8'}],
+          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
         });
       };
     }, [navigate]),
@@ -62,7 +62,7 @@ export default function PetProfile() {
     try {
       const petDoc = await getDoc(doc(firestore, 'Pets', id));
       if (petDoc.exists()) {
-        const petData = {id: petDoc.id, ...petDoc.data()};
+        const petData = { id: petDoc.id, ...petDoc.data() };
         setPet(petData);
       } else {
         setError('Pet not found');
@@ -90,15 +90,15 @@ export default function PetProfile() {
                 : null,
               vaccine: data.vaccine
                 ? await Promise.all(
-                    data.vaccine.map(async v => ({
-                      name: v.name
-                        ? await keyman.decrypthealthdata(v.name)
-                        : null,
-                      quantity: v.quantity
-                        ? await keyman.decrypthealthdata(v.quantity)
-                        : null,
-                    })),
-                  )
+                  data.vaccine.map(async v => ({
+                    name: v.name
+                      ? await keyman.decrypthealthdata(v.name)
+                      : null,
+                    quantity: v.quantity
+                      ? await keyman.decrypthealthdata(v.quantity)
+                      : null,
+                  })),
+                )
                 : null,
               treatment: data.treatment
                 ? await keyman.decrypthealthdata(data.treatment)
@@ -123,12 +123,12 @@ export default function PetProfile() {
                 : null,
             };
           }),
-        ); 
+        );
 
-    setMedicalHistory(medicalHistoryList);
-    sethLoading(false);
-  }
-  );
+        setMedicalHistory(medicalHistoryList);
+        sethLoading(false);
+      }
+    );
     return unsubscribeMedicalHistory;
   }, [id]);
 
@@ -142,8 +142,8 @@ export default function PetProfile() {
     const [day, month, year] = dateString.split('-');
     return `${day}-${month}-${year}`;
   };
-  const renderImage = useCallback(({item}) => {
-    return <Image source={{uri: item}} style={styles.image} />;
+  const renderImage = useCallback(({ item }) => {
+    return <Image source={{ uri: item }} style={styles.image} />;
   }, []);
   const handleRecordClick = record => {
     setSelectedRecord(record);
@@ -157,7 +157,10 @@ export default function PetProfile() {
   const imageData = pet?.additionalImages && pet.additionalImages.length > 0
     ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
     : [pet?.photoURL].filter(url => url);
-
+  const handleOwnerPress = () => {
+    navigate.navigate('OtherUser', { username: pet?.username,uid:pet?.uid });
+    console.log(pet?.uid);
+  };
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -193,7 +196,7 @@ export default function PetProfile() {
                   key={index}
                   style={[
                     styles.dot,
-                    {opacity: index === currentIndex ? 1 : 0.5},
+                    { opacity: index === currentIndex ? 1 : 0.5 },
                   ]}
                 />
               ))}
@@ -249,13 +252,16 @@ export default function PetProfile() {
           <View style={styles.row}>
             <View style={styles.leftcolum}>
               <Text style={styles.categoryPet}>Current Owner</Text>
-              <Text style={styles.valuePet}>{pet?.username}</Text>
+              <TouchableOpacity onPress={handleOwnerPress} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'gray', padding: 8, borderRadius: 20 }}>
+                <Text style={styles.valuePet}>{pet?.username}</Text>
+                <MaterialCommunityIcons name="account" size={30} color="#D27C2C" />
+              </TouchableOpacity>
             </View>
           </View>
         </View>
         <View style={styles.healtbook}>
 
-        {ishloading ? (
+          {ishloading ? (
             <View style={styles.Loading}>
               <Text style={styles.loadingtext}>Loading....</Text>
             </View>
@@ -265,11 +271,11 @@ export default function PetProfile() {
                 <Text style={styles.healtbooktitle}>Health Book</Text>
               </View>
               <View style={styles.healtData}>
-                <View style={{paddingVertical: 5, paddingBottom: '10%'}}>
+                <View style={{ paddingVertical: 5, paddingBottom: '10%' }}>
                   <Text style={styles.categoryPet}>Health Conditions</Text>
                   <Text style={styles.valuePet}>
                     {medicalHistory.length > 0 &&
-                    medicalHistory[medicalHistory.length - 1].conditions
+                      medicalHistory[medicalHistory.length - 1].conditions
                       ? medicalHistory[medicalHistory.length - 1].conditions
                       : 'No conditions available'}{' '}
                   </Text>
@@ -278,65 +284,65 @@ export default function PetProfile() {
                   <View style={styles.leftcolum}>
                     <Text style={styles.categoryPet}>Drug allergy</Text>
                     <Text style={styles.valuePet}>
-                    {medicalHistory.map(record => {
-                      if (record.drugallergy) {
-                        hasDrugAllergy = true;
-                        drugallergycounter++;
-                        return (
-                          <Text key={drugallergycounter} style={styles.row2}>
-                            {drugallergycounter}. {record.drugallergy}
-                          </Text>
-                        );
+                      {medicalHistory.map(record => {
+                        if (record.drugallergy) {
+                          hasDrugAllergy = true;
+                          drugallergycounter++;
+                          return (
+                            <Text key={drugallergycounter} style={styles.row2}>
+                              {drugallergycounter}. {record.drugallergy}
+                            </Text>
+                          );
+                        }
                       }
-                    }
-                    )}
-                    {!hasDrugAllergy && <Text style={styles.row2}>No drug allergy records found</Text>}
+                      )}
+                      {!hasDrugAllergy && <Text style={styles.row2}>No drug allergy records found</Text>}
                     </Text>
                   </View>
                   <View style={styles.rightcolum}>
                     <Text style={styles.categoryPet}>Chronic</Text>
                     <Text style={styles.valuePet}>
-                    {medicalHistory.map(record => {
-                      if (record.chronic) {
-                        hasChronic = true;
-                        chroniccounter++;
-                        return (
-                          <Text key={chroniccounter} style={styles.row2}>
-                            {chroniccounter}. {record.chronic}
-                          </Text>
-                        );
+                      {medicalHistory.map(record => {
+                        if (record.chronic) {
+                          hasChronic = true;
+                          chroniccounter++;
+                          return (
+                            <Text key={chroniccounter} style={styles.row2}>
+                              {chroniccounter}. {record.chronic}
+                            </Text>
+                          );
+                        }
                       }
-                    }
-                    )}
-                    {!hasChronic && <Text style={styles.row2} >No chronic{'\n'}records found</Text>}
+                      )}
+                      {!hasChronic && <Text style={styles.row2} >No chronic{'\n'}records found</Text>}
                     </Text>
                   </View>
                 </View>
-                <View style={{paddingVertical: 5, paddingTop: '10%'}}>
+                <View style={{ paddingVertical: 5, paddingTop: '10%' }}>
                   <Text style={styles.categoryPet}>Vaccination list</Text>
                   {medicalHistory.map(record => (
                     <View key={record.id}>
                       {Array.isArray(record.vaccine) &&
-                      record.vaccine.length > 0
+                        record.vaccine.length > 0
                         ? record.vaccine.map(vaccine => {
-                            hasVaccines = true;
-                            vaccineCounter++;
-                            return (
-                              <View
-                                key={vaccineCounter}
-                                style={{
-                                  flexDirection: 'row',
-                                  justifyContent: 'space-between',
-                                }}>
-                                <Text style={styles.row2}>
-                                  {vaccineCounter}. {vaccine.name}
-                                </Text>
-                                <Text style={styles.row2}>
-                                  {vaccine.quantity}
-                                </Text>
-                              </View>
-                            );
-                          })
+                          hasVaccines = true;
+                          vaccineCounter++;
+                          return (
+                            <View
+                              key={vaccineCounter}
+                              style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                              }}>
+                              <Text style={styles.row2}>
+                                {vaccineCounter}. {vaccine.name}
+                              </Text>
+                              <Text style={styles.row2}>
+                                {vaccine.quantity}
+                              </Text>
+                            </View>
+                          );
+                        })
                         : null}
                     </View>
                   ))}
@@ -348,7 +354,7 @@ export default function PetProfile() {
                     <Text>No medical history records found.</Text>
                   ) : (
                     medicalHistory.map((record, index) => {
-                      const {id, date} = record;
+                      const { id, date } = record;
                       return (
                         <TouchableOpacity
                           key={id}

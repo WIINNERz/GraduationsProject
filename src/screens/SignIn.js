@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEntry, toggleSecureEntry, handleSignIn, loading, error, navigation }) => {
   return (
+    <KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
     <View style={styles.formContainer}>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <View style={styles.inputContainer}>
@@ -63,12 +64,14 @@ const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEn
         )}
       </TouchableOpacity>
     </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   formContainer: {
-    width: '80%',
+    width: '90%',
+    marginHorizontal: '5%',
   },
   inputContainer: {
     flexDirection: 'row',

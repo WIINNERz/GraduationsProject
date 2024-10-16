@@ -7,6 +7,7 @@ import PetDetail from '../screens/PetDetail';
 import PetProfile from '../screens/PetProfile';
 import FindPet from '../screens/FindPet';
 import ChatRoom1 from '../screens/ChatRoom1';
+import OtherUser from '../screens/OtherUser';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,12 @@ export default function PetStack() {
       <Stack.Screen
         name="ChatRoom1"
         component={ChatRoom1}
+        options={{
+          tabBarStyle: { display: 'none' }
+        }} />
+      <Stack.Screen
+        name="OtherUser"
+        component={OtherUser}
         options={{
           tabBarStyle: { display: 'none' }
         }} />

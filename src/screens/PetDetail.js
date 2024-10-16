@@ -183,7 +183,7 @@ const PetDetail = () => {
     fetchPet();
   }, [id]);
 
-  const handleSave = async () => {
+  const handleSave = async (imageToDelete) => {
     try {
       if (!user) {
         console.error('No user is currently logged in.');
@@ -198,6 +198,7 @@ const PetDetail = () => {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
+      await deleteSpecificAdditionalImage(imageToDelete);
 
       const {
         name = '',
@@ -318,7 +319,6 @@ const PetDetail = () => {
       {
         text: 'Yes',
         onPress: () => {
-          // Wrap the async function in a synchronous function
           (async () => {
             try {
               await deletePet();
@@ -445,7 +445,6 @@ const PetDetail = () => {
     ]);
   };
 
-  // Function to open the image library for additional images
   const openImageLibraryForAdditionalImages = async () => {
     const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
     if (!result.canceled) {
@@ -455,7 +454,6 @@ const PetDetail = () => {
     }
   };
 
-  // Function to open the camera for additional images
   const openCameraForAdditionalImages = async () => {
     const result = await launchCamera({ mediaType: 'photo', quality: 1 });
     if (!result.canceled) {
@@ -479,7 +477,6 @@ const PetDetail = () => {
       const snapshot = await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      // Ensure the Firestore document is being referenced correctly
       const petDocRef = doc(db, 'Pets', id);
 
       await updateDoc(petDocRef, {
@@ -521,26 +518,17 @@ const PetDetail = () => {
     fetchAdditionalImages();
   }, []);
   const handleDeleteAdditionalImage = async (index) => {
-    console.log("Index to delete:", index);
-    console.log("Additional images before deletion:", additionalImages);
-  
-    // สร้างสำเนาของ additionalImages เพื่อหลีกเลี่ยงการเปลี่ยนแปลงโดยตรง
-    const updatedImages = additionalImages.filter((_, i) => i !== index); // ลบภาพที่ต้องการออกจากสำเนา
-  
-    console.log("Additional images after deletion:", updatedImages);
-  
+    const updatedImages = additionalImages.filter((_, i) => i !== index); 
     try {
       const petDocRef = doc(db, 'Pets', id);
       await updateDoc(petDocRef, {
         additionalImages: updatedImages
       });
-      setAdditionalImages(updatedImages); // อัปเดตสถานะด้วยสำเนาที่ถูกลบภาพแล้ว
-      console.log("Updated additional images in Firestore:", updatedImages);
+      setAdditionalImages(updatedImages);
     } catch (error) {
       console.error("Error deleting additional image: ", error);
     }
   };
-
 
   if (loading) {
     return (
