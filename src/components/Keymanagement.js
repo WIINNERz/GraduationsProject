@@ -52,7 +52,6 @@ const Keymanagement = () => {
   async function clearKey() {
     try {
       await Keychain.resetGenericPassword ( { service: 'masterkey' });
-      await Keychain.resetGenericPassword ( { service: 'privatekey' });
       console.log('Key cleared successfully');
     } catch (error) {
       console.error('Could not clear key', error);
@@ -75,29 +74,20 @@ const Keymanagement = () => {
   // used for retrieve master key from firebase ,decrypt it and store it
   async function retrieveandstorekey(password) {
     try {
-      const passkey = await getpasskey(password);
-      const decmaster = await getmasterkey(passkey);
-      await storeKey(decmaster);
-    } catch (error) {
-      console.error('Could not retrieve and store key', error);
-    }
-  }
-  // used for get master key from firebase and decrypt it
-  async function getmasterkey(passkey) {
-    try {
       const {iv, masterKey} = await getuserkey();
-      const decryptMasterKey = await Aes.decrypt(
+      const passkey = await getpasskey(password);
+      const decmaster = await Aes.decrypt(  
         masterKey,
         passkey,
         iv,
         'aes-256-cbc',
       );
-      return decryptMasterKey;
+      await storeKey(decmaster);
     } catch (error) {
-      console.error(error);
-      return '';
+      console.error('Could not retrieve and store key', error);
     }
   }
+
   // used for get passkey from password and id
   async function getpasskey(password) {
     try {
@@ -276,9 +266,6 @@ const Keymanagement = () => {
   async function encryptData(data) {
     try {
       const masterKey = await retrievemasterkey();
-      if (!masterKey) {
-        // throw new Error('Missing master key');
-      }
       const encryptedData = crypto.AES.encrypt(data, masterKey).toString();
       return encryptedData;
     } catch (error) {
@@ -290,9 +277,6 @@ const Keymanagement = () => {
   async function decryptData(data) {
     try {
       const masterKey = await retrievemasterkey();
-      if (!masterKey) {
-        throw new Error('Missing master key');
-      }
       const decryptedData = crypto.AES.decrypt(data, masterKey).toString(
         crypto.enc.Utf8,
       );
@@ -306,7 +290,6 @@ const Keymanagement = () => {
   return {
     storeKey,
     getpasskey,
-    getmasterkey,
     createAndEncryptMasterKey,
     Reencrpytmaseky,
     retrievemasterkey,
@@ -318,6 +301,7 @@ const Keymanagement = () => {
     clearKey,
     getRecoverykey,
     decrypthealthdata,
+
   };
 };
 

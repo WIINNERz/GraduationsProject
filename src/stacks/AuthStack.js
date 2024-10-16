@@ -108,8 +108,6 @@ const AuthStack = () => {
               });
               const KeymanagementInstance = Keymanagement();
               await KeymanagementInstance.createAndEncryptMasterKey(passwordReg , uid);
-              // await ee2e.generateKeyPair(uid);
-              // Clear form fields and stop loading
               setUsername('');
               setEmailReg('');
               setPasswordReg('');

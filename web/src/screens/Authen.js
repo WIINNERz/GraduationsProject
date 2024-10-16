@@ -103,11 +103,6 @@ function Authen() {
         }
       }
     } catch (error) {
-      // } else {
-      //   console.log('Thai ID is invalid');
-      //   return;
-      // }
-      // }
       console.log(error.message);
       alert('Error', error.message);
     }
@@ -184,7 +179,6 @@ function Authen() {
               <Components.Paragraph>
                 Enter your personal details and start journey with us
               </Components.Paragraph>
-              {/* <Components.Accounttext>Already have an account?</Components.Accounttext> */}
               <Components.GhostButton onClick={() => toggle(true)}>
                 Sign In
               </Components.GhostButton>
@@ -195,7 +189,6 @@ function Authen() {
               <Components.Paragraph>
                 To keep connected with us please login with your personal info
               </Components.Paragraph>
-              {/* <Components.Accounttext>Don't have an account?</Components.Accounttext> */}
               <Components.GhostButton onClick={() => toggle(false)}>
                 Sign Up
               </Components.GhostButton>
