@@ -57,7 +57,7 @@ const TermOfService = () => {
 
         <Text style={styles.heading}>2. Use of the App</Text>
         <Text style={styles.paragraph}>
-          You must be at least 13 years old to use PetPal. You agree to use the App for its intended purpose of pet care management and adoption services, and to abide by all applicable laws and regulations.
+          You must be at least 15 years old to use PetPal. You agree to use the App for its intended purpose of pet care management and adoption services, and to abide by all applicable laws and regulations.
         </Text>
 
         <Text style={styles.heading}>3. User Accounts</Text>
@@ -72,7 +72,7 @@ const TermOfService = () => {
 
         <Text style={styles.heading}>5. Veterinary and Adoption Services</Text>
         <Text style={styles.paragraph}>
-          PetPal offers access to veterinary visit place and pet adoption management. PetPal does not guarantee the availability or accuracy of veterinary services or the outcome of any adoption process facilitated through the App.
+          PetPal offers access to nearest veterinary visit place and pet adoption management system. PetPal does not guarantee the availability or accuracy of veterinary services or the outcome of any adoption process facilitated through the App.
         </Text>
 
         <Text style={styles.heading}>6. Prohibited Activities</Text>
@@ -115,7 +115,7 @@ const TermOfService = () => {
 
         <Text style={styles.heading}>13. Contact Us</Text>
         <Text style={styles.paragraph}>
-          If you have any questions or concerns about these Terms, please contact us at support@petpal.com.
+          If you have any questions or concerns about these Terms, please contact us We have only seaweed group.
         </Text>
       </ScrollView>
       <View style={styles.buttonContainer}>

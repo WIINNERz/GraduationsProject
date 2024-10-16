@@ -47,7 +47,7 @@ const AccountInfo = () => {
         <Text style={styles.subHeader}>How Can You Manage Your Data?</Text>
         <Text style={styles.paragraph}>
           You can request to view, edit, or delete your personal information at
-          any time by visiting the "Account Settings" section of the app.
+          any time by visiting the "Settings" section of the app.
         </Text>
       </ScrollView>
     </View>
