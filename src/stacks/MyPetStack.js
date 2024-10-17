@@ -26,7 +26,6 @@ export default function MyPetStack() {
         name="PetDetail"
         component={PetDetail}
         options={{
-          tabBarStyle: { display: 'none' },
           headerShown: false,
         }}
       />

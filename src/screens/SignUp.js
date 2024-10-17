@@ -93,7 +93,9 @@ const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, set
 
 const styles = StyleSheet.create({
   formContainer: {
-    width: '80%',
+    width: '90%',
+    marginHorizontal: '5%',
+
   },
   inputContainer: {
     flexDirection: 'row',

@@ -1,19 +1,20 @@
 import * as React from 'react';
-import {View, StyleSheet, Animated, Image} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { View, StyleSheet, Animated, Image, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from 'firebase/auth';
-import {auth , firestore} from '../configs/firebaseConfig';
-import {getFirestore, setDoc ,doc , updateDoc} from '@react-native-firebase/firestore';
+import { auth, firestore } from '../configs/firebaseConfig';
+import { getFirestore, setDoc, doc, updateDoc } from '@react-native-firebase/firestore';
 import ToggleButton from '../components/ToggleButton';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Forgot from '../screens/Forgot';
 import Keymanagement from '../components/Keymanagement';
 import E2EE from '../components/E2EE';
+
 const AuthStack = () => {
   const navigation = useNavigation();
   const [isSignIn, setIsSignIn] = React.useState(true);
@@ -32,11 +33,11 @@ const AuthStack = () => {
   const backgroundAnimation = React.useRef(new Animated.Value(0)).current;
   const ee2e = E2EE();
 
-
   const validatePassword = password => {
     const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return regex.test(password);
   };
+
   const handleSignIn = async () => {
     if (emailLog && passwordLog) {
       setLoading(true);
@@ -88,7 +89,7 @@ const AuthStack = () => {
           );
 
           // Navigate to WaitVerify screen
-          navigation.navigate('WaitVerify', {uid: tempUser.user.uid});
+          navigation.navigate('WaitVerify', { uid: tempUser.user.uid });
 
           // Poll for email verification
           const checkVerificationInterval = setInterval(async () => {
@@ -97,7 +98,7 @@ const AuthStack = () => {
               clearInterval(checkVerificationInterval); // Stop checking when verified
 
               // Save user data to Firestore
-              const {uid} = tempUser.user;
+              const { uid } = tempUser.user;
               const photoURL =
                 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
               await setDoc(doc(db, 'Users', uid), {
@@ -107,7 +108,7 @@ const AuthStack = () => {
                 photoURL,
               });
               const KeymanagementInstance = Keymanagement();
-              await KeymanagementInstance.createAndEncryptMasterKey(passwordReg , uid);
+              await KeymanagementInstance.createAndEncryptMasterKey(passwordReg, uid);
               setUsername('');
               setEmailReg('');
               setPasswordReg('');
@@ -135,61 +136,73 @@ const AuthStack = () => {
       useNativeDriver: false,
     }).start();
   };
+
   const toggleSecureEntry = () => {
     setIsSecureEntry(!isSecureEntry);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{marginTop: '50%'}}>
-      <Image source={require('../assets/image.png')} style={styles.logo} />
-        <ToggleButton
-          isSignIn={isSignIn}
-          setIsSignIn={setIsSignIn}
-          startAnimation={startAnimation}
-          backgroundAnimation={backgroundAnimation}
-  
-        />
-      </View>
-      {isSignIn ? (
-        <SignIn
-          emailLog={emailLog}
-          setEmailLog={setEmailLog}
-          passwordLog={passwordLog}
-          setPasswordLog={setPasswordLog}
-          isSecureEntry={isSecureEntry}
-          toggleSecureEntry={toggleSecureEntry}
-          isButtonEnabled={isButtonEnabled}
-          handleSignIn={handleSignIn}
-          loading={loading}
-          error={error}
-          navigation={navigation}
-        />
-      ) : (
-        <SignUp
-          username={username}
-          setUsername={setUsername}
-          emailReg={emailReg}
-          setEmailReg={setEmailReg}
-          passwordReg={passwordReg}
-          setPasswordReg={setPasswordReg}
-          confirmPassword={confirmPassword}
-          setConfirmPassword={setConfirmPassword}
-          isSecureEntry={isSecureEntry}
-          toggleSecureEntry={toggleSecureEntry}
-          handleSignUp={handleSignUp}
-          loading={loading}
-          error={error}
-        />
-      )}
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.container}>
+          <Image source={require('../assets/image.png')} style={styles.logo} />
+          <ToggleButton
+            isSignIn={isSignIn}
+            setIsSignIn={setIsSignIn}
+            startAnimation={startAnimation}
+            backgroundAnimation={backgroundAnimation}
+          />
+          {isSignIn ? (
+            <SignIn
+              emailLog={emailLog}
+              setEmailLog={setEmailLog}
+              passwordLog={passwordLog}
+              setPasswordLog={setPasswordLog}
+              isSecureEntry={isSecureEntry}
+              toggleSecureEntry={toggleSecureEntry}
+              isButtonEnabled={isButtonEnabled}
+              handleSignIn={handleSignIn}
+              loading={loading}
+              error={error}
+              navigation={navigation}
+            />
+          ) : (
+            <SignUp
+              username={username}
+              setUsername={setUsername}
+              emailReg={emailReg}
+              setEmailReg={setEmailReg}
+              passwordReg={passwordReg}
+              setPasswordReg={setPasswordReg}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              isSecureEntry={isSecureEntry}
+              toggleSecureEntry={toggleSecureEntry}
+              handleSignUp={handleSignUp}
+              loading={loading}
+              error={error}
+            />
+          )}
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
+
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
-    color: "black",
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'black',
   },
   logo: {
     width: 200,

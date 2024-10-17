@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo} from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,156 +9,159 @@ import {
   Platform,
   Dimensions,
   Keyboard,
-
 } from 'react-native';
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore';
-import {petsRef} from '../configs/firebaseConfig';
-import {useNavigation} from '@react-navigation/native';
+import { onSnapshot, query, where } from 'firebase/firestore';
+import { petsRef } from '../configs/firebaseConfig';
+import { useNavigation } from '@react-navigation/native';
 import PetList from '../components/PetList';
 import useAuth from '../hooks/useAuth';
 import PetFilter from '../components/PetFilter';
 
 const FindPet = () => {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const navigation = useNavigation();
-  const [pets, setPets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedField, setSelectedField] = useState('name'); // Default to 'name'
-  const [filterPaddingTop, setFilterPaddingTop] = useState(0); // State for paddingTop
-  const [dataPanelPaddingTop, setDataPanelPaddingTop] = useState(0); // State for paddingTop
-  const [headerHeight, setHeaderHeight] = useState(0); // State for header height
+  const [state, setState] = useState({
+    pets: [],
+    loading: true,
+    error: null,
+    filter: 'all',
+    searchQuery: '',
+    selectedField: 'name',
+    filterPaddingTop: 0,
+    dataPanelPaddingTop: 0,
+    headerHeight: '8%',
+  });
+
+  const handleKeyboardShow = useCallback(() => {
+    setState(prevState => ({
+      ...prevState,
+      filterPaddingTop: '12%',
+      dataPanelPaddingTop: '12.5%',
+      headerHeight: '11.2%',
+    }));
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: 'none' },
+    });
+  }, [navigation]);
+
+  const handleKeyboardHide = useCallback(() => {
+    setState(prevState => ({
+      ...prevState,
+      filterPaddingTop: 0,
+      dataPanelPaddingTop: 0,
+      headerHeight: '8%',
+    }));
+    navigation.getParent()?.setOptions({
+      tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+    });
+  }, [navigation]);
+
   useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-      setFilterPaddingTop('12%'); // Set paddingTop to 20 when keyboard is shown
-      setDataPanelPaddingTop('12.5%'); // Set paddingTop to 20 when keyboard is shown
-      setHeaderHeight('11.2%'); // Set paddingTop to 20 when keyboard is shown
-      navigation.getParent()?.setOptions({
-        tabBarStyle: { display: 'none' },
-      });
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setFilterPaddingTop(0);
-      setDataPanelPaddingTop(0);
-      setHeaderHeight('8%');
-      navigation.getParent()?.setOptions({
-        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
-      });
-    });
+    const showSubscription = Keyboard.addListener('keyboardDidShow', handleKeyboardShow);
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', handleKeyboardHide);
 
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
     };
-  }, [navigation]);
+  }, [handleKeyboardShow, handleKeyboardHide]);
+
   const petQuery = useMemo(() => {
     let q = query(petsRef, where('status', '==', 'dont_have_owner'));
-    if (filter !== 'all') {
-      q = query(q, where('type', '==', filter));
+    if (state.filter !== 'all') {
+      q = query(q, where('type', '==', state.filter));
     }
-    if (searchQuery) {
+    if (state.searchQuery) {
       q = query(
         q,
-        where(selectedField, '>=', searchQuery),
-        where(selectedField, '<=', searchQuery + '\uf8ff')
+        where(state.selectedField, '>=', state.searchQuery),
+        where(state.selectedField, '<=', state.searchQuery + '\uf8ff')
       );
     }
-      return q;
-    }, [filter, searchQuery, selectedField]); 
+    return q;
+  }, [state.filter, state.searchQuery, state.selectedField]);
 
-  const fetchPets = () => {
-    setLoading(true);
-    setError(null);
+  const fetchPets = useCallback(() => {
+    setState(prevState => ({ ...prevState, loading: true, error: null }));
     const unsubscribe = onSnapshot(
       petQuery,
       querySnapshot => {
         const data = querySnapshot.docs.map(doc => doc.data());
-        setPets(data);
-        setLoading(false);
+        setState(prevState => ({ ...prevState, pets: data, loading: false }));
       },
       error => {
         console.error('Error fetching pets: ', error);
-        setError('Failed to fetch pets. Please try again later.');
-        setLoading(false);
-      },
+        setState(prevState => ({
+          ...prevState,
+          error: 'Failed to fetch pets. Please try again later.',
+          loading: false,
+        }));
+      }
     );
 
     return unsubscribe;
-  };
+  }, [petQuery]);
 
   useEffect(() => {
-    let isMounted = true;
-
     if (user?.uid) {
       const unsubscribe = fetchPets();
-      return () => {
-        isMounted = false;
-        unsubscribe();
-      };
+      return () => unsubscribe();
     }
-  }, [user?.uid, petQuery]);
+  }, [user?.uid, fetchPets]);
+
+  const { pets, loading, error, filter, searchQuery, selectedField, filterPaddingTop, dataPanelPaddingTop, headerHeight } = state;
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-       <ScrollView contentContainerStyle={styles.container}>
-        <View style={[styles.header,{height: headerHeight}]}>
-          <Text
-            style={styles.title}>
-            Looking for Owner
-          </Text>
-        </View> 
-        <View style={[styles.filterContainer, {paddingTop: filterPaddingTop}]}>
-        <PetFilter
-          filter={filter}
-          setFilter={setFilter}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          selectedField={selectedField}
-          setSelectedField={setSelectedField}
-        />
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={[styles.header, { height: headerHeight }]}>
+          <Text style={styles.title}>Looking for Owner</Text>
         </View>
-        <View style={[styles.datapanel, {marginTop: dataPanelPaddingTop}]}>
-        {/* <View style={styles.datapanel}> */}
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : error ? (
-          <Text style={styles.errorText}>{error}</Text>
-        ) : pets.length > 0 ? (
-          <View style={styles.petList}>
-            <PetList  pets={pets} />
-          </View>
-        ) : (
-          <View style={styles.noPetsContainer}>
-            <Text style={styles.noPetsText}>No Pets Available</Text>
-          </View>
-        )}
+        <View style={[styles.filterContainer, { paddingTop: filterPaddingTop }]}>
+          <PetFilter
+            filter={filter}
+            setFilter={filter => setState(prevState => ({ ...prevState, filter }))}
+            searchQuery={searchQuery}
+            setSearchQuery={searchQuery => setState(prevState => ({ ...prevState, searchQuery }))}
+            selectedField={selectedField}
+            setSelectedField={selectedField => setState(prevState => ({ ...prevState, selectedField }))}
+          />
+        </View>
+        <View style={[styles.datapanel, { marginTop: dataPanelPaddingTop }]}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : error ? (
+            <Text style={styles.errorText}>{error}</Text>
+          ) : pets.length > 0 ? (
+            <View style={styles.petList}>
+              <PetList pets={pets} />
+            </View>
+          ) : (
+            <View style={styles.noPetsContainer}>
+              <Text style={styles.noPetsText}>No Pets Available</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-const {width} = Dimensions.get('window');
+
+const { width } = Dimensions.get('window');
 const titleSize = width / 17;
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
     flex: 1,
     height: '100%',
     width: '100%',
   },
   header: {
     width: '100%',
-    height : '8%',
+    height: '8%',
     paddingHorizontal: 20,
     flexDirection: 'row',
     backgroundColor: '#D27C2C',
@@ -171,7 +174,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: '100%',
     height: '22%',
-   
   },
   datapanel: {
     backgroundColor: '#fff',
@@ -182,12 +184,6 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 20,
-  },
-  searchIcon: {
-    position: 'absolute',
-    right: 10,
-    backgroundColor: 'white',
-    borderRadius: 50,
   },
   noPetsContainer: {
     alignItems: 'center',
@@ -201,10 +197,9 @@ const styles = StyleSheet.create({
   petList: {
     width: '100%',
     height: '100%',
-    paddingHorizontal : 5,
-    
+    paddingHorizontal: 5,
   },
-  title : {
+  title: {
     fontSize: titleSize,
     color: 'white',
     fontFamily: 'InterSemiBold',
@@ -219,5 +214,3 @@ const styles = StyleSheet.create({
 });
 
 export default FindPet;
-
-
