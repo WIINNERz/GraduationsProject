@@ -228,8 +228,6 @@ const PetDetail = () => {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
-      await deleteSpecificAdditionalImage(imageToDelete);
-
       const {
         name = '',
         age = '',

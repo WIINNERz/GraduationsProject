@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Dimensions,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -88,7 +89,23 @@ const AddPet = () => {
     {label: "Don't have owner", value: 'dont_have_owner'},
     {label: 'Have owner', value: 'have_owner'},
   ];
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' },
+      });
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+      });
+    });
 
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, [navigation]);
   useEffect(() => {
     if (!user) return;
 
@@ -874,6 +891,13 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     paddingTop: 60,
+  },
+  tabBar: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: '8%',
+    position: 'absolute',
+    overflow: 'hidden',
   },
 });
 

@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Keyboard,
 } from 'react-native';
 import React from 'react';
 import Aes from 'react-native-aes-crypto';
@@ -20,7 +21,23 @@ const Verify = () => {
   const [id, setId] = useState('');
   const navigate = useNavigation();
   const [verified, setVerified] = useState(false);
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      navigate.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' },
+      });
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      navigate.getParent()?.setOptions({
+        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+      });
+    });
 
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, [navigate]);
   useEffect(() => {
     const isVerified = async () => {
       const currentUser = auth.currentUser;
@@ -251,8 +268,14 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     alignItems: 'center',
-   
     justifyContent: 'center',
+  },
+  tabBar: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: '8%',
+    position: 'absolute',
+    overflow: 'hidden',
   },
 });
 export default Verify;

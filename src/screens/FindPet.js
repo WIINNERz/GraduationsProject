@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  Keyboard,
 
 } from 'react-native';
 import {
@@ -32,7 +33,32 @@ const FindPet = () => {
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedField, setSelectedField] = useState('name'); // Default to 'name'
+  const [filterPaddingTop, setFilterPaddingTop] = useState(0); // State for paddingTop
+  const [dataPanelPaddingTop, setDataPanelPaddingTop] = useState(0); // State for paddingTop
+  const [headerHeight, setHeaderHeight] = useState(0); // State for header height
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setFilterPaddingTop('12%'); // Set paddingTop to 20 when keyboard is shown
+      setDataPanelPaddingTop('12.5%'); // Set paddingTop to 20 when keyboard is shown
+      setHeaderHeight('11.2%'); // Set paddingTop to 20 when keyboard is shown
+      navigation.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' },
+      });
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setFilterPaddingTop(0);
+      setDataPanelPaddingTop(0);
+      setHeaderHeight('8%');
+      navigation.getParent()?.setOptions({
+        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+      });
+    });
 
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, [navigation]);
   const petQuery = useMemo(() => {
     let q = query(petsRef, where('status', '==', 'dont_have_owner'));
     if (filter !== 'all') {
@@ -85,13 +111,13 @@ const FindPet = () => {
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
        <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header,{height: headerHeight}]}>
           <Text
             style={styles.title}>
             Looking for Owner
           </Text>
         </View> 
-       <View style={styles.filterContainer}>
+        <View style={[styles.filterContainer, {paddingTop: filterPaddingTop}]}>
         <PetFilter
           filter={filter}
           setFilter={setFilter}
@@ -101,7 +127,8 @@ const FindPet = () => {
           setSelectedField={setSelectedField}
         />
         </View>
-        <View style={styles.datapanel}>
+        <View style={[styles.datapanel, {marginTop: dataPanelPaddingTop}]}>
+        {/* <View style={styles.datapanel}> */}
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : error ? (
@@ -129,7 +156,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  
   header: {
     width: '100%',
     height : '8%',
@@ -142,7 +168,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   filterContainer: {
-    justifyContent : 'flex-start',
     backgroundColor: '#fff',
     width: '100%',
     height: '22%',
@@ -152,7 +177,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: '100%',
     height: '62%',
-    
   },
   errorText: {
     color: 'red',
@@ -185,7 +209,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'InterSemiBold',
   },
-
+  tabBar: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: '8%',
+    position: 'absolute',
+    overflow: 'hidden',
+  },
 });
 
 export default FindPet;

@@ -5,7 +5,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEntry, toggleSecureEntry, handleSignIn, loading, error, navigation }) => {
   return (
-    <KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
     <View style={styles.formContainer}>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <View style={styles.inputContainer}>
@@ -64,7 +63,6 @@ const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEn
         )}
       </TouchableOpacity>
     </View>
-    </KeyboardAvoidingView>
   );
 };
 

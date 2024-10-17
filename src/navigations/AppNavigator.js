@@ -4,9 +4,9 @@ import { Image, View, StyleSheet, Keyboard, Text } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigationState } from '@react-navigation/native';
 import PetStack from '../stacks/PetStack';
 import ProfileStack from '../stacks/ProfileStack';
-import HomeStack from '../stacks/HomeStack';
 import ChatStack from '../stacks/ChatStack';
 import MyPetStack from '../stacks/MyPetStack'; // Ensure this import is correct
 import WaitVerifyStack from '../stacks/WaitVerifyStack';
@@ -68,6 +68,9 @@ const AppNavigator = ({ initialRouteName }) => {
   const [userDocExists, setUserDocExists] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  const state = useNavigationState(state => state);
+  const currentRouteName = state?.routes[state.index]?.name;
+
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
@@ -105,11 +108,20 @@ const AppNavigator = ({ initialRouteName }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (currentRouteName) {
+      console.log(`Current screen: ${currentRouteName}`);
+    }
+  }, [currentRouteName]);
+
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
       screenOptions={{
-        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8', display: isKeyboardVisible ? 'none' : 'flex' }],
+        tabBarStyle: [
+          styles.tabBar,
+          { backgroundColor: '#F0DFC8', display: isKeyboardVisible || currentRouteName === 'PetDetail' ? 'none' : 'flex' }
+        ],
         tabBarActiveTintColor: '#E16539',
         tabBarLabelStyle: { fontSize: 16 }
       }}
