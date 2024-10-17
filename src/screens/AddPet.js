@@ -11,6 +11,7 @@ import {
   Image,
   ActivityIndicator,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -420,6 +421,10 @@ const AddPet = () => {
     );
   }
   return (
+  <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{flex: 1}}
+    >    
     <View style={styles.container}>
       <View style={styles.header}>
         <MaterialCommunityIcons
@@ -619,6 +624,7 @@ const AddPet = () => {
         </View>
       </ScrollView>
     </View>
+    </KeyboardAvoidingView>
   );
 };
 const {width} = Dimensions.get('window');

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, TouchableOpacity, Alert, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { getDoc, doc, updateDoc } from 'firebase/firestore';
@@ -34,7 +34,7 @@ const ProfileDetail = ({ navigation }) => {
 
       return () => {
         navigation.getParent()?.setOptions({
-          tabBarStyle: [styles.tabBar, { backgroundColor:'#F0DFC8' }],// Reset tabBarStyle to default
+          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],// Reset tabBarStyle to default
         });
       };
     }, [navigation])
@@ -48,29 +48,29 @@ const ProfileDetail = ({ navigation }) => {
         if (docSnap.exists() && docSnap.data().email === user.email) {
           const data = docSnap.data();
           try {
-          const decryptedFirstname = data.firstname ? await KeymanagementInstance.decryptData(data.firstname) : null;
-          const decryptedLastname = data.lastname ? await KeymanagementInstance.decryptData(data.lastname) : null;
-          const decryptedTel = data.tel ? await KeymanagementInstance.decryptData(data.tel) : null;
-          const decryptedTelEmergency = data.telEmergency ? await KeymanagementInstance.decryptData(data.telEmergency) : null;
-          const decryptedAddress = data.address ? await KeymanagementInstance.decryptData(data.address) : null;
-          const decryptedDistrict = data.district ? await KeymanagementInstance.decryptData(data.district) : null;
-          const decryptedProvince = data.province ? await KeymanagementInstance.decryptData(data.province) : null;
-          const decryptedZipcode = data.zipcode ? await KeymanagementInstance.decryptData(data.zipcode) : null;  
-          setUserData(data);
-          setFirstname(decryptedFirstname);
-          setLastname(decryptedLastname);
-          setUsername(data.username);
-          setEmail(data.email);
-          setTel(decryptedTel);
-          setTelEmergency(decryptedTelEmergency);
-          setAddress(decryptedAddress);
-          setDistrict(decryptedDistrict);
-          setProvince(decryptedProvince);
-          setZipcode(decryptedZipcode);
+            const decryptedFirstname = data.firstname ? await KeymanagementInstance.decryptData(data.firstname) : null;
+            const decryptedLastname = data.lastname ? await KeymanagementInstance.decryptData(data.lastname) : null;
+            const decryptedTel = data.tel ? await KeymanagementInstance.decryptData(data.tel) : null;
+            const decryptedTelEmergency = data.telEmergency ? await KeymanagementInstance.decryptData(data.telEmergency) : null;
+            const decryptedAddress = data.address ? await KeymanagementInstance.decryptData(data.address) : null;
+            const decryptedDistrict = data.district ? await KeymanagementInstance.decryptData(data.district) : null;
+            const decryptedProvince = data.province ? await KeymanagementInstance.decryptData(data.province) : null;
+            const decryptedZipcode = data.zipcode ? await KeymanagementInstance.decryptData(data.zipcode) : null;
+            setUserData(data);
+            setFirstname(decryptedFirstname);
+            setLastname(decryptedLastname);
+            setUsername(data.username);
+            setEmail(data.email);
+            setTel(decryptedTel);
+            setTelEmergency(decryptedTelEmergency);
+            setAddress(decryptedAddress);
+            setDistrict(decryptedDistrict);
+            setProvince(decryptedProvince);
+            setZipcode(decryptedZipcode);
           } catch (error) {
             console.error('Error decrypting data: ', error);
           }
-          
+
         }
       }
       setLoading(false);
@@ -80,50 +80,50 @@ const ProfileDetail = ({ navigation }) => {
   }, [user]);
 
   const handleSave = async () => {
-  if (user) {
-    const userDoc = doc(firestore, 'Users', user.uid);
-    
-    try {
-      const encryptedFirstname = firstname ? await KeymanagementInstance.encryptData(firstname) : null;
-      const encryptedLastname = lastname ? await KeymanagementInstance.encryptData(lastname) : null;
-      const encryptedTel = tel ? await KeymanagementInstance.encryptData(tel) : null;
-      const encryptedTelEmergency = telEmergency ? await KeymanagementInstance.encryptData(telEmergency) : null;
-      const encryptedAddress = address ? await KeymanagementInstance.encryptData(address) : null;
-      const encryptedDistrict = district ? await KeymanagementInstance.encryptData(district) : null;
-      const encryptedProvince = province ? await KeymanagementInstance.encryptData(province) : null;
-      const encryptedZipcode = zipcode ? await KeymanagementInstance.encryptData(zipcode) : null;
-      
-      const updatedData = {
-        firstname: encryptedFirstname,
-        lastname: encryptedLastname,
-        username: username || null,
-        email: email || null,
-        tel: encryptedTel,
-        telEmergency: encryptedTelEmergency,
-        address: encryptedAddress,
-        district: encryptedDistrict,
-        province: encryptedProvince,
-        zipcode: encryptedZipcode
-      };
+    if (user) {
+      const userDoc = doc(firestore, 'Users', user.uid);
 
-      await updateDoc(userDoc, updatedData);
-      navigation.navigate('Profiles');
-    } catch (error) {
+      try {
+        const encryptedFirstname = firstname ? await KeymanagementInstance.encryptData(firstname) : null;
+        const encryptedLastname = lastname ? await KeymanagementInstance.encryptData(lastname) : null;
+        const encryptedTel = tel ? await KeymanagementInstance.encryptData(tel) : null;
+        const encryptedTelEmergency = telEmergency ? await KeymanagementInstance.encryptData(telEmergency) : null;
+        const encryptedAddress = address ? await KeymanagementInstance.encryptData(address) : null;
+        const encryptedDistrict = district ? await KeymanagementInstance.encryptData(district) : null;
+        const encryptedProvince = province ? await KeymanagementInstance.encryptData(province) : null;
+        const encryptedZipcode = zipcode ? await KeymanagementInstance.encryptData(zipcode) : null;
+
+        const updatedData = {
+          firstname: encryptedFirstname,
+          lastname: encryptedLastname,
+          username: username || null,
+          email: email || null,
+          tel: encryptedTel,
+          telEmergency: encryptedTelEmergency,
+          address: encryptedAddress,
+          district: encryptedDistrict,
+          province: encryptedProvince,
+          zipcode: encryptedZipcode
+        };
+
+        await updateDoc(userDoc, updatedData);
+        navigation.navigate('Profiles');
+      } catch (error) {
+        Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
+        console.error('Error updating document: ', error);
+      }
+    } else {
       Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
-      console.error('Error updating document: ', error);
     }
-  } else {
-    Alert.alert('Error', 'Failed to update profile. Please try again.', [{ text: 'OK' }]);
-  }
-};
+  };
 
   const pickImage = () => {
     Alert.alert(
       'Select Image',
       'Choose an option',
       [
-        { text: 'Camera', onPress: () => {openCamera();} },
-        { text: 'Gallery', onPress: () => {openImageLibrary();} },
+        { text: 'Camera', onPress: () => { openCamera(); } },
+        { text: 'Gallery', onPress: () => { openImageLibrary(); } },
         { text: 'Cancel', style: 'cancel' }
       ]
     );
@@ -195,151 +195,157 @@ const ProfileDetail = ({ navigation }) => {
   }
 
   return (
-    <View style={{ backgroundColor: 'rgba(rgba(210, 124, 44, 0.5))', }}>
-      <View style={styles.container}>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: 20,
-          backgroundColor: '#D27C2C',
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.select({ ios: 60})}
+    >
+        <View style={{ backgroundColor: 'rgba(rgba(210, 124, 44, 0.5))', }}>
+          <View style={styles.container}>
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: 20,
+              backgroundColor: '#D27C2C',
+              borderTopLeftRadius: 25,
+              borderTopRightRadius: 25,
 
-        }}>
-          <TouchableOpacity style={styles.topic} onPress={() => navigation.navigate('Profiles')}>
-            <Text style={styles.topic}>Cancel</Text>
-          </TouchableOpacity>
-          <Text style={styles.topic}>Edit Profile</Text>
-          <TouchableOpacity style={styles.topic} onPress={handleSave}>
-            <Text style={styles.topic}>Save</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.profilePanel}>
-          <View style={{ alignItems: 'center' }}>
-            <View style={styles.leftContent}>
-              {userData.photoURL ? (
-                <Image source={{ uri: userData.photoURL }} style={styles.image} />
-              ) : (
-                <MaterialCommunityIcons name="account" size={50} color="gray" />
-              )}
-              <TouchableOpacity onPress={pickImage}>
-
-                <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" />
+            }}>
+              <TouchableOpacity style={styles.topic} onPress={() => navigation.navigate('Profiles')}>
+                <Text style={styles.topic}>Cancel</Text>
+              </TouchableOpacity>
+              <Text style={styles.topic}>Edit Profile</Text>
+              <TouchableOpacity style={styles.topic} onPress={handleSave}>
+                <Text style={styles.topic}>Save</Text>
               </TouchableOpacity>
             </View>
-            <View style={{ paddingTop: 10 }}>
-              {userData.verify ? (
-                <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
-                  <View style={styles.verified}>
-                    <Text style={{ color: 'black' }}>Verified</Text>
-                    <MaterialCommunityIcons name="account-circle" size={20} color="#D27C2C" />
+            <ScrollView contentContainerStyle={{ flexGrow: 1,paddingBottom:'25%' }}>
+            <View style={styles.profilePanel}>
+              <View style={{ alignItems: 'center' }}>
+                <View style={styles.leftContent}>
+                  {userData.photoURL ? (
+                    <Image source={{ uri: userData.photoURL }} style={styles.image} />
+                  ) : (
+                    <MaterialCommunityIcons name="account" size={50} color="gray" />
+                  )}
+                  <TouchableOpacity onPress={pickImage}>
+
+                    <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" />
+                  </TouchableOpacity>
+                </View>
+                <View style={{ paddingTop: 10 }}>
+                  {userData.verify ? (
+                    <TouchableOpacity onPress={() => navigation.navigate('ProfileDetail')}>
+                      <View style={styles.verified}>
+                        <Text style={{ color: 'black' }}>Verified</Text>
+                        <MaterialCommunityIcons name="account-circle" size={20} color="#D27C2C" />
+                      </View>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={styles.verified}>
+                      <Text style={{ opacity: 0.5 }}>Not Verified</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Username</Text>
+                <TextInput
+                  style={styles.input}
+                  value={username}
+                  onChangeText={setUsername}
+                  placeholder="Username"
+                />
+
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Firstname</Text>
+                <TextInput
+                  style={styles.input}
+                  value={firstname}
+                  onChangeText={setFirstname}
+                  placeholder="First Name"
+                />
+
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Lastname</Text>
+                <TextInput
+                  style={styles.input}
+                  value={lastname}
+                  onChangeText={setLastname}
+                  placeholder="Last Name"
+                />
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Tel</Text>
+                <TextInput
+                  style={styles.input}
+                  value={tel}
+                  onChangeText={setTel}
+                  placeholder="Telephone Number"
+                />
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Emergency Tel</Text>
+                <TextInput
+                  style={styles.input}
+                  value={telEmergency}
+                  onChangeText={setTelEmergency}
+                  placeholder="Emergency Telephone Number"
+                />
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Address</Text>
+                <TextInput
+                  style={styles.input}
+                  value={address}
+                  onChangeText={setAddress}
+                  placeholder="Address"
+                />
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>District</Text>
+                <TextInput
+                  style={styles.input}
+                  value={district}
+                  onChangeText={setDistrict}
+                  placeholder="District"
+                />
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Province</Text>
+                <TextInput
+                  style={styles.input}
+                  value={province}
+                  onChangeText={setProvince}
+                  placeholder="Province"
+                />
+              </View>
+              <View style={styles.myaccount}>
+                <Text style={styles.name}>Post code</Text>
+                <TextInput
+                  style={styles.input}
+                  value={zipcode}
+                  onChangeText={setZipcode}
+                  placeholder="Post Code"
+                />
+              </View>
+              <View style={styles.myaccount}>
+                <TouchableOpacity onPress={() => navigation.navigate('Verify')}>
+                  <View style={{ width: '100%', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.name}>Verify your Account</Text>
+                    <MaterialCommunityIcons name="chevron-right" size={30} color="#D27C2C" />
                   </View>
                 </TouchableOpacity>
-              ) : (
-                <View style={styles.verified}>
-                  <Text style={{ opacity: 0.5 }}>Not Verified</Text>
-                </View>
-              )}
-            </View>
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Username</Text>
-            <TextInput
-              style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Username"
-            />
-
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Firstname</Text>
-            <TextInput
-              style={styles.input}
-              value={firstname}
-              onChangeText={setFirstname}
-              placeholder="First Name"
-            />
-
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Lastname</Text>
-            <TextInput
-              style={styles.input}
-              value={lastname}
-              onChangeText={setLastname}
-              placeholder="Last Name"
-            />
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Tel</Text>
-            <TextInput
-              style={styles.input}
-              value={tel}
-              onChangeText={setTel}
-              placeholder="Telephone Number"
-            />
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Emergency Tel</Text>
-            <TextInput
-              style={styles.input}
-              value={telEmergency}
-              onChangeText={setTelEmergency}
-              placeholder="Emergency Telephone Number"
-            />
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Address</Text>
-            <TextInput
-              style={styles.input}
-              value={address}
-              onChangeText={setAddress}
-              placeholder="Address"
-            />
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>District</Text>
-            <TextInput
-              style={styles.input}
-              value={district}
-              onChangeText={setDistrict}
-              placeholder="District"
-            />
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Province</Text>
-            <TextInput
-              style={styles.input}
-              value={province}
-              onChangeText={setProvince}
-              placeholder="Province"
-            />
-          </View>
-          <View style={styles.myaccount}>
-            <Text style={styles.name}>Post code</Text>
-            <TextInput
-              style={styles.input}
-              value={zipcode}
-              onChangeText={setZipcode}
-              placeholder="Post Code"
-            />
-          </View>
-          <View style={styles.myaccount}>
-            <TouchableOpacity onPress={() => navigation.navigate('Verify')}>
-              <View style={{width:'100%',alignItems : 'center',flexDirection:'row', justifyContent:'space-between' }}>
-              <Text style={styles.name}>Verify your Account</Text>
-              <MaterialCommunityIcons name="chevron-right" size={30} color="#D27C2C" />
               </View>
-            </TouchableOpacity>
+            </View>
+            {uploading && <ActivityIndicator size="large" color="#0000ff" />}
+            </ScrollView>
           </View>
         </View>
-        {uploading && <ActivityIndicator size="large" color="#0000ff" />}
-      </View>
-    </View>
 
+    </KeyboardAvoidingView>
   );
 };
 
@@ -418,7 +424,7 @@ const styles = StyleSheet.create({
   tabBar: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: "8%", 
+    height: "8%",
     position: 'absolute',
     overflow: 'hidden',
   },

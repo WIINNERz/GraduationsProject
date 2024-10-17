@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,9 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  Keyboard,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import {
   getFirestore,
   doc,
@@ -66,7 +67,36 @@ const PetDetail = () => {
   const { id } = route.params;
   const navigation = useNavigation();
   const KeymanagementInstance = new Keymanagement();
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' },
+      });
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+      });
+    });
 
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, [navigation]);
+  useFocusEffect(
+    useCallback(() => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: { display: 'none' },
+      });
+
+      return () => {
+        navigation.getParent()?.setOptions({
+          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+        });
+      };
+    }, [navigation]),
+  );
   useEffect(() => {
     if (!user) return;
 
@@ -897,6 +927,13 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     margin: 10,
+  },
+  tabBar: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: '8%',
+    position: 'absolute',
+    overflow: 'hidden',
   },
 });
 

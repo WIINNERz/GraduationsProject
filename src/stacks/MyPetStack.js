@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 
 export default function MyPetStack() {
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name="Home"
         component={Home}
@@ -25,7 +25,10 @@ export default function MyPetStack() {
       <Stack.Screen
         name="PetDetail"
         component={PetDetail}
-        options={{headerShown: false}}
+        options={{
+          tabBarStyle: { display: 'none' },
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="AddPet"

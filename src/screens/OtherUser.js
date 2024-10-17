@@ -80,7 +80,7 @@ export default function OtherUser() {
                         <Text style={styles.nameText}>WAIIYAWAT </Text>
                         <Text style={styles.nameText}>SAELEE</Text>
                         {/* <Text style={styles.nameText}>{user?.firstname}</Text>
-                <Text style={styles.nameText}>{user?.lastname}</Text> */}
+                        <Text style={styles.nameText}>{user?.lastname}</Text> */}
                     </View>
                 </View>
             </View>
