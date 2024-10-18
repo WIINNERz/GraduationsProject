@@ -132,40 +132,40 @@ export default function PetProfile() {
             return {
               id: doc.id,
               conditions: data.conditions
-                ? await keyman.decrypthealthdata(data.conditions)
+                ? await keyman.decryptviaapi(data.conditions)
                 : null,
               vaccine: data.vaccine
                 ? await Promise.all(
                     data.vaccine.map(async v => ({
                       name: v.name
-                        ? await keyman.decrypthealthdata(v.name)
+                        ? await keyman.decryptviaapi(v.name)
                         : null,
                       quantity: v.quantity
-                        ? await keyman.decrypthealthdata(v.quantity)
+                        ? await keyman.decryptviaapi(v.quantity)
                         : null,
                     })),
                   )
                 : null,
               treatment: data.treatment
-                ? await keyman.decrypthealthdata(data.treatment)
+                ? await keyman.decryptviaapi(data.treatment)
                 : null,
               doctor: data.doctor
-                ? await keyman.decrypthealthdata(data.doctor)
+                ? await keyman.decryptviaapi(data.doctor)
                 : null,
               note: data.note
-                ? await keyman.decrypthealthdata(data.note)
+                ? await keyman.decryptviaapi(data.note)
                 : null,
               date: data.date
-                ? await keyman.decrypthealthdata(data.date)
+                ? await keyman.decryptviaapi(data.date)
                 : null,
               time: data.time
-                ? await keyman.decrypthealthdata(data.time)
+                ? await keyman.decryptviaapi(data.time)
                 : null,
               drugallergy: data.drugallergy
-                ? await keyman.decrypthealthdata(data.drugallergy)
+                ? await keyman.decryptviaapi(data.drugallergy)
                 : null,
               chronic: data.chronic
-                ? await keyman.decrypthealthdata(data.chronic)
+                ? await keyman.decryptviaapi(data.chronic)
                 : null,
             };
           }),
@@ -321,11 +321,11 @@ export default function PetProfile() {
           <View style={styles.row}>
             <View style={styles.leftcolum}>
               <Text style={styles.categoryPet}>Weight</Text>
-              <Text style={styles.valuePet}>{pet?.weight}</Text>
+              <Text style={styles.valuePet}>{pet?.weight} g.</Text>
             </View>
             <View style={styles.rightcolum}>
               <Text style={styles.categoryPet}>Height</Text>
-              <Text style={styles.valuePet}>{pet?.height}</Text>
+              <Text style={styles.valuePet}>{pet?.height} cm.</Text>
             </View>
           </View>
           <View style={styles.row}>

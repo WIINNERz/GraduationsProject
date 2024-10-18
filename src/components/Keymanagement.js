@@ -13,7 +13,7 @@ const Keymanagement = () => {
   const API_URL = 'https://petpaw-six.vercel.app/'; 
   const currentUser = auth.currentUser;
   // used for get user key things
-  const decrypthealthdata = async (data) => {
+  const decryptviaapi = async (data) => {
     try {
       const response = await axios.post(`${API_URL}decrypt`, { encryptedText: data });
       const { decrypted } = response.data;
@@ -22,7 +22,15 @@ const Keymanagement = () => {
       console.error(error);
     }
   };
-
+  const encrpytviaapi = async plaintext => {
+    try {
+      const response = await axios.post(`${API_URL}encrypt`, { plaintext });
+      const { encryptedData } = response.data;
+      return encryptedData;
+    } catch (error) {
+      console.error(error);
+    }
+  };
   async function getuserkey() {
     const currentUser = auth.currentUser;
     try {
@@ -39,6 +47,7 @@ const Keymanagement = () => {
   // used for store key
   async function storeKey(key) {
     if (!key) {
+      Alert.alert('Error', 'please contact support', [{text: 'OK'}]);
       return;
     }
     try {
@@ -178,7 +187,6 @@ const Keymanagement = () => {
         keyLength,
         hash,
       );
-
       try {
         const decryptMasterKey = await Aes.decrypt(
           masterKey,
@@ -273,7 +281,6 @@ const Keymanagement = () => {
       return '';
     }
   }
-
   async function decryptData(data) {
     try {
       const masterKey = await retrievemasterkey();
@@ -300,8 +307,8 @@ const Keymanagement = () => {
     recoveryMaskeyByID,
     clearKey,
     getRecoverykey,
-    decrypthealthdata,
-
+    decryptviaapi,
+    encrpytviaapi,
   };
 };
 

@@ -553,7 +553,7 @@ const AddPet = () => {
             <View style={styles.box2}>
               <TextInput
                 style={styles.input}
-                placeholder="Weight"
+                placeholder="Weight (grams)"
                 placeholderTextColor={'gray'}
                 value={weight}
                 onChangeText={setWeight}
@@ -561,7 +561,7 @@ const AddPet = () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Height"
+                placeholder="Height (cm)"
                 placeholderTextColor={'gray'}
                 value={height}
                 onChangeText={setHeight}

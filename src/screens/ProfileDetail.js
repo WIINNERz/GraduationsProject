@@ -16,11 +16,6 @@ const ProfileDetail = ({ navigation }) => {
   const [lastname, setLastname] = useState('');
   const [username, setUsername] = useState('');
   const [tel, setTel] = useState('');
-  const [telEmergency, setTelEmergency] = useState('');
-  const [address, setAddress] = useState('');
-  const [district, setDistrict] = useState('');
-  const [province, setProvince] = useState('');
-  const [zipcode, setZipcode] = useState('');
   const [email, setEmail] = useState('');
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
@@ -48,25 +43,15 @@ const ProfileDetail = ({ navigation }) => {
         if (docSnap.exists() && docSnap.data().email === user.email) {
           const data = docSnap.data();
           try {
-            const decryptedFirstname = data.firstname ? await KeymanagementInstance.decryptData(data.firstname) : null;
-            const decryptedLastname = data.lastname ? await KeymanagementInstance.decryptData(data.lastname) : null;
+            const decryptedFirstname = data.firstname ? await KeymanagementInstance.decryptviaapi(data.firstname) : null;
+            const decryptedLastname = data.lastname ? await KeymanagementInstance.decryptviaapi(data.lastname) : null;
             const decryptedTel = data.tel ? await KeymanagementInstance.decryptData(data.tel) : null;
-            const decryptedTelEmergency = data.telEmergency ? await KeymanagementInstance.decryptData(data.telEmergency) : null;
-            const decryptedAddress = data.address ? await KeymanagementInstance.decryptData(data.address) : null;
-            const decryptedDistrict = data.district ? await KeymanagementInstance.decryptData(data.district) : null;
-            const decryptedProvince = data.province ? await KeymanagementInstance.decryptData(data.province) : null;
-            const decryptedZipcode = data.zipcode ? await KeymanagementInstance.decryptData(data.zipcode) : null;
             setUserData(data);
             setFirstname(decryptedFirstname);
             setLastname(decryptedLastname);
             setUsername(data.username);
             setEmail(data.email);
             setTel(decryptedTel);
-            setTelEmergency(decryptedTelEmergency);
-            setAddress(decryptedAddress);
-            setDistrict(decryptedDistrict);
-            setProvince(decryptedProvince);
-            setZipcode(decryptedZipcode);
           } catch (error) {
             console.error('Error decrypting data: ', error);
           }
@@ -84,14 +69,10 @@ const ProfileDetail = ({ navigation }) => {
       const userDoc = doc(firestore, 'Users', user.uid);
 
       try {
-        const encryptedFirstname = firstname ? await KeymanagementInstance.encryptData(firstname) : null;
-        const encryptedLastname = lastname ? await KeymanagementInstance.encryptData(lastname) : null;
+        const encryptedFirstname = firstname ? await KeymanagementInstance.encrpytviaapi(firstname) : null;
+        const encryptedLastname = lastname ? await KeymanagementInstance.encrpytviaapi(lastname) : null;
         const encryptedTel = tel ? await KeymanagementInstance.encryptData(tel) : null;
-        const encryptedTelEmergency = telEmergency ? await KeymanagementInstance.encryptData(telEmergency) : null;
-        const encryptedAddress = address ? await KeymanagementInstance.encryptData(address) : null;
-        const encryptedDistrict = district ? await KeymanagementInstance.encryptData(district) : null;
-        const encryptedProvince = province ? await KeymanagementInstance.encryptData(province) : null;
-        const encryptedZipcode = zipcode ? await KeymanagementInstance.encryptData(zipcode) : null;
+
 
         const updatedData = {
           firstname: encryptedFirstname,
@@ -99,11 +80,6 @@ const ProfileDetail = ({ navigation }) => {
           username: username || null,
           email: email || null,
           tel: encryptedTel,
-          telEmergency: encryptedTelEmergency,
-          address: encryptedAddress,
-          district: encryptedDistrict,
-          province: encryptedProvince,
-          zipcode: encryptedZipcode
         };
 
         await updateDoc(userDoc, updatedData);
@@ -284,51 +260,6 @@ const ProfileDetail = ({ navigation }) => {
                   value={tel}
                   onChangeText={setTel}
                   placeholder="Telephone Number"
-                />
-              </View>
-              <View style={styles.myaccount}>
-                <Text style={styles.name}>Emergency Tel</Text>
-                <TextInput
-                  style={styles.input}
-                  value={telEmergency}
-                  onChangeText={setTelEmergency}
-                  placeholder="Emergency Telephone Number"
-                />
-              </View>
-              <View style={styles.myaccount}>
-                <Text style={styles.name}>Address</Text>
-                <TextInput
-                  style={styles.input}
-                  value={address}
-                  onChangeText={setAddress}
-                  placeholder="Address"
-                />
-              </View>
-              <View style={styles.myaccount}>
-                <Text style={styles.name}>District</Text>
-                <TextInput
-                  style={styles.input}
-                  value={district}
-                  onChangeText={setDistrict}
-                  placeholder="District"
-                />
-              </View>
-              <View style={styles.myaccount}>
-                <Text style={styles.name}>Province</Text>
-                <TextInput
-                  style={styles.input}
-                  value={province}
-                  onChangeText={setProvince}
-                  placeholder="Province"
-                />
-              </View>
-              <View style={styles.myaccount}>
-                <Text style={styles.name}>Post code</Text>
-                <TextInput
-                  style={styles.input}
-                  value={zipcode}
-                  onChangeText={setZipcode}
-                  placeholder="Post Code"
                 />
               </View>
               <View style={styles.myaccount}>

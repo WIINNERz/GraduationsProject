@@ -98,7 +98,6 @@ const E2EE = () => {
       nonce: encodeBase64(nonce),
     };
   };
-
   const decryptMessage = (sharedSecret, cipherText, nonce) => {
     const secret = decodeBase64(sharedSecret);
     const message = decodeBase64(cipherText);

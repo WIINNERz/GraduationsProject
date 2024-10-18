@@ -46,14 +46,14 @@ const Profiles = () => {
           const encln = docSnap.data().lastname;
 
           try {
-            const decryptedFirstname = encfn
-              ? await KeymanagementInstance.decryptData(encfn)
-              : '';
-            const decryptedLastname = encln
-              ? await KeymanagementInstance.decryptData(encln)
-              : '';
-            setFirstname(decryptedFirstname ?? '');
-            setLastname(decryptedLastname ?? '');
+            // const decryptedFirstname = encfn
+            //   ? await KeymanagementInstance.decryptviaapi(encfn)
+            //   : '';
+            // const decryptedLastname = encln
+            //   ? await KeymanagementInstance.decryptviaapi(encln)
+            //   : '';
+            // setFirstname(decryptedFirstname ?? '');
+            // setLastname(decryptedLastname ?? '');
           } catch (error) {
             console.error('Error decrypting user data:', error);
             setFirstname('');
@@ -174,9 +174,9 @@ const Profiles = () => {
         </View>
         <View style={styles.myaccount}>
           <View style={{flexDirection: 'row'}}>
-            <Text style={styles.name}>{firstname}</Text>
+            {/* <Text style={styles.name}>{firstname}</Text> */}
             <Text> </Text>
-            <Text style={styles.name}>{lastname}</Text>
+            {/* <Text style={styles.name}>{lastname}</Text> */}
           </View>
           <Text style={styles.username}>@{userData.username}</Text>
           {userData.verify ? (

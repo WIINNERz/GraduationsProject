@@ -637,7 +637,7 @@ const PetDetail = () => {
               <Text style={styles.field}>Weight</Text>
               <TextInput
                 style={styles.inputwh}
-                placeholder="Weight"
+                placeholder="Weight (grams)"
                 keyboardType="numeric"
                 value={pet?.weight ? `${pet.weight}` || '' : ''}
                 onChangeText={text =>
@@ -649,7 +649,7 @@ const PetDetail = () => {
               <Text style={styles.field}>Height</Text>
               <TextInput
                 style={styles.inputwh}
-                placeholder="Height"
+                placeholder="Height (cm)"
                 keyboardType="numeric"
                 value={pet?.height ? `${pet.height}` || '' : ''}
                 onChangeText={text =>
