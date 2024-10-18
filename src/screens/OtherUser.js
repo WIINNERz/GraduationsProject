@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, FlatList} from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, FlatList, Touchable, TouchableOpacity } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   getFirestore,
   doc,
@@ -10,14 +10,14 @@ import {
   where,
   getDocs,
 } from 'firebase/firestore';
-import {firestore} from '../configs/firebaseConfig';
+import { firestore } from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from '../components/Keymanagement';
 
 export default function OtherUser() {
   const route = useRoute();
   const navigate = useNavigation();
-  const {username, uid} = route.params;
+  const { username, uid } = route.params;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,16 +29,16 @@ export default function OtherUser() {
       try {
         const userDoc = await getDoc(doc(firestore, 'Users', uid));
         if (userDoc.exists()) {
-          const {firstname, lastname} = {
+          const { firstname, lastname } = {
             firstname: userDoc.data().firstname
               ? await KeymanagementInstance.decryptviaapi(
-                  userDoc.data().firstname,
-                )
+                userDoc.data().firstname,
+              )
               : null,
             lastname: userDoc.data().lastname
               ? await KeymanagementInstance.decryptviaapi(
-                  userDoc.data().lastname,
-                )
+                userDoc.data().lastname,
+              )
               : null,
           };
 
@@ -58,6 +58,7 @@ export default function OtherUser() {
         const petsQuery = query(
           collection(firestore, 'Pets'),
           where('uid', '==', uid),
+          where('status', '==', 'dont_have_owner'),
         );
         const petsSnapshot = await getDocs(petsQuery);
         const petsList = petsSnapshot.docs.map(doc => ({
@@ -100,13 +101,11 @@ export default function OtherUser() {
         onPress={() => navigate.goBack()}
       />
       <View style={styles.content}>
-        <Image source={{uri: user?.photoURL}} style={styles.profileImage} />
+        <Image source={{ uri: user?.photoURL }} style={styles.profileImage} />
         <View style={styles.userInfo}>
           <Text style={styles.username}>{user?.username}</Text>
           <View style={styles.nameContainer}>
-            {/* <Text style={styles.nameText}>WAIIYAWAT </Text>
-                        <Text style={styles.nameText}>SAELEE</Text> */}
-            <Text style={styles.nameText}>{user?.firstname} </Text> 
+            <Text style={styles.nameText}>{user?.firstname} </Text>
             <Text style={styles.nameText}>{user?.lastname}</Text>
           </View>
         </View>
@@ -115,16 +114,23 @@ export default function OtherUser() {
       <FlatList
         data={pets}
         keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <View style={styles.petItem}>
-            <Image source={{uri: item.photoURL}} style={styles.petImage} />
-            <View>
-              <Text style={styles.petName}>{item.name}</Text>
-              <Text>{item.breeds}</Text>
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigate.navigate('PetProfile', { id: item.id })}>
+            <View style={styles.petItem}>
+              {item?.photoURL ? (
+                <Image source={{ uri: item.photoURL }} style={styles.petImage} />
+              ) : (
+                <MaterialCommunityIcons name="account" style={styles.petImage} size={50} color="gray" />
+              )}
+              <View>
+                <Text style={styles.petName}>{item.name}</Text>
+                <Text>{item.breeds}</Text>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
-        contentContainerStyle={styles.container}
+        style={styles.flatList} // Apply style to FlatList
+        contentContainerStyle={styles.flatListContent} // Apply style to FlatList content container
       />
     </View>
   );
@@ -192,21 +198,26 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: 'InterBold',
     marginVertical: 20,
+    textAlign: 'left', // Align text to the left
+    alignSelf: 'flex-start', // Align the Text component to the start of the container
+    marginLeft: 20, // Add some left margin if needed
   },
   petItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
     padding: 10,
     borderRadius: 25,
     backgroundColor: '#F0DFC8',
-    width: '90%',
+    width: 200, // Fixed width as a percentage of the parent container
   },
   petImage: {
     width: 75,
     height: 75,
     borderRadius: 50,
     marginRight: 10,
+    borderWidth: 1,
   },
   petName: {
     fontSize: 18,
@@ -220,5 +231,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 100,
     zIndex: 1,
+  },
+  flatList: {
+    width: '100%',
+  },
+  flatListContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

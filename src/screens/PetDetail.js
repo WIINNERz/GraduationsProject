@@ -149,7 +149,7 @@ const PetDetail = () => {
                 )
                 : '',
               breeds: petData.breeds
-                ?petData.breeds
+                ? petData.breeds
                 : '',
               weight: petData.weight
                 ? CryptoJS.AES.decrypt(petData.weight, key).toString(
@@ -546,7 +546,7 @@ const PetDetail = () => {
     fetchAdditionalImages();
   }, []);
   const handleDeleteAdditionalImage = async (index) => {
-    const updatedImages = additionalImages.filter((_, i) => i !== index); 
+    const updatedImages = additionalImages.filter((_, i) => i !== index);
     try {
       const petDocRef = doc(db, 'Pets', id);
       await updateDoc(petDocRef, {
@@ -702,11 +702,7 @@ const PetDetail = () => {
               />
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.additionalImagePicker}
-            onPress={pickAdditionalImages}>
-            <Text style={styles.additionalImagePickerText}>Pick Additional Images</Text>
-          </TouchableOpacity>
+
           <View style={styles.additionalImagesContainer}>
             {additionalImages.length > 0 ? (
               additionalImages.map((uri, index) => (
@@ -718,12 +714,19 @@ const PetDetail = () => {
                   />
                   <TouchableOpacity style={styles.deleteButton}
                     onPress={() => handleDeleteAdditionalImage(index)}>
-                    <Text style={styles.deleteButtonText}>Delete</Text>
+                    <MaterialCommunityIcons name="close" size={20} color="red" />
                   </TouchableOpacity>
                 </View>
               ))
             ) : (
-              <Text>No additional images available.</Text>
+              <View style={styles.additionalContainerNo}>
+                <TouchableOpacity
+                  style={styles.additionalImagePicker}
+                  onPress={pickAdditionalImages}>
+                  <Text style={styles.additionalImagePickerText}>Add Images</Text>
+                </TouchableOpacity>
+                <Text>No additional images available.</Text>
+              </View>
             )}
           </View>
           {userData?.verify ? (
@@ -798,6 +801,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     backgroundColor: '#fff',
+    marginTop: 20,
   },
   whContainer: {
     width: '100%',
@@ -852,7 +856,7 @@ const styles = StyleSheet.create({
   },
   camera: {
     padding: 5,
-    backgroundColor: 'white',
+    backgroundColor: '#F0DFC8',
     borderRadius: 50,
     position: 'absolute',
     top: -30,
@@ -920,11 +924,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#ddd',
+    marginVertical: 10,
+  },
+  additionalImagePicker: {
+    backgroundColor: '#F0DFC8',
+    padding: 10,
+    borderRadius: 10,
+    margin: 10,
+  },
+  additionalContainerNo: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  additionalImagePickerText: {
+    fontFamily: 'InterRegular',
   },
   additionalImage: {
     width: 100,
     height: 100,
     margin: 10,
+    borderRadius: 10,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#F0DFC8',
+    borderRadius: 10,
+    padding: 5,
   },
   tabBar: {
     borderTopLeftRadius: 20,

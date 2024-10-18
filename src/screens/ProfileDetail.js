@@ -29,7 +29,7 @@ const ProfileDetail = ({ navigation }) => {
 
       return () => {
         navigation.getParent()?.setOptions({
-          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],// Reset tabBarStyle to default
+          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
         });
       };
     }, [navigation])

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import CryptoJS from 'rn-crypto-js';
 import {
   View,
@@ -14,9 +14,9 @@ import {
   KeyboardAvoidingView,
   Keyboard,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Dropdown} from 'react-native-element-dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import {
   getFirestore,
   setDoc,
@@ -30,11 +30,11 @@ import {
   where,
   Timestamp,
 } from 'firebase/firestore';
-import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {auth, firestore, storage} from '../configs/firebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, firestore, storage } from '../configs/firebaseConfig';
 import Checkbox from '../components/checkbox';
-import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
-import {CancelPButton, SavePButton} from '../components/Button';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import { CancelPButton, SavePButton } from '../components/Button';
 import Calendar from '../components/calendar';
 import Keymanagement from '../components/Keymanagement';
 
@@ -54,7 +54,7 @@ const AddPet = () => {
     color: '',
     characteristics: '',
     chronic: '',
-    location:'',
+    location: '',
     conditions: '',
     birthday: '',
     adoptingConditions: '',
@@ -86,8 +86,8 @@ const AddPet = () => {
   const KeymanagementInstance = Keymanagement();
 
   const data = [
-    {label: "Don't have owner", value: 'dont_have_owner'},
-    {label: 'Have owner', value: 'have_owner'},
+    { label: "Don't have owner", value: 'dont_have_owner' },
+    { label: 'Have owner', value: 'have_owner' },
   ];
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -211,7 +211,7 @@ const AddPet = () => {
       await setDoc(petDocRef, {
         nid,
         id,
-        breeds : breeds,
+        breeds: breeds,
         uid: user.uid,
         username,
         name,
@@ -308,7 +308,7 @@ const AddPet = () => {
   };
 
   const openImageLibrary = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
 
     if (!result.canceled) {
       setImageP(result.assets[0].uri);
@@ -316,7 +316,7 @@ const AddPet = () => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({mediaType: 'photo', quality: 1});
+    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
 
     if (!result.canceled) {
       setImageP(result.assets[0].uri);
@@ -339,7 +339,7 @@ const AddPet = () => {
 
       const snapshot = await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(snapshot.ref);
-      await updateDoc(petDocRef, {photoURL: downloadURL});
+      await updateDoc(petDocRef, { photoURL: downloadURL });
     } catch (error) {
       Alert.alert('Error', 'Failed to upload image. Please try again.');
       console.error('Error uploading image: ', error);
@@ -362,7 +362,7 @@ const AddPet = () => {
           openAdditionalImageLibrary();
         },
       },
-      {text: 'Cancel', style: 'cancel'},
+      { text: 'Cancel', style: 'cancel' },
     ]);
   };
 
@@ -372,7 +372,7 @@ const AddPet = () => {
       quality: 1,
       selectionLimit: 0,
     });
-  
+
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setAdditionalImages(prevImages => [
         ...prevImages,
@@ -383,8 +383,8 @@ const AddPet = () => {
   };
 
   const openAdditionalCamera = async () => {
-    const result = await launchCamera({mediaType: 'photo', quality: 1});
-  
+    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setAdditionalImages(prevImages => [
         ...prevImages,
@@ -406,7 +406,7 @@ const AddPet = () => {
           return await getDownloadURL(snapshot.ref);
         })
       );
-  
+
       await updateDoc(petDocRef, { additionalImages: uploadedImageUrls });
     } catch (error) {
       Alert.alert('Error', 'Failed to upload additional images. Please try again.');
@@ -417,18 +417,18 @@ const AddPet = () => {
   };
 
   const genderData = [
-    {label: 'Male', value: 'Male'},
-    {label: 'Female', value: 'Female'},
-    {label: 'Others', value: 'Others'},
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+    { label: 'Others', value: 'Others' },
   ];
 
   const typeData = [
-    {label: 'Cat', value: 'Cat'},
-    {label: 'Dog', value: 'Dog'},
-    {label: 'Snake', value: 'Snake'},
-    {label: 'Fish', value: 'Fish'},
-    {label: 'Sheep', value: 'Sheep'},
-    {label: 'Others', value: 'Other'},
+    { label: 'Cat', value: 'Cat' },
+    { label: 'Dog', value: 'Dog' },
+    { label: 'Snake', value: 'Snake' },
+    { label: 'Fish', value: 'Fish' },
+    { label: 'Sheep', value: 'Sheep' },
+    { label: 'Others', value: 'Other' },
   ];
   if (loading) {
     return (
@@ -438,213 +438,220 @@ const AddPet = () => {
     );
   }
   return (
-  <KeyboardAvoidingView
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{flex: 1}}
-    >    
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <MaterialCommunityIcons
-          style={styles.back}
-          name="arrow-left"
-          size={35}
-          color="#D27C2C"
-          onPress={() => navigation.goBack()}
-        />
-        <Text style={styles.screenTitle}>Add Pet</Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.photoSec}>
-          <View style={{borderRadius: 100}}>
-            {imageP ? (
-              <Image source={{uri: imageP}} style={styles.image} />
-            ) : (
-              <MaterialCommunityIcons name="dog" size={120} color="#E16539" />
-            )}
-          </View>
-          <TouchableOpacity onPress={pickImage}>
-            <MaterialCommunityIcons
-              style={styles.camera}
-              name="camera-plus"
-              size={30}
-              color="#000"
-            />
-          </TouchableOpacity>
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <MaterialCommunityIcons
+            style={styles.back}
+            name="arrow-left"
+            size={35}
+            color="#D27C2C"
+            onPress={() => navigation.goBack()}
+          />
+          <Text style={styles.screenTitle}>Add Pet</Text>
         </View>
-        <View style={styles.container}>
-          <View style={styles.subContainer}>
-            <View style={styles.box2}>
-              <TextInput
-                style={styles.input}
-                placeholder="Name"
-                placeholderTextColor={'gray'}
-    
-                value={name}
-                onChangeText={setName}
-              />
-              <Text style={styles.age}> Age :{age}</Text>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <View style={styles.photoSec}>
+            <View style={{ borderRadius: 100 }}>
+              {imageP ? (
+                <Image source={{ uri: imageP }} style={styles.image} />
+              ) : (
+                <MaterialCommunityIcons name="dog" size={120} color="#E16539" />
+              )}
             </View>
-            <View style={styles.box2}>
+            <TouchableOpacity onPress={pickImage}>
+              <MaterialCommunityIcons
+                style={styles.camera}
+                name="camera-plus"
+                size={30}
+                color="#000"
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.container}>
+            <View style={styles.subContainer}>
+              <View style={styles.box2}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Name"
+                  placeholderTextColor={'gray'}
+
+                  value={name}
+                  onChangeText={setName}
+                />
+                <Text style={styles.age}> Age :{age}</Text>
+              </View>
+              <View style={styles.box2}>
+                <Dropdown
+                  style={[styles.input, genderFocused && { borderColor: 'blue' }]}
+                  placeholderStyle={styles.placeholderStyle}
+                  itemTextStyle={styles.itemTextStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={genderData}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={!genderFocused ? 'Gender' : '...'}
+                  value={gender}
+                  onFocus={() => setGenderFocused(true)}
+                  onBlur={() => setGenderFocused(false)}
+                  onChange={item => {
+                    setGender(item.value);
+                    setGenderFocused(false);
+                  }}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Color"
+                  placeholderTextColor={'gray'}
+                  value={color}
+                  onChangeText={setColor}
+                />
+              </View>
+
               <Dropdown
-                style={[styles.input, genderFocused && {borderColor: 'blue'}]}
+                style={[styles.inputwh, typeFocused && { borderColor: 'blue' }]}
                 placeholderStyle={styles.placeholderStyle}
-                itemTextStyle={styles.itemTextStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
                 iconStyle={styles.iconStyle}
-                data={genderData}
+                itemTextStyle={styles.itemTextStyle}
+                data={typeData}
                 maxHeight={300}
                 labelField="label"
                 valueField="value"
-                placeholder={!genderFocused ? 'Gender' : '...'}
-                value={gender}
-                onFocus={() => setGenderFocused(true)}
-                onBlur={() => setGenderFocused(false)}
+                placeholder={!typeFocused ? 'Type' : '...'}
+                value={type}
+                onFocus={() => setTypeFocused(true)}
+                onBlur={() => setTypeFocused(false)}
                 onChange={item => {
-                  setGender(item.value);
-                  setGenderFocused(false);
+                  setType(item.value);
+                  setTypeFocused(false);
                 }}
               />
-
               <TextInput
-                style={styles.input}
-                placeholder="Color"
+                style={styles.inputwh}
+                placeholder="Breed"
                 placeholderTextColor={'gray'}
-                value={color}
-                onChangeText={setColor}
+                value={breeds}
+                onChangeText={setBreeds}
               />
-            </View>
-
-            <Dropdown
-              style={[styles.inputwh, typeFocused && {borderColor: 'blue'}]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              itemTextStyle={styles.itemTextStyle}
-              data={typeData}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!typeFocused ? 'Type' : '...'}
-              value={type}
-              onFocus={() => setTypeFocused(true)}
-              onBlur={() => setTypeFocused(false)}
-              onChange={item => {
-                setType(item.value);
-                setTypeFocused(false);
-              }}
-            />
-            <TextInput
-              style={styles.inputwh}
-              placeholder="Breed"
-              placeholderTextColor={'gray'}
-              value={breeds}
-              onChangeText={setBreeds}
-            />
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.inputDate}
-                value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
-                editable={false}
-              />
-              <Calendar date={date} onChange={onDateChange} />
-            </View>
-            <View style={styles.box2}>
-              <TextInput
-                style={styles.input}
-                placeholder="Weight (grams)"
-                placeholderTextColor={'gray'}
-                value={weight}
-                onChangeText={setWeight}
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Height (cm)"
-                placeholderTextColor={'gray'}
-                value={height}
-                onChangeText={setHeight}
-                keyboardType="numeric"
-              />
-            </View>
-            <TextInput
-              style={styles.inputwh}
-              placeholder="Characteristics"
-              placeholderTextColor={'gray'}
-              value={characteristics}
-              onChangeText={setCharacteristics}
-            />
-            <TextInput
-              style={styles.inputwh}
-              placeholder="Chronic Diseases"
-              placeholderTextColor={'gray'}
-              value={chronic}
-              onChangeText={setChronic}
-            />
-
-            <TouchableOpacity
-              style={styles.additionalImagePicker}
-              onPress={pickAdditionalImages}>
-                <Text style={styles.additionalImagePickerText}>
-                  Pick Additional Images
-                </Text>
-            </TouchableOpacity>
-              <View style={styles.additionalImagesContainer}>
-                {additionalImages.map((uri, index) => (
-                  <Image
-                    key={index}
-                    source={{uri}}
-                    style={styles.additionalImage}
-                  />
-                        ))}
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.inputDate}
+                  value={`Date: ${date.toLocaleDateString()}, Age: ${age}`}
+                  editable={false}
+                />
+                <Calendar date={date} onChange={onDateChange} />
               </View>
-            {userData?.verify ? (
-              <>
-                <View style={styles.checkboxContainer}>
-                  <Checkbox
-                    text="Find Owner"
-                    isChecked={isChecked}
-                    onPress={() => {
-                      setIsChecked(!isChecked);
-                      setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
-                    }}
-                  />
-                </View>
-                <View style={styles.subContainer}>
-                  {isChecked && (
-                    <>
-                      <TextInput
-                        style={styles.inputwh}
-                        placeholder="Location"
-                        placeholderTextColor={'gray'}
-                        value={location}
-                        onChangeText={setLocation}
+              <View style={styles.box2}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Weight (grams)"
+                  placeholderTextColor={'gray'}
+                  value={weight}
+                  onChangeText={setWeight}
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Height (cm)"
+                  placeholderTextColor={'gray'}
+                  value={height}
+                  onChangeText={setHeight}
+                  keyboardType="numeric"
+                />
+              </View>
+              <TextInput
+                style={styles.inputwh}
+                placeholder="Characteristics"
+                placeholderTextColor={'gray'}
+                value={characteristics}
+                onChangeText={setCharacteristics}
+              />
+              <TextInput
+                style={styles.inputwh}
+                placeholder="Chronic Diseases"
+                placeholderTextColor={'gray'}
+                value={chronic}
+                onChangeText={setChronic}
+              />
+
+              <View style={styles.additionalImagesContainer}>
+                {additionalImages.length > 0 ? (
+                  additionalImages.map((uri, index) => (
+                    <View key={index} style={styles.additionalImageWrapper}>
+                      <Image
+                        key={index}
+                        source={{ uri }}
+                        style={styles.additionalImage}
                       />
-                      <TextInput
-                        style={styles.inputwh}
-                        placeholder="Conditions"
-                        placeholderTextColor={'gray'}
-                        value={conditions}
-                        onChangeText={setConditions}
-                      />
-                    </>
-                  )}
-                </View>
-              </>
-            ) : null}
-            <View style={[styles.buttonContainer, {marginBottom: 100}]}>
-              <CancelPButton onPress={() => navigation.navigate('MyPet')} />
-              <SavePButton onPress={handleSubmit} />
+                      <TouchableOpacity style={styles.deleteButton}
+                        onPress={() => handleDeleteAdditionalImage(index)}>
+                        <MaterialCommunityIcons name="close" size={20} color="red" />
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                ) : (
+                  <View style={styles.additionalContainerNo}>
+                    <TouchableOpacity
+                      style={styles.additionalImagePicker}
+                      onPress={pickAdditionalImages}>
+                      <Text style={styles.additionalImagePickerText}>Add Images</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+              {userData?.verify ? (
+                <>
+                  <View style={styles.checkboxContainer}>
+                    <Checkbox
+                      text="Find Owner"
+                      isChecked={isChecked}
+                      onPress={() => {
+                        setIsChecked(!isChecked);
+                        setStatus(isChecked ? 'have_owner' : 'dont_have_owner');
+                      }}
+                    />
+                  </View>
+                    {isChecked && (
+                      <>
+                        <TextInput
+                          style={styles.inputwh}
+                          placeholder="Location"
+                          placeholderTextColor={'gray'}
+                          value={location}
+                          onChangeText={setLocation}
+                        />
+                        <TextInput
+                          style={styles.inputwh}
+                          placeholder="Conditions"
+                          placeholderTextColor={'gray'}
+                          value={conditions}
+                          onChangeText={setConditions}
+                        />
+                      </>
+                    )}
+                </>
+              ) : null}
+              <View style={[styles.buttonContainer, { marginBottom: 100 }]}>
+                <CancelPButton onPress={() => navigation.navigate('MyPet')} />
+                <SavePButton onPress={handleSubmit} />
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
     </KeyboardAvoidingView>
   );
 };
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const titleSize = width / 16;
 const styles = StyleSheet.create({
   container: {
@@ -840,11 +847,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#ddd',
+    marginVertical: 10,
+  },
+  additionalImagePicker: {
+    backgroundColor: '#F0DFC8',
+    padding: 10,
+    borderRadius: 10,
+    margin: 10,
+  },
+  additionalContainerNo: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  additionalImagePickerText: {
+    fontFamily: 'InterRegular',
   },
   additionalImage: {
     width: 100,
     height: 100,
     margin: 10,
+    borderRadius: 10,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#F0DFC8',
+    borderRadius: 10,
+    padding: 5,
   },
   dropdown: {
     height: 50,

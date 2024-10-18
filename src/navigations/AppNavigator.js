@@ -107,13 +107,6 @@ const AppNavigator = ({ initialRouteName }) => {
       setUserDocExists(false);
     }
   }, []);
-
-  useEffect(() => {
-    if (currentRouteName) {
-      console.log(`Current screen: ${currentRouteName}`);
-    }
-  }, [currentRouteName]);
-
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
