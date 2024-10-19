@@ -173,12 +173,12 @@ const styles = StyleSheet.create({
   filterContainer: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '22%',
+    height: '28%',
   },
   datapanel: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '62%',
+    height: '56%',
   },
   errorText: {
     color: 'red',

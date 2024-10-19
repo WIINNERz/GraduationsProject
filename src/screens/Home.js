@@ -232,7 +232,7 @@ const openMaps = () => {
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => navigation.navigate('MyPets')}>
-            <MaterialCommunityIcons name="dog" size={pawsize} color="#D27C2C" />
+            <MaterialCommunityIcons name="paw" size={pawsize} color="#D27C2C" />
             <Text style={styles.menuText}>My Pets</Text>
           </TouchableOpacity>
           <TouchableOpacity

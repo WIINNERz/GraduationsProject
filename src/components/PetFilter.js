@@ -20,7 +20,9 @@ const PetFilter = ({
       {label: 'Dog', value: 'Dog', icon: 'dog'},
       {label: 'Snake', value: 'Snake', icon: 'snake'},
       {label: 'Fish', value: 'Fish', icon: 'fish'},
-      {label: 'Sheep', value: 'Sheep', icon: 'sheep'},
+      {label: 'Bird', value: 'Bird', icon: 'bird'},
+      {label: 'Rabbit', value: 'Rabbit', icon: 'rabbit'},
+      {label: 'Turtle', value: 'Turtle', icon: 'turtle'},
       {label: 'Others', value: 'Other', icon: 'dots-horizontal-circle'},
     ],
     [],
@@ -166,7 +168,6 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
   inputSearchStyle: {
-
     height: 40,
     fontSize: 16,
     color: 'black',

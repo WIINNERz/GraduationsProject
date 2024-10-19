@@ -19,6 +19,7 @@ import {firestore} from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from '../components/Keymanagement';
 import MedicalHistoryModal from '../components/MedicalHistoryModal';
+import RenderIcon from '../components/RenderIcon';
 
 const {width, height} = Dimensions.get('window');
 
@@ -44,6 +45,7 @@ export default function PetProfile() {
   const flatListRef = useRef(null);
   const KeymanagementInstance = useMemo(() => new Keymanagement(), []);
   const keyman = Keymanagement();
+  const icon = RenderIcon();
   useFocusEffect(
     useCallback(() => {
       navigate.getParent()?.setOptions({
@@ -205,30 +207,12 @@ export default function PetProfile() {
         : [pet?.photoURL].filter(url => url),
     [pet],
   );
-  const renderIcon = (type) => {
-    switch (type) {
-      case 'Dog':
-        return <MaterialCommunityIcons name="dog" size={120} color="#E16539" />;
-      case 'Cat':
-        return <MaterialCommunityIcons name="cat" size={120} color="#E16539" />;
-      case 'Bird':
-        return <MaterialCommunityIcons name="bird" size={120} color="#E16539" />;
-      case 'Snake': 
-        return <MaterialCommunityIcons name="snake" size={120} color="#E16539" />;
-      case 'Fish':
-        return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
-      case 'Rabbit':
-        return <MaterialCommunityIcons name="rabbit" size={120} color="#E16539" />;
-      case 'Hamster':
-        return <MaterialCommunityIcons name="hamster" size={120} color="#E16539" />;
-      case 'Turtle':
-        return <MaterialCommunityIcons name="turtle" size={120} color="#E16539" />;
-      case 'Fish':
-        return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
-      default:
-        return <MaterialCommunityIcons name="paw" size={120} color="#E16539" />;
-    }
-  };  
+  const renderIcon = type => {
+    const iconType = icon.geticon(type);
+    return (
+      <MaterialCommunityIcons name={iconType} size={200} color="#D27C2C" />
+    );
+  }; 
 
   const handleRecordClick = record => {
     setSelectedRecord(record);

@@ -2,13 +2,21 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import RenderIcon from './RenderIcon';
 
 export default function PetCard({ item }) {
   const navigation = useNavigation();
+  const icon = RenderIcon();
 
   const openPetProfile = () => {
     navigation.navigate('PetProfile', { id: item.id });
   }
+  const renderIcon = type => {
+    const iconType = icon.geticon(type);
+    return (
+      <MaterialCommunityIcons name={iconType} size={80} color="#D27C2C" style={styles.dogicon} />
+    );
+  };
 
   const formattedDate = item?.updatedAt ? new Date(item.updatedAt.seconds * 1000).toLocaleDateString() : '';
 
@@ -18,7 +26,7 @@ export default function PetCard({ item }) {
         {item?.photoURL ? ( 
         <Image source={{ uri: item?.photoURL }} style={styles.image} />
         ) : (
-        <MaterialCommunityIcons name="cat" size={80} style={styles.dogicon} color="#E16539" />
+        (renderIcon(item?.type))
         )}
         <View style={styles.genderIcon}>
           {item?.gender === 'Male' && (

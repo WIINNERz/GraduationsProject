@@ -427,7 +427,9 @@ const AddPet = () => {
     { label: 'Dog', value: 'Dog' },
     { label: 'Snake', value: 'Snake' },
     { label: 'Fish', value: 'Fish' },
-    { label: 'Sheep', value: 'Sheep' },
+    { label: 'Bird', value: 'Bird' },
+    { label: 'Rabbit', value: 'Rabbit' },
+    { label: 'Turtle', value: 'Turtle' },
     { label: 'Others', value: 'Other' },
   ];
   if (loading) {

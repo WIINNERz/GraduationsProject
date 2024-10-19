@@ -14,17 +14,13 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {
-  doc,
-  getDoc,
-  collection,
-  onSnapshot,
-} from 'firebase/firestore';
+import {doc, getDoc, collection, onSnapshot} from 'firebase/firestore';
 import {firestore} from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AdoptBar from '../components/AdoptBar';
 import MedicalHistoryModal from '../components/MedicalHistoryModal';
 import Keymanagement from '../components/Keymanagement';
+import RenderIcon from '../components/RenderIcon';
 
 const {width} = Dimensions.get('window');
 
@@ -48,6 +44,7 @@ export default function PetProfile() {
   let hasChronic = false;
   let hasDrugAllergy = false;
   const keyman = Keymanagement();
+  const icon = RenderIcon();
 
   useFocusEffect(
     useCallback(() => {
@@ -161,30 +158,12 @@ export default function PetProfile() {
       ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
       : [pet?.photoURL].filter(url => url);
 
-    const renderIcon = (type) => {
-        switch (type) {
-          case 'Dog':
-            return <MaterialCommunityIcons name="dog" size={120} color="#E16539" />;
-          case 'Cat':
-            return <MaterialCommunityIcons name="cat" size={120} color="#E16539" />;
-          case 'Bird':
-            return <MaterialCommunityIcons name="bird" size={120} color="#E16539" />;
-          case 'Snake': 
-            return <MaterialCommunityIcons name="snake" size={120} color="#E16539" />;
-          case 'Fish':
-            return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
-          case 'Rabbit':
-            return <MaterialCommunityIcons name="rabbit" size={120} color="#E16539" />;
-          case 'Hamster':
-            return <MaterialCommunityIcons name="hamster" size={120} color="#E16539" />;
-          case 'Turtle':
-            return <MaterialCommunityIcons name="turtle" size={120} color="#E16539" />;
-          case 'Fish':
-            return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
-          default:
-            return <MaterialCommunityIcons name="paw" size={120} color="#E16539" />;
-        }
-      };  
+  const renderIcon = type => {
+    const iconType = icon.geticon(type);
+    return (
+      <MaterialCommunityIcons name={iconType} size={200} color="#D27C2C" />
+    );
+  };
   const handleOwnerPress = () => {
     navigate.navigate('OtherUser', {username: pet?.username, uid: pet?.uid});
     console.log(pet?.uid);
@@ -221,9 +200,7 @@ export default function PetProfile() {
               }}
             />
           ) : (
-            <View style={styles.nopic}>
-              {renderIcon(pet?.type)}
-            </View>
+            <View style={styles.nopic}>{renderIcon(pet?.type)}</View>
           )}
           {pet?.additionalImages && pet.additionalImages.length > 0 && (
             <View style={styles.pagination}>
@@ -597,11 +574,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   nopic: {
-    
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    
-    
   },
 });

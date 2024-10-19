@@ -17,6 +17,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import {auth} from '../configs/firebaseConfig';
+import RenderIcon from '../components/RenderIcon';
 
 export default function MyPet() {
   const [dogs, setDogs] = useState([]);
@@ -24,6 +25,7 @@ export default function MyPet() {
   const [error, setError] = useState(null);
   const navigation = useNavigation();
   const user = auth.currentUser;
+  const icon = RenderIcon();
 
   const fetchDogs = async () => {
     if (user) {
@@ -50,6 +52,13 @@ export default function MyPet() {
     }
   };
 
+  const renderIcon = type => {
+    const iconType = icon.geticon(type);
+    return (
+      <MaterialCommunityIcons name={iconType} size={80} color="#E16539" />
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
@@ -65,7 +74,7 @@ export default function MyPet() {
       {item.photoURL ? (
         <Image source={{uri: item.photoURL}} style={styles.petPic} />
       ) : (
-        <MaterialCommunityIcons name="dog" size={80} color="#E16539" />
+        renderIcon(item.type)
       )}
       <Text style={styles.petdetail}>{item.name}</Text>
     </TouchableOpacity>
