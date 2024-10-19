@@ -8,27 +8,32 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import { getFirestore, doc, getDoc, collection, onSnapshot } from 'firebase/firestore';
-import { firestore } from '../configs/firebaseConfig';
+import {
+  doc,
+  getDoc,
+  collection,
+  onSnapshot,
+} from 'firebase/firestore';
+import {firestore} from '../configs/firebaseConfig';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AdoptBar from '../components/AdoptBar';
 import MedicalHistoryModal from '../components/MedicalHistoryModal';
 import Keymanagement from '../components/Keymanagement';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 export default function PetProfile() {
   const navigate = useNavigation();
   const [pet, setPet] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState([]);
   const route = useRoute();
-  const { id } = route.params;
+  const {id} = route.params;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,12 +52,12 @@ export default function PetProfile() {
   useFocusEffect(
     useCallback(() => {
       navigate.getParent()?.setOptions({
-        tabBarStyle: { display: 'none' },
+        tabBarStyle: {display: 'none'},
       });
 
       return () => {
         navigate.getParent()?.setOptions({
-          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+          tabBarStyle: [styles.tabBar, {backgroundColor: '#F0DFC8'}],
         });
       };
     }, [navigate]),
@@ -62,7 +67,7 @@ export default function PetProfile() {
     try {
       const petDoc = await getDoc(doc(firestore, 'Pets', id));
       if (petDoc.exists()) {
-        const petData = { id: petDoc.id, ...petDoc.data() };
+        const petData = {id: petDoc.id, ...petDoc.data()};
         setPet(petData);
       } else {
         setError('Pet not found');
@@ -75,7 +80,12 @@ export default function PetProfile() {
   }, [id]);
 
   const subscribeToMedicalHistory = useCallback(() => {
-    const medicalHistoryRef = collection(firestore, 'Pets', id, 'MedicalHistory');
+    const medicalHistoryRef = collection(
+      firestore,
+      'Pets',
+      id,
+      'MedicalHistory',
+    );
     const unsubscribeMedicalHistory = onSnapshot(
       medicalHistoryRef,
       async snapshot => {
@@ -90,15 +100,13 @@ export default function PetProfile() {
                 : null,
               vaccine: data.vaccine
                 ? await Promise.all(
-                  data.vaccine.map(async v => ({
-                    name: v.name
-                      ? await keyman.decryptviaapi(v.name)
-                      : null,
-                    quantity: v.quantity
-                      ? await keyman.decryptviaapi(v.quantity)
-                      : null,
-                  })),
-                )
+                    data.vaccine.map(async v => ({
+                      name: v.name ? await keyman.decryptviaapi(v.name) : null,
+                      quantity: v.quantity
+                        ? await keyman.decryptviaapi(v.quantity)
+                        : null,
+                    })),
+                  )
                 : null,
               treatment: data.treatment
                 ? await keyman.decryptviaapi(data.treatment)
@@ -106,15 +114,9 @@ export default function PetProfile() {
               doctor: data.doctor
                 ? await keyman.decryptviaapi(data.doctor)
                 : null,
-              note: data.note
-                ? await keyman.decryptviaapi(data.note)
-                : null,
-              date: data.date
-                ? await keyman.decryptviaapi(data.date)
-                : null,
-              time: data.time
-                ? await keyman.decryptviaapi(data.time)
-                : null,
+              note: data.note ? await keyman.decryptviaapi(data.note) : null,
+              date: data.date ? await keyman.decryptviaapi(data.date) : null,
+              time: data.time ? await keyman.decryptviaapi(data.time) : null,
               drugallergy: data.drugallergy
                 ? await keyman.decryptviaapi(data.drugallergy)
                 : null,
@@ -127,7 +129,7 @@ export default function PetProfile() {
 
         setMedicalHistory(medicalHistoryList);
         sethLoading(false);
-      }
+      },
     );
     return unsubscribeMedicalHistory;
   }, [id]);
@@ -142,8 +144,8 @@ export default function PetProfile() {
     const [day, month, year] = dateString.split('-');
     return `${day}-${month}-${year}`;
   };
-  const renderImage = useCallback(({ item }) => {
-    return <Image source={{ uri: item }} style={styles.image} />;
+  const renderImage = useCallback(({item}) => {
+    return <Image source={{uri: item}} style={styles.image} />;
   }, []);
   const handleRecordClick = record => {
     setSelectedRecord(record);
@@ -154,11 +156,37 @@ export default function PetProfile() {
     setModalVisible(false);
     setSelectedRecord(null);
   };
-  const imageData = pet?.additionalImages && pet.additionalImages.length > 0
-    ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
-    : [pet?.photoURL].filter(url => url);
+  const imageData =
+    pet?.additionalImages && pet.additionalImages.length > 0
+      ? [pet.photoURL, ...pet.additionalImages].filter(url => url)
+      : [pet?.photoURL].filter(url => url);
+
+    const renderIcon = (type) => {
+        switch (type) {
+          case 'Dog':
+            return <MaterialCommunityIcons name="dog" size={120} color="#E16539" />;
+          case 'Cat':
+            return <MaterialCommunityIcons name="cat" size={120} color="#E16539" />;
+          case 'Bird':
+            return <MaterialCommunityIcons name="bird" size={120} color="#E16539" />;
+          case 'Snake': 
+            return <MaterialCommunityIcons name="snake" size={120} color="#E16539" />;
+          case 'Fish':
+            return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
+          case 'Rabbit':
+            return <MaterialCommunityIcons name="rabbit" size={120} color="#E16539" />;
+          case 'Hamster':
+            return <MaterialCommunityIcons name="hamster" size={120} color="#E16539" />;
+          case 'Turtle':
+            return <MaterialCommunityIcons name="turtle" size={120} color="#E16539" />;
+          case 'Fish':
+            return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
+          default:
+            return <MaterialCommunityIcons name="paw" size={120} color="#E16539" />;
+        }
+      };  
   const handleOwnerPress = () => {
-    navigate.navigate('OtherUser', { username: pet?.username,uid:pet?.uid });
+    navigate.navigate('OtherUser', {username: pet?.username, uid: pet?.uid});
     console.log(pet?.uid);
   };
   return (
@@ -172,23 +200,31 @@ export default function PetProfile() {
             color="#D27C2C"
             onPress={() => navigate.goBack()}
           />
-          <FlatList
-            data={imageData}
-            renderItem={renderImage}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled={true}
-            snapToAlignment="center"
-            snapToInterval={width}
-            decelerationRate="fast"
-            ref={flatListRef}
-            initialScrollIndex={0}
-            onMomentumScrollEnd={event => {
-              const index = Math.round(event.nativeEvent.contentOffset.x / width);
-              setCurrentIndex(index);
-            }}
-          />
+          {imageData && imageData.length > 0 ? (
+            <FlatList
+              data={imageData}
+              renderItem={renderImage}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled={true}
+              snapToAlignment="center"
+              snapToInterval={width}
+              decelerationRate="fast"
+              ref={flatListRef}
+              initialScrollIndex={0}
+              onMomentumScrollEnd={event => {
+                const index = Math.round(
+                  event.nativeEvent.contentOffset.x / width,
+                );
+                setCurrentIndex(index);
+              }}
+            />
+          ) : (
+            <View style={styles.nopic}>
+              {renderIcon(pet?.type)}
+            </View>
+          )}
           {pet?.additionalImages && pet.additionalImages.length > 0 && (
             <View style={styles.pagination}>
               {imageData.map((_, index) => (
@@ -196,7 +232,7 @@ export default function PetProfile() {
                   key={index}
                   style={[
                     styles.dot,
-                    { opacity: index === currentIndex ? 1 : 0.5 },
+                    {opacity: index === currentIndex ? 1 : 0.5},
                   ]}
                 />
               ))}
@@ -252,15 +288,26 @@ export default function PetProfile() {
           <View style={styles.row}>
             <View style={styles.leftcolum}>
               <Text style={styles.categoryPet}>Current Owner</Text>
-              <TouchableOpacity onPress={handleOwnerPress} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'gray', padding: 8, borderRadius: 20 }}>
+              <TouchableOpacity
+                onPress={handleOwnerPress}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: 'gray',
+                  padding: 8,
+                  borderRadius: 20,
+                }}>
                 <Text style={styles.valuePet}>{pet?.username}</Text>
-                <MaterialCommunityIcons name="account" size={30} color="#D27C2C" />
+                <MaterialCommunityIcons
+                  name="account"
+                  size={30}
+                  color="#D27C2C"
+                />
               </TouchableOpacity>
             </View>
           </View>
         </View>
         <View style={styles.healtbook}>
-
           {ishloading ? (
             <View style={styles.Loading}>
               <Text style={styles.loadingtext}>Loading....</Text>
@@ -271,11 +318,11 @@ export default function PetProfile() {
                 <Text style={styles.healtbooktitle}>Health Book</Text>
               </View>
               <View style={styles.healtData}>
-                <View style={{ paddingVertical: 5, paddingBottom: '10%' }}>
+                <View style={{paddingVertical: 5, paddingBottom: '10%'}}>
                   <Text style={styles.categoryPet}>Health Conditions</Text>
                   <Text style={styles.valuePet}>
                     {medicalHistory.length > 0 &&
-                      medicalHistory[medicalHistory.length - 1].conditions
+                    medicalHistory[medicalHistory.length - 1].conditions
                       ? medicalHistory[medicalHistory.length - 1].conditions
                       : 'No conditions available'}{' '}
                   </Text>
@@ -294,9 +341,12 @@ export default function PetProfile() {
                             </Text>
                           );
                         }
-                      }
+                      })}
+                      {!hasDrugAllergy && (
+                        <Text style={styles.row2}>
+                          No drug allergy records found
+                        </Text>
                       )}
-                      {!hasDrugAllergy && <Text style={styles.row2}>No drug allergy records found</Text>}
                     </Text>
                   </View>
                   <View style={styles.rightcolum}>
@@ -312,37 +362,40 @@ export default function PetProfile() {
                             </Text>
                           );
                         }
-                      }
+                      })}
+                      {!hasChronic && (
+                        <Text style={styles.row2}>
+                          No chronic{'\n'}records found
+                        </Text>
                       )}
-                      {!hasChronic && <Text style={styles.row2} >No chronic{'\n'}records found</Text>}
                     </Text>
                   </View>
                 </View>
-                <View style={{ paddingVertical: 5, paddingTop: '10%' }}>
+                <View style={{paddingVertical: 5, paddingTop: '10%'}}>
                   <Text style={styles.categoryPet}>Vaccination list</Text>
                   {medicalHistory.map(record => (
                     <View key={record.id}>
                       {Array.isArray(record.vaccine) &&
-                        record.vaccine.length > 0
+                      record.vaccine.length > 0
                         ? record.vaccine.map(vaccine => {
-                          hasVaccines = true;
-                          vaccineCounter++;
-                          return (
-                            <View
-                              key={vaccineCounter}
-                              style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                              }}>
-                              <Text style={styles.row2}>
-                                {vaccineCounter}. {vaccine.name}
-                              </Text>
-                              <Text style={styles.row2}>
-                                {vaccine.quantity}
-                              </Text>
-                            </View>
-                          );
-                        })
+                            hasVaccines = true;
+                            vaccineCounter++;
+                            return (
+                              <View
+                                key={vaccineCounter}
+                                style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'space-between',
+                                }}>
+                                <Text style={styles.row2}>
+                                  {vaccineCounter}. {vaccine.name}
+                                </Text>
+                                <Text style={styles.row2}>
+                                  {vaccine.quantity}
+                                </Text>
+                              </View>
+                            );
+                          })
                         : null}
                     </View>
                   ))}
@@ -354,7 +407,7 @@ export default function PetProfile() {
                     <Text>No medical history records found.</Text>
                   ) : (
                     medicalHistory.map((record, index) => {
-                      const { id, date } = record;
+                      const {id, date} = record;
                       return (
                         <TouchableOpacity
                           key={id}
@@ -410,7 +463,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width,
-    height: "100%",
+    height: '100%',
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
     backgroundColor: 'gray',
@@ -542,5 +595,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#D27C2C',
     marginHorizontal: 5,
+  },
+  nopic: {
+    
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+    
   },
 });

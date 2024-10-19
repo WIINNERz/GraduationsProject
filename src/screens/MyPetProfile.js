@@ -205,6 +205,30 @@ export default function PetProfile() {
         : [pet?.photoURL].filter(url => url),
     [pet],
   );
+  const renderIcon = (type) => {
+    switch (type) {
+      case 'Dog':
+        return <MaterialCommunityIcons name="dog" size={120} color="#E16539" />;
+      case 'Cat':
+        return <MaterialCommunityIcons name="cat" size={120} color="#E16539" />;
+      case 'Bird':
+        return <MaterialCommunityIcons name="bird" size={120} color="#E16539" />;
+      case 'Snake': 
+        return <MaterialCommunityIcons name="snake" size={120} color="#E16539" />;
+      case 'Fish':
+        return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
+      case 'Rabbit':
+        return <MaterialCommunityIcons name="rabbit" size={120} color="#E16539" />;
+      case 'Hamster':
+        return <MaterialCommunityIcons name="hamster" size={120} color="#E16539" />;
+      case 'Turtle':
+        return <MaterialCommunityIcons name="turtle" size={120} color="#E16539" />;
+      case 'Fish':
+        return <MaterialCommunityIcons name="fish" size={120} color="#E16539" />;
+      default:
+        return <MaterialCommunityIcons name="paw" size={120} color="#E16539" />;
+    }
+  };  
 
   const handleRecordClick = record => {
     setSelectedRecord(record);
@@ -235,6 +259,7 @@ export default function PetProfile() {
             color="#D27C2C"
             onPress={() => navigate.navigate('PetDetail', {id: pet?.id})}
           />
+          {imageData && imageData.length > 0 ? ( 
           <FlatList
             data={imageData}
             renderItem={renderImage}
@@ -255,6 +280,11 @@ export default function PetProfile() {
               flatListRef.current.scrollToIndex({animated: true, index});
             }}
           />
+          ) : (
+            <View style={styles.nopic}>
+              {renderIcon(pet?.type)}
+            </View>
+          )}
           {pet?.additionalImages && pet.additionalImages.length > 0 && (
             <View style={styles.pagination}>
               {imageData.map((_, index) => (
@@ -633,5 +663,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingLeft: 30,
     fontFamily: 'InterSemiBold',
+  },
+  nopic: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
