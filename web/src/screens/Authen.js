@@ -36,7 +36,7 @@ function Authen() {
       );
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if (userData.role !== 'vet') {
+        if (userData.role !== 'Veterinarian') {
           await auth.signOut();
           alert('Access denied. Only vets are allowed.');
           return;
@@ -96,7 +96,7 @@ function Authen() {
             uid,
             publicKey: publicKey,
             encPrivateKey: secretKey,
-            role: 'vet',
+            role: 'Veterinarian',
           });
           console.log('Signed up successfully');
           navigate('/petdetail');

@@ -194,12 +194,13 @@ const PetDetail = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
-        const docRef = doc(firestore, 'Users', user.uid);
+        const docRef = doc(firestore, 'Vets', user.uid);
         try {
           getDoc(docRef).then(docSnap => {
             if (docSnap.exists()) {
               docSnap.data();
               setUserProfile(docSnap.data());
+              console.log('Document data:', docSnap.data());
             } else {
               console.log('No such document!');
             }
