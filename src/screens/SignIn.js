@@ -3,7 +3,7 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator,
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
-const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEntry, toggleSecureEntry, handleSignIn, loading, error, navigation }) => {
+const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEntry, toggleSecureEntry, handleSignIn, loading, error, navigation  }) => {
   return (
     <View style={styles.formContainer}>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -15,7 +15,8 @@ const SignIn = ({ emailLog, setEmailLog, passwordLog, setPasswordLog, isSecureEn
           placeholderTextColor={"gray"}
           autoCapitalize='none'
           value={emailLog}
-          onChangeText={(value) => setEmailLog(value)}
+          keyboardType='email-address'
+          onChangeText={(value) => setEmailLog(value)  }
         />
         <MaterialCommunityIcons
           name='email-outline'

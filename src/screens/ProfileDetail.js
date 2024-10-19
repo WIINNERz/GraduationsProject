@@ -19,6 +19,7 @@ const ProfileDetail = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
+  const [error, setError] = React.useState('');
   const user = auth.currentUser;
   const KeymanagementInstance = Keymanagement();
   useFocusEffect(
@@ -39,7 +40,6 @@ const ProfileDetail = ({ navigation }) => {
       if (user) {
         const userDoc = doc(firestore, 'Users', user.uid);
         const docSnap = await getDoc(userDoc);
-
         if (docSnap.exists() && docSnap.data().email === user.email) {
           const data = docSnap.data();
           try {
@@ -64,16 +64,22 @@ const ProfileDetail = ({ navigation }) => {
     fetchUserData();
   }, [user]);
 
+  const validataTelephonenumber = (value) => {
+    const reg = /^[0-9]{10}$/;
+     return reg.test(value);
+  };
+
   const handleSave = async () => {
     if (user) {
       const userDoc = doc(firestore, 'Users', user.uid);
-
+      if (!validataTelephonenumber(tel)) {
+        setError('Invalid telephone number');
+        return;
+      }
       try {
         const encryptedFirstname = firstname ? await KeymanagementInstance.encrpytviaapi(firstname) : null;
         const encryptedLastname = lastname ? await KeymanagementInstance.encrpytviaapi(lastname) : null;
         const encryptedTel = tel ? await KeymanagementInstance.encryptData(tel) : null;
-
-
         const updatedData = {
           firstname: encryptedFirstname,
           lastname: encryptedLastname,
@@ -224,6 +230,9 @@ const ProfileDetail = ({ navigation }) => {
                   )}
                 </View>
               </View>
+              <View style={styles.error}>
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+              </View>
               <View style={styles.myaccount}>
                 <Text style={styles.name}>Username</Text>
                 <TextInput
@@ -257,7 +266,7 @@ const ProfileDetail = ({ navigation }) => {
                 <Text style={styles.name}>Tel</Text>
                 <TextInput
                   style={styles.input}
-                  value={tel}
+                  value={tel} 
                   onChangeText={setTel}
                   placeholder="Telephone Number"
                 />
@@ -358,6 +367,12 @@ const styles = StyleSheet.create({
     height: "8%",
     position: 'absolute',
     overflow: 'hidden',
+  },
+  errorText: {
+    color: 'red',
+    marginTop :10,
+    marginBottom: 5,
+    textAlign: 'center',
   },
 });
 

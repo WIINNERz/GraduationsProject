@@ -478,7 +478,6 @@ const AddPet = () => {
                   style={styles.input}
                   placeholder="Name"
                   placeholderTextColor={'gray'}
-
                   value={name}
                   onChangeText={setName}
                 />

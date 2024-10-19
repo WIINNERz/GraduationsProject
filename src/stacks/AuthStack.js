@@ -37,23 +37,34 @@ const AuthStack = () => {
     const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return regex.test(password);
   };
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
 
   const handleSignIn = async () => {
+    if (!validateEmail(emailLog)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
     if (emailLog && passwordLog) {
       setLoading(true);
       setError('');
       try {
         await signInWithEmailAndPassword(auth, emailLog, passwordLog);
-        const KeymanagementInstance = Keymanagement();
-        await KeymanagementInstance.retrieveandstorekey(passwordLog);
+        if(signInWithEmailAndPassword){
+          const KeymanagementInstance = Keymanagement();
+          await KeymanagementInstance.retrieveandstorekey(passwordLog);
+          await ee2e.storeSecretKey();
+        }
         navigation.navigate('MyPets');
         setEmailLog('');
         setPasswordLog('');
       } catch (err) {
-        console.error('Error signing in:', err);
+        
         setError('Failed to sign in. Please check your email and password.');
       } finally {
-        await ee2e.storeSecretKey();
+        
         setLoading(false);
       }
     } else {
@@ -63,9 +74,13 @@ const AuthStack = () => {
 
   const handleSignUp = async () => {
     if (emailReg && passwordReg && passwordReg === confirmPassword) {
+      if (!validateEmail(emailReg)) {
+        setError('Please enter a valid email address.');
+        return;
+      }
       if (!validatePassword(passwordReg)) {
         setError(
-          'Password must be at least 6 characters long, include letters and numbers, and contain at least one uppercase letter.',
+          'Password must be at least 8 characters long, include letters and numbers, and contain at least one uppercase letter.',
         );
         return;
       }
