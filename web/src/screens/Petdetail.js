@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../CSS/Petdetail.module.css';
 import {
   collection,
-  onSnapshot,
   query,
   where,
   doc,

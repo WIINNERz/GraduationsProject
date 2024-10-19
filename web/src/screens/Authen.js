@@ -30,7 +30,7 @@ function Authen() {
     const thaiIdInput = id;
     const m = thaiIdInput.match(/(\d{12})(\d)/);
     if (!m) {
-        // Alert.alert('Thai ID must be 13 digits');
+       alert('Thai ID must be 13 digits');
       return;
     }
     const digits = m[1].split('');
@@ -40,7 +40,7 @@ function Authen() {
     const lastDigit = `${(11 - (sum % 11)) % 10}`;
     const inputLastDigit = m[2];
     if (lastDigit !== inputLastDigit) {
-        // Alert.alert('Thai ID is invalid');
+        alert('Thai ID is invalid');
       return;
     }
     return true;
@@ -76,23 +76,27 @@ function Authen() {
       setError(
         'Password must be at least 6 characters long, include letters and numbers, and contain at least one uppercase letter.',
       );
+      alert(error);
       return;
     }
     try {
-      const idcheck = validateThaiId(id);
-      if (idcheck === true) {
+      const idcheck = await validateThaiId(id); // Await the validateThaiId function
+      if (idcheck) {
         const hash = CryptoJS.SHA256(id).toString();
         const usersSnapshot = await getDocs(collection(firestore, 'Vets'));
         let hashExists = false;
-
+    
         usersSnapshot.forEach(userDoc => {
           const userData = userDoc.data();
           if (userData.hashedID === hash) {
             hashExists = true;
           }
         });
+    
         if (hashExists) {
           console.log('This ID card number has already been used');
+          alert('This ID card number has already been used');
+          return;
         } else {
           const tempUser = await createUserWithEmailAndPassword(
             auth,
@@ -104,7 +108,7 @@ function Authen() {
             displayName: `${firstname} ${lastname}`,
           });
           // Successful sign-up
-
+    
           await setDoc(doc(firestore, 'Vets', uid), {
             firstname: firstname,
             lastname: lastname,
@@ -113,13 +117,13 @@ function Authen() {
             uid,
             role: 'Veterinarian',
           });
-          console.log('Signed up successfully');
+          alert('Signed up successfully');
           navigate('/petdetail');
         }
       }
     } catch (error) {
       console.log(error.message);
-      alert('Error', error.message);
+      alert('Error: ' + error.message);
     }
   };
 

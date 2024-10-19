@@ -1,4 +1,3 @@
-import {useState, useEffect} from 'react';
 import nacl from 'tweetnacl';
 import {encodeBase64, decodeBase64} from 'tweetnacl-util';
 const securedFunction = () => {
