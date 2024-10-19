@@ -9,7 +9,6 @@ import {
 import {getDoc, doc, collection, setDoc,getDocs} from 'firebase/firestore';
 import {auth, firestore} from '../firebase-config';
 import styles from '../CSS/Authen.module.css';
-import securedFunction from '../Function/securefunction';
 import CryptoJS from 'crypto-js'; // ใช้อย่นะจ๊ะ
 
 function Authen() {
@@ -21,11 +20,30 @@ function Authen() {
   const [firstname, setFirstname] = React.useState('');
   const [lastname, setLastname] = React.useState('');
   const [id, setID] = React.useState('');
-  const sec = securedFunction();
+
 
   const validatePassword = password => {
     const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{6,}$/;
     return regex.test(password);
+  };
+  const validateThaiId = async id => {
+    const thaiIdInput = id;
+    const m = thaiIdInput.match(/(\d{12})(\d)/);
+    if (!m) {
+        // Alert.alert('Thai ID must be 13 digits');
+      return;
+    }
+    const digits = m[1].split('');
+    const sum = digits.reduce((total, digit, i) => {
+      return total + (13 - i) * +digit;
+    }, 0);
+    const lastDigit = `${(11 - (sum % 11)) % 10}`;
+    const inputLastDigit = m[2];
+    if (lastDigit !== inputLastDigit) {
+        // Alert.alert('Thai ID is invalid');
+      return;
+    }
+    return true;
   };
   const handleSignIn = async e => {
     e.preventDefault();
@@ -61,7 +79,7 @@ function Authen() {
       return;
     }
     try {
-      const idcheck = await sec.validateThaiId(id);
+      const idcheck = validateThaiId(id);
       if (idcheck === true) {
         const hash = CryptoJS.SHA256(id).toString();
         const usersSnapshot = await getDocs(collection(firestore, 'Vets'));
@@ -86,16 +104,13 @@ function Authen() {
             displayName: `${firstname} ${lastname}`,
           });
           // Successful sign-up
-          const {publicKey, secretKey} = await sec.generateKeyPair();
 
           await setDoc(doc(firestore, 'Vets', uid), {
             firstname: firstname,
             lastname: lastname,
             email: email,
-            // hashedID: hash,
+            hashedID: hash,
             uid,
-            publicKey: publicKey,
-            encPrivateKey: secretKey,
             role: 'Veterinarian',
           });
           console.log('Signed up successfully');

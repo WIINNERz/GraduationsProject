@@ -58,7 +58,6 @@ const Verify = () => {
     const m = thaiIdInput.match(/(\d{12})(\d)/);
     if (!m) {
       Alert.alert('Thai ID must be 13 digits');
-
       return;
     }
     const digits = m[1].split('');
