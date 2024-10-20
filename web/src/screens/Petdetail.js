@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useLocation} from 'react-router-dom';
 import styles from '../CSS/Petdetail.module.css';
 import {
   collection,
@@ -10,8 +10,8 @@ import {
   getDoc,
   getDocs,
 } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth, firestore } from '../firebase-config';
+import {onAuthStateChanged} from 'firebase/auth';
+import {auth, firestore} from '../firebase-config';
 import axios from 'axios';
 
 const PetDetail = () => {
@@ -38,7 +38,8 @@ const PetDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const API_URL = 'https://petpaw-six.vercel.app/'; 
+  const API_URL = process.env.REACT_APP_WEB_API_URL;
+  const apikey = process.env.REACT_APP_WEB_API_KEY;
 
   const profilemodaltoggle = () => {
     setIsProfileModalOpen(!isProfileModalOpen);
@@ -151,7 +152,7 @@ const PetDetail = () => {
   };
 
   const handleAddVaccine = () => {
-    setVaccineList([...vaccineList, { name: vaccine, quantity: quantity }]);
+    setVaccineList([...vaccineList, {name: vaccine, quantity: quantity}]);
     setVaccine('');
     setDose('');
   };
@@ -185,7 +186,7 @@ const PetDetail = () => {
 
         if (!healthSnapshot.empty) {
           const medicalHistory = healthSnapshot.docs.map(doc => doc.data());
-          setPetdata(prevData => ({ ...prevData, medicalHistory }));
+          setPetdata(prevData => ({...prevData, medicalHistory}));
         }
       });
     }
@@ -199,7 +200,6 @@ const PetDetail = () => {
             if (docSnap.exists()) {
               docSnap.data();
               setUserProfile(docSnap.data());
-              console.log('Document data:', docSnap.data());
             } else {
               console.log('No such document!');
             }
@@ -218,21 +218,34 @@ const PetDetail = () => {
 
   const encrpyt = async plaintext => {
     try {
-      const response = await axios.post(`${API_URL}encrypt`, { plaintext });
-      const { encryptedData } = response.data;
+      const response = await axios.post(
+        `${API_URL}encrypt`,
+        {plaintext},
+        {
+          headers: {'x-api-key': apikey}
+        }
+      );
+      const {encryptedData} = response.data;
       return encryptedData;
     } catch (error) {
-      console.error(error);
+      console.error(
+        'Encryption error:',
+        error.response ? error.response.data : error.message,
+      );
+      throw error; // สามารถโยน error กลับเพื่อให้เรียกใช้ฟังก์ชันนี้จัดการได้
     }
   };
   const decrypt = async encryptedText => {
     try {
-      const response = await axios.post(`${API_URL}decrypt`, { encryptedText });
-      const { decrypted } = response.data;
-      console.log('Decrypted data:', decrypted); // Log the decrypted data
-      return decrypted;
+      const response = await axios.post(`${API_URL}decrypt`,{ encryptedText },{headers: {'x-api-key': apikey}});
+      const {decryptedText} = response.data;
+      return decryptedText;
     } catch (error) {
-      console.error(error);
+      console.error(
+        'Decryption error:',
+        error.response ? error.response.data : error.message,
+      );
+      throw error; // สามารถโยน error กลับเพื่อให้เรียกใช้ฟังก์ชันนี้จัดการได้
     }
   };
 
@@ -289,8 +302,7 @@ const PetDetail = () => {
                 Logout
               </button>
             </li>
-            <li>
-            </li>
+            <li></li>
           </ul>
         </div>
         <div className={styles.mainsection}>
@@ -390,7 +402,7 @@ const PetDetail = () => {
                     &times;
                   </span>
                   <div className={styles.addnewrecord}>
-                    <h2 style={{ paddingLeft: 10 }}>
+                    <h2 style={{paddingLeft: 10}}>
                       Add new record to {petdata.name}{' '}
                     </h2>
                     <form onSubmit={handleaddnewrecord} className={styles.form}>
@@ -439,7 +451,7 @@ const PetDetail = () => {
                         placeholder="Note"
                         value={Note}
                         onChange={e => setNote(e.target.value)}></input>
-                      <p style={{ paddingLeft: 10 }}>
+                      <p style={{paddingLeft: 10}}>
                         **fill only new information**
                       </p>
                       <input
