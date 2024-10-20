@@ -198,7 +198,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
             (adoptedPets[pet.id] || adopted) && styles.adoptedButton,
           ]}
           onPress={() => handleAdopt(pet.id, pet.uid, messageId, roomId)}
-          disabled={adoptedPets[pet.id] || adopted}>
+          disabled={adoptedPets[pet.id] || adopted || pet.status == 'have_owner'}>
           <Text style={styles.buttonText}>
             {adoptedPets[pet.id] || adopted ? 'Adopted' : 'Adopt'}
           </Text>

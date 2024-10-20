@@ -11,13 +11,13 @@ import {
 import React, { useState, useCallback } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFirestore, collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
-import { launchImageLibrary ,launchCamera } from 'react-native-image-picker';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { auth } from '../configs/firebaseConfig';
 import Keymanagement from './Keymanagement';
 import { useNavigation } from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 
-export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelephone,onSendLocation }) {
+export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelephone, onSendLocation }) {
   const [state, setState] = useState({
     isPetPanelVisible: false,
     loading: true,
@@ -73,7 +73,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
         Alert.alert('Permission Denied', 'Location permission is required to send your location.');
         return;
       }
-  
+
       Geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -112,7 +112,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
               mediaType: 'photo',
               quality: 1,
             });
-  
+
             if (result.didCancel) {
               console.log('User cancelled image picker');
             } else if (result.error) {
@@ -130,7 +130,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
               mediaType: 'photo',
               quality: 1,
             });
-  
+
             if (result.didCancel) {
               console.log('User cancelled image picker');
             } else if (result.error) {
@@ -158,7 +158,7 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
           where('status', '==', 'dont_have_owner')
         );
         const querySnapshot = await getDocs(q);
-  
+
         const petList = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -210,9 +210,9 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          
+
           const decryptedTel = userData.tel ? await KeymanagementInstance.decryptData(userData.tel) : null;
-          
+
           setState(prevState => ({
             ...prevState,
             telephoneNumber: decryptedTel || 'Doesn\'t have a telephone number',
@@ -239,8 +239,8 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
   return (
     <View style={styles.container}>
       <View style={styles.button}>
-      <TouchableOpacity style={styles.buttonStyle} onPress={confirmAndSendLocation}>
-      <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
+        <TouchableOpacity style={styles.buttonStyle} onPress={confirmAndSendLocation}>
+          <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
         </TouchableOpacity>
         <Text style={styles.menuname} >Location</Text>
       </View>
@@ -248,19 +248,19 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
         <TouchableOpacity style={styles.buttonStyle} onPress={pickImage}>
           <MaterialCommunityIcons name="image" size={30} color="#E16539" />
         </TouchableOpacity>
-          <Text style={styles.menuname}>Photo</Text>
+        <Text style={styles.menuname}>Photo</Text>
       </View>
       <View style={styles.button}>
         <TouchableOpacity style={styles.buttonStyle} onPress={fetchTelephoneNumber}>
           <MaterialCommunityIcons name="phone" size={30} color="#E16539" />
         </TouchableOpacity>
-          <Text style={styles.menuname}>Telephone Number</Text>
+        <Text style={styles.menuname}>Telephone Number</Text>
       </View>
       <View style={styles.button}>
         <TouchableOpacity style={styles.buttonStyle} onPress={pickPet}>
           <MaterialCommunityIcons name="dog-side" size={30} color="#E16539" />
         </TouchableOpacity>
-          <Text style={styles.menuname}>Transfer Pet Profile</Text>
+        <Text style={styles.menuname}>Transfer Pet Profile</Text>
       </View>
       {state.isPetPanelVisible && (
         <View style={styles.petPanel}>
@@ -274,21 +274,27 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets ,onSendTelep
               state.petData.map((pet, index) => (
                 <TouchableOpacity key={index} style={styles.petItem} onPress={() => togglePetSelection(pet.id)}>
                   <View style={styles.petImageContainer}>
-                    <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
-                    {state.selectedPets[pet.id] && (
-                      <MaterialCommunityIcons
-                        name="check-circle"
-                        size={24}
-                        color="#fff"
-                        style={styles.checkIcon}
-                      />
+                    {pet.photoURL ? (
+                      <View style={styles.petImageContainer}>
+                        <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
+                        {state.selectedPets[pet.id] && (
+                          <MaterialCommunityIcons
+                            name="check-circle"
+                            size={24}
+                            color="#fff"
+                            style={styles.checkIcon}
+                          />
+                        )}
+                      </View>
+                    ) : (
+                      <MaterialCommunityIcons name="dog" size={50} color="#E16539" />
                     )}
                   </View>
                   <Text style={styles.petName}>{pet.name}</Text>
                 </TouchableOpacity>
               ))
             ) : (
-                <Text style={{fontSize:64}}>No pets found</Text>
+              <Text style={{ fontSize: 64 }}>No pets found</Text>
             )
           )}
           <TouchableOpacity style={styles.sendButton} onPress={handleSendPets}>
@@ -325,7 +331,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#EDE6E6',
     height: 'auto',
-    padding:10,
+    padding: 10,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     flexDirection: 'row',

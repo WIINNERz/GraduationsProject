@@ -120,7 +120,7 @@ export default function OtherUser() {
               {item?.photoURL ? (
                 <Image source={{ uri: item.photoURL }} style={styles.petImage} />
               ) : (
-                <MaterialCommunityIcons name="account" style={styles.petImage} size={50} color="gray" />
+                <MaterialCommunityIcons name="dog" style={styles.petIcon} size={50} color="gray" />
               )}
               <View>
                 <Text style={styles.petName}>{item.name}</Text>
@@ -204,8 +204,6 @@ const styles = StyleSheet.create({
   },
   petItem: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 20,
     padding: 10,
     borderRadius: 25,
@@ -220,9 +218,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   petName: {
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
     fontSize: 18,
     fontFamily: 'InterRegular',
     fontWeight: 'bold',
+  },
+  petIcon: {
+    marginRight: 10,
   },
   back: {
     position: 'absolute',

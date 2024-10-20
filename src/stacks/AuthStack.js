@@ -92,27 +92,18 @@ const AuthStack = () => {
           emailReg,
           passwordReg,
         );
-
-        // Send verification email
         if (tempUser && tempUser.user) {
-          // Send verification email
           await sendEmailVerification(tempUser.user);
-
-          // Inform the user to verify their email
           setError(
             'A verification email has been sent. Please verify your email to complete registration.',
           );
-
-          // Navigate to WaitVerify screen
           navigation.navigate('WaitVerify', { uid: tempUser.user.uid });
 
-          // Poll for email verification
           const checkVerificationInterval = setInterval(async () => {
-            await tempUser.user.reload(); // Reload user data
+            await tempUser.user.reload();
             if (tempUser.user.emailVerified) {
-              clearInterval(checkVerificationInterval); // Stop checking when verified
+              clearInterval(checkVerificationInterval); 
 
-              // Save user data to Firestore
               const { uid } = tempUser.user;
               const photoURL =
                 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';
@@ -130,7 +121,7 @@ const AuthStack = () => {
               setConfirmPassword('');
               setLoading(false);
             }
-          }, 3000); // Check every 3 seconds
+          }, 3000); 
         } else {
           throw new Error('User object is undefined');
         }
