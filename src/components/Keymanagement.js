@@ -10,14 +10,15 @@ const Keymanagement = () => {
   const iterations = 5000,
     keyLength = 256,
     hash = 'sha256';
-  const API_URL = 'https://petpaw-six.vercel.app/'; 
+  const API_URL = process.env.WEB_API_URL; 
+  const API_KEY = process.env.WEB_API_KEY;
   const currentUser = auth.currentUser;
-  // used for get user key things
+
   const decryptviaapi = async (data) => {
     try {
-      const response = await axios.post(`${API_URL}decrypt`, { encryptedText: data });
-      const { decrypted } = response.data;
-      return decrypted;
+      const response = await axios.post(`${API_URL}decrypt`, { encryptedText: data } , { headers: { 'x-api-key': API_KEY } });
+      const { decryptedText } = response.data;
+      return decryptedText;
     } catch (error) {
       console.error(error);
     }

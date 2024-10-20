@@ -9,7 +9,7 @@ import {
 import {getDoc, doc, collection, setDoc,getDocs} from 'firebase/firestore';
 import {auth, firestore} from '../firebase-config';
 import styles from '../CSS/Authen.module.css';
-import CryptoJS from 'crypto-js'; // ใช้อย่นะจ๊ะ
+import CryptoJS from 'crypto-js'; 
 
 function Authen() {
   const navigate = useNavigate();
