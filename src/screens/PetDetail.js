@@ -568,8 +568,9 @@ const PetDetail = () => {
           <MaterialCommunityIcons name="account" size={50} color="gray" />
         )}
         <TouchableOpacity onPress={pickImage}>
-          <View style={styles.camera}>
-            <MaterialCommunityIcons name="camera" size={30} color="#3A3A3A" />
+          <View style={styles.Change}>
+            <Text style={{ color: 'black', fontSize: 12}}>Change</Text>
+            {/* <MaterialCommunityIcons name="camera" size={30} color="#3A3A3A" /> */}
           </View>
         </TouchableOpacity>
         <View style={styles.subContainer}>

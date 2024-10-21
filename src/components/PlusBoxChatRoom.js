@@ -287,7 +287,17 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
                         )}
                       </View>
                     ) : (
+                      <View style={styles.petImageContainer}>
                       <MaterialCommunityIcons name="dog" size={50} color="#E16539" />
+                      {state.selectedPets[pet.id] && (
+                        <MaterialCommunityIcons
+                          name="check-circle"
+                          size={24}
+                          color="#fff"
+                          style={styles.checkIcon}
+                        />
+                      )}
+                    </View>
                     )}
                   </View>
                   <Text style={styles.petName}>{pet.name}</Text>

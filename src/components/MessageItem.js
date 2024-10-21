@@ -12,6 +12,7 @@ import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from '../configs/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from './Keymanagement';
 import FullScreenModal from './FullScreenModal';
 
@@ -187,7 +188,11 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
 
   const PetItem = ({ pet }) => (
     <View style={styles.petItem}>
-      <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
+      {pet.photoURL ? (
+        <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
+      ) : (
+      <MaterialCommunityIcons name="dog" size={50} color="#E16539" />
+       )}
       <Text style={styles.petName}>
         {senderName} wants to sent {pet.name} to you for further care.
       </Text>

@@ -211,8 +211,8 @@ const ProfileDetail = ({ navigation }) => {
                     <MaterialCommunityIcons name="account" size={50} color="gray" />
                   )}
                   <TouchableOpacity onPress={pickImage}>
-
-                    <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" />
+                    <Text style={{ color: 'black', fontSize: 12}}>Change</Text>
+                    {/* <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" /> */}
                   </TouchableOpacity>
                 </View>
                 <View style={{ paddingTop: 10 }}>
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
 
   },
   leftContent: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },

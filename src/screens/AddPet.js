@@ -303,6 +303,7 @@ const AddPet = () => {
           openImageLibrary();
         },
       },
+      {text: 'Cancel', style: 'cancel'},
     ]);
   };
 
