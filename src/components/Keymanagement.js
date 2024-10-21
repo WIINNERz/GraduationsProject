@@ -10,14 +10,20 @@ const Keymanagement = () => {
   const iterations = 5000,
     keyLength = 256,
     hash = 'sha256';
-  const API_URL = process.env.WEB_API_URL; 
+  
+  const API_URL = process.env.WEB_API_URL;
   const API_KEY = process.env.WEB_API_KEY;
+
   const currentUser = auth.currentUser;
 
-  const decryptviaapi = async (data) => {
+  const decryptviaapi = async data => {
     try {
-      const response = await axios.post(`${API_URL}decrypt`, { encryptedText: data } , { headers: { 'x-api-key': API_KEY } });
-      const { decryptedText } = response.data;
+      const response = await axios.post(
+        `${API_URL}decrypt`,
+        {encryptedText: data},
+        {headers: {'x-api-key': API_KEY}},
+      );
+      const {decryptedText} = response.data;
       return decryptedText;
     } catch (error) {
       console.error(error);
@@ -25,8 +31,8 @@ const Keymanagement = () => {
   };
   const encrpytviaapi = async plaintext => {
     try {
-      const response = await axios.post(`${API_URL}encrypt`, { plaintext });
-      const { encryptedData } = response.data;
+      const response = await axios.post(`${API_URL}encrypt`, {plaintext});
+      const {encryptedData} = response.data;
       return encryptedData;
     } catch (error) {
       console.error(error);
@@ -52,7 +58,7 @@ const Keymanagement = () => {
       return;
     }
     try {
-      await Keychain.setGenericPassword('maskey', key , { service: 'masterkey' });
+      await Keychain.setGenericPassword('maskey', key, {service: 'masterkey'});
       console.log('MKey stored successfully');
     } catch (error) {
       console.log('Could not store key', error);
@@ -61,7 +67,7 @@ const Keymanagement = () => {
   // used for clear key
   async function clearKey() {
     try {
-      await Keychain.resetGenericPassword ( { service: 'masterkey' });
+      await Keychain.resetGenericPassword({service: 'masterkey'});
       console.log('Key cleared successfully');
     } catch (error) {
       console.error('Could not clear key', error);
@@ -70,7 +76,9 @@ const Keymanagement = () => {
   // used for retrieve master key from keychain
   async function retrievemasterkey() {
     try {
-      const credentials = await Keychain.getGenericPassword({ service: 'masterkey' });
+      const credentials = await Keychain.getGenericPassword({
+        service: 'masterkey',
+      });
       if (credentials) {
         return credentials.password;
       } else {
@@ -86,7 +94,7 @@ const Keymanagement = () => {
     try {
       const {iv, masterKey} = await getuserkey();
       const passkey = await getpasskey(password);
-      const decmaster = await Aes.decrypt(  
+      const decmaster = await Aes.decrypt(
         masterKey,
         passkey,
         iv,
@@ -153,7 +161,7 @@ const Keymanagement = () => {
         iv,
         'aes-256-cbc',
       );
-      
+
       const userRef = doc(firestore, 'Users', uid);
       await updateDoc(userRef, {
         masterKey: encryptedMasterKey,
@@ -271,7 +279,7 @@ const Keymanagement = () => {
       return '';
     }
   }
-  
+
   async function encryptData(data) {
     try {
       const masterKey = await retrievemasterkey();

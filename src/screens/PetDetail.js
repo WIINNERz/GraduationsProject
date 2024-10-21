@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,11 @@ import {
   Dimensions,
   Keyboard,
 } from 'react-native';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {
   getFirestore,
   doc,
@@ -25,9 +29,9 @@ import {
   arrayRemove,
 } from 'firebase/firestore';
 
-import { auth, storage, firestore } from '../configs/firebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import {auth, storage, firestore} from '../configs/firebaseConfig';
+import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Checkbox from '../components/checkbox';
 import CryptoJS from 'rn-crypto-js';
@@ -48,34 +52,31 @@ const PetDetail = () => {
     color: '',
     characteristics: '',
     chronic: '',
-    location,
-    conditions: '',
+
     birthday: '',
     adoptingConditions: '',
     additionalImages: [],
   });
   const [isFindHomeChecked, setIsFindHomeChecked] = useState(false);
-  const [adoptingConditions, setAdoptingConditions] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [location, setLocation] = useState('');
 
   const [additionalImages, setAdditionalImages] = useState([]);
   const route = useRoute();
   const [image, setImage] = useState('');
-  const { id } = route.params;
+  const {id} = route.params;
   const navigation = useNavigation();
   const KeymanagementInstance = new Keymanagement();
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
       navigation.getParent()?.setOptions({
-        tabBarStyle: { display: 'none' },
+        tabBarStyle: {display: 'none'},
       });
     });
     const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
       navigation.getParent()?.setOptions({
-        tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+        tabBarStyle: [styles.tabBar, {backgroundColor: '#F0DFC8'}],
       });
     });
 
@@ -87,12 +88,12 @@ const PetDetail = () => {
   useFocusEffect(
     useCallback(() => {
       navigation.getParent()?.setOptions({
-        tabBarStyle: { display: 'none' },
+        tabBarStyle: {display: 'none'},
       });
 
       return () => {
         navigation.getParent()?.setOptions({
-          tabBarStyle: [styles.tabBar, { backgroundColor: '#F0DFC8' }],
+          tabBarStyle: [styles.tabBar, {backgroundColor: '#F0DFC8'}],
         });
       };
     }, [navigation]),
@@ -145,56 +146,44 @@ const PetDetail = () => {
               ...petData,
               age: petData.age
                 ? CryptoJS.AES.decrypt(petData.age, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
-              breeds: petData.breeds
-                ? petData.breeds
-                : '',
+              breeds: petData.breeds ? petData.breeds : '',
               weight: petData.weight
                 ? CryptoJS.AES.decrypt(petData.weight, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
               height: petData.height
                 ? CryptoJS.AES.decrypt(petData.height, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
               characteristics: petData.characteristics
                 ? CryptoJS.AES.decrypt(petData.characteristics, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
               chronic: petData.chronic
                 ? CryptoJS.AES.decrypt(petData.chronic, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              location: petData.location
-                ? CryptoJS.AES.decrypt(petData.location, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              conditions: petData.conditions
-                ? CryptoJS.AES.decrypt(petData.conditions, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
               color: petData.color
                 ? CryptoJS.AES.decrypt(petData.color, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
               gender: petData.gender
                 ? CryptoJS.AES.decrypt(petData.gender, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
               birthday: petData.birthday
                 ? CryptoJS.AES.decrypt(petData.birthday, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
+                    CryptoJS.enc.Utf8,
+                  )
                 : '',
               additionalImages: petData.additionalImages || [],
             };
@@ -213,7 +202,7 @@ const PetDetail = () => {
     fetchPet();
   }, [id]);
 
-  const handleSave = async (imageToDelete) => {
+  const handleSave = async imageToDelete => {
     try {
       if (!user) {
         console.error('No user is currently logged in.');
@@ -236,8 +225,6 @@ const PetDetail = () => {
         height = '',
         characteristics = '',
         chronic = '',
-        location = '',
-        conditions = '',
         color = '',
         gender = '',
         birthday,
@@ -257,8 +244,6 @@ const PetDetail = () => {
           height,
           characteristics,
           chronic,
-          location,
-          conditions,
           color,
           gender,
           birthday,
@@ -271,9 +256,7 @@ const PetDetail = () => {
           ...pet,
           name: name.trim(),
           age: age ? CryptoJS.AES.encrypt(String(age), key).toString() : null,
-          breeds: breeds
-            ? breeds
-            : null,
+          breeds: breeds ? breeds : null,
           weight: weight
             ? CryptoJS.AES.encrypt(String(weight), key).toString()
             : null,
@@ -285,9 +268,6 @@ const PetDetail = () => {
             : null,
           chronic: chronic
             ? CryptoJS.AES.encrypt(String(chronic), key).toString()
-            : null,
-          conditions: conditions
-            ? CryptoJS.AES.encrypt(String(conditions), key).toString()
             : null,
           color: color
             ? CryptoJS.AES.encrypt(String(color), key).toString()
@@ -386,12 +366,12 @@ const PetDetail = () => {
           openImageLibrary();
         },
       },
-      { text: 'Cancel', style: 'cancel' },
+      {text: 'Cancel', style: 'cancel'},
     ]);
   };
 
   const openImageLibrary = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
+    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
     if (!result.canceled) {
       setImage(result.assets[0].uri);
       uploadImage(result.assets[0].uri);
@@ -399,7 +379,7 @@ const PetDetail = () => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+    const result = await launchCamera({mediaType: 'photo', quality: 1});
     if (!result.canceled) {
       setImage(result.assets[0].uri);
       uploadImage(result.assets[0].uri);
@@ -436,10 +416,10 @@ const PetDetail = () => {
       const petDocRef = doc(db, 'Pets', id);
 
       await updateDoc(petDocRef, {
-        photoURL: downloadURL
+        photoURL: downloadURL,
       });
 
-      setPet((prevState) => ({
+      setPet(prevState => ({
         ...prevState,
         additionalImages: [...(prevState.additionalImages || []), downloadURL],
       }));
@@ -452,8 +432,6 @@ const PetDetail = () => {
       setUploading(false);
     }
   };
-
-
 
   const pickAdditionalImages = () => {
     Alert.alert('Select Images', 'Choose an option', [
@@ -469,12 +447,12 @@ const PetDetail = () => {
           openImageLibraryForAdditionalImages();
         },
       },
-      { text: 'Cancel', style: 'cancel' },
+      {text: 'Cancel', style: 'cancel'},
     ]);
   };
 
   const openImageLibraryForAdditionalImages = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
+    const result = await launchImageLibrary({mediaType: 'photo', quality: 1});
     if (!result.canceled) {
       const newImageUri = result.assets[0].uri;
       setAdditionalImages(prevImages => [...prevImages, newImageUri]);
@@ -483,7 +461,7 @@ const PetDetail = () => {
   };
 
   const openCameraForAdditionalImages = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
+    const result = await launchCamera({mediaType: 'photo', quality: 1});
     if (!result.canceled) {
       const newImageUri = result.assets[0].uri;
       setAdditionalImages(prevImages => [...prevImages, newImageUri]);
@@ -491,13 +469,13 @@ const PetDetail = () => {
     }
   };
 
-  const uploadAdditionalImages = async (uri) => {
+  const uploadAdditionalImages = async uri => {
     if (!uri) return;
 
     setUploading(true);
     const storageRef = ref(
       storage,
-      `images/${user.uid}/pets/${pet.name}/additional/${Date.now()}`
+      `images/${user.uid}/pets/${pet.name}/additional/${Date.now()}`,
     );
     try {
       const response = await fetch(uri);
@@ -511,7 +489,7 @@ const PetDetail = () => {
         additionalImages: arrayUnion(downloadURL),
       });
 
-      setPet((prevState) => ({
+      setPet(prevState => ({
         ...prevState,
         additionalImages: [...(prevState.additionalImages || []), downloadURL],
       }));
@@ -525,7 +503,6 @@ const PetDetail = () => {
     }
   };
 
-
   const fetchAdditionalImages = async () => {
     try {
       const petDocRef = doc(db, 'Pets', id);
@@ -535,26 +512,26 @@ const PetDetail = () => {
         const petData = docSnap.data();
         setAdditionalImages(petData.additionalImages || []);
       } else {
-        console.log("No such document!");
+        console.log('No such document!');
       }
     } catch (error) {
-      console.error("Error fetching additional images: ", error);
+      console.error('Error fetching additional images: ', error);
     }
   };
 
   useEffect(() => {
     fetchAdditionalImages();
   }, []);
-  const handleDeleteAdditionalImage = async (index) => {
+  const handleDeleteAdditionalImage = async index => {
     const updatedImages = additionalImages.filter((_, i) => i !== index);
     try {
       const petDocRef = doc(db, 'Pets', id);
       await updateDoc(petDocRef, {
-        additionalImages: updatedImages
+        additionalImages: updatedImages,
       });
       setAdditionalImages(updatedImages);
     } catch (error) {
-      console.error("Error deleting additional image: ", error);
+      console.error('Error deleting additional image: ', error);
     }
   };
 
@@ -586,7 +563,7 @@ const PetDetail = () => {
         contentContainerStyle={styles.scrollViewContent}
         style={styles.container}>
         {pet?.photoURL ? (
-          <Image source={{ uri: pet.photoURL }} style={styles.image} />
+          <Image source={{uri: pet.photoURL}} style={styles.image} />
         ) : (
           <MaterialCommunityIcons name="account" size={50} color="gray" />
         )}
@@ -603,13 +580,13 @@ const PetDetail = () => {
                 style={styles.input}
                 placeholder="Name"
                 value={pet?.name || ''}
-                onChangeText={text => setPet({ ...pet, name: text })}
+                onChangeText={text => setPet({...pet, name: text})}
               />
             </View>
             <View style={styles.containerwh}>
               <Text>Age</Text>
               <TextInput
-                style={styles.input}
+                style={styles.inputwh}
                 placeholder="Age"
                 placeholderTextColor={'gray'}
                 value={pet.age || ''}
@@ -617,21 +594,32 @@ const PetDetail = () => {
               />
             </View>
           </View>
+          <View style={styles.whContainer}>
+            <View style={styles.containerwh}>
+              <Text style={styles.field}>Type</Text>
+              <TextInput
+                style={styles.inputwh}  
+                value={pet?.type || ''}
+                editable={false}
+              />
+            </View>
+            <View style={styles.containerwh}>
+              <Text style={styles.field}>Birthday</Text>
+              <TextInput
+              style={styles.inputwh}
+              value={pet?.birthday || ''}
+              editable={false}
+            />
+            </View>
+          </View>
           <Text style={styles.field}>Breeds</Text>
           <TextInput
             style={styles.input}
             placeholder="Breed"
             value={pet?.breeds || ''}
-            onChangeText={text => setPet({ ...pet, breeds: text })}
+            onChangeText={text => setPet({...pet, breeds: text})}
           />
-          <Text style={styles.field}> Birthday </Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              value={pet?.birthday || ''}
-              editable={false}
-            />
-          </View>
+
           <View style={styles.whContainer}>
             <View style={styles.containerwh}>
               <Text style={styles.field}>Weight</Text>
@@ -641,7 +629,7 @@ const PetDetail = () => {
                 keyboardType="numeric"
                 value={pet?.weight ? `${pet.weight}` || '' : ''}
                 onChangeText={text =>
-                  setPet({ ...pet, weight: parseFloat(text) })
+                  setPet({...pet, weight: parseFloat(text)})
                 }
               />
             </View>
@@ -653,7 +641,7 @@ const PetDetail = () => {
                 keyboardType="numeric"
                 value={pet?.height ? `${pet.height}` || '' : ''}
                 onChangeText={text =>
-                  setPet({ ...pet, height: parseFloat(text) })
+                  setPet({...pet, height: parseFloat(text)})
                 }
               />
             </View>
@@ -665,7 +653,7 @@ const PetDetail = () => {
                 style={styles.inputwh}
                 placeholder="Color"
                 value={pet?.color ? `${pet.color}` || '' : ''}
-                onChangeText={text => setPet({ ...pet, color: text })}
+                onChangeText={text => setPet({...pet, color: text})}
               />
             </View>
             <View style={styles.containerwh}>
@@ -687,7 +675,7 @@ const PetDetail = () => {
                 value={
                   pet?.characteristics ? `${pet.characteristics}` || '' : ''
                 }
-                onChangeText={text => setPet({ ...pet, characteristics: text })}
+                onChangeText={text => setPet({...pet, characteristics: text})}
               />
             </View>
           </View>
@@ -698,7 +686,7 @@ const PetDetail = () => {
                 style={styles.inputwh}
                 placeholder="Chronic"
                 value={pet?.chronic ? `${pet.chronic}` || '' : ''}
-                onChangeText={text => setPet({ ...pet, chronic: text })}
+                onChangeText={text => setPet({...pet, chronic: text})}
               />
             </View>
           </View>
@@ -709,12 +697,17 @@ const PetDetail = () => {
                 <View key={index} style={styles.additionalImageWrapper}>
                   <Image
                     key={index}
-                    source={{ uri }}
+                    source={{uri}}
                     style={styles.additionalImage}
                   />
-                  <TouchableOpacity style={styles.deleteButton}
+                  <TouchableOpacity
+                    style={styles.deleteButton}
                     onPress={() => handleDeleteAdditionalImage(index)}>
-                    <MaterialCommunityIcons name="close" size={20} color="red" />
+                    <MaterialCommunityIcons
+                      name="close"
+                      size={20}
+                      color="red"
+                    />
                   </TouchableOpacity>
                 </View>
               ))
@@ -723,7 +716,9 @@ const PetDetail = () => {
                 <TouchableOpacity
                   style={styles.additionalImagePicker}
                   onPress={pickAdditionalImages}>
-                  <Text style={styles.additionalImagePickerText}>Add Images</Text>
+                  <Text style={styles.additionalImagePickerText}>
+                    Add Images
+                  </Text>
                 </TouchableOpacity>
                 <Text>No additional images available.</Text>
               </View>
@@ -740,16 +735,6 @@ const PetDetail = () => {
 
               {isFindHomeChecked && (
                 <View style={styles.adoptionDetailsContainer}>
-                  <Text style={styles.field}>Location</Text>
-                  <TextInput
-                    style={styles.inputwh}
-                    placeholder="Location"
-                    placeholderTextColor={'gray'}
-                    value={pet?.location ? pet.location || '' : ''}
-                    onChangeText={text =>
-                      setPet(prevPet => ({ ...prevPet, location: text }))
-                    }
-                  />
                   <Text style={styles.field}>Adopting Conditions</Text>
                   <TextInput
                     style={styles.input}
@@ -757,10 +742,12 @@ const PetDetail = () => {
                     value={pet?.adoptingConditions || ''} // Fallback to empty string if pet.adoptingConditions is null or undefined
                     onChangeText={
                       text =>
-                        setPet(prevPet => ({ ...prevPet, adoptingConditions: text })) // Update adoptingConditions with new text
+                        setPet(prevPet => ({
+                          ...prevPet,
+                          adoptingConditions: text,
+                        })) // Update adoptingConditions with new text
                     }
                   />
-
                 </View>
               )}
             </>
@@ -775,7 +762,6 @@ const PetDetail = () => {
             onPress={() => handleDelete()}>
             <Text>Delete</Text>
           </TouchableOpacity>
-
         </View>
         {error && <Text style={styles.errorText}>Error: {error}</Text>}
         {uploading && <ActivityIndicator size="small" color="#0000ff" />}
@@ -783,7 +769,7 @@ const PetDetail = () => {
     </View>
   );
 };
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const titleSize = width / 17;
 const styles = StyleSheet.create({

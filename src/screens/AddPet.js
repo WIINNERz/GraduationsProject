@@ -54,7 +54,6 @@ const AddPet = () => {
     color: '',
     characteristics: '',
     chronic: '',
-    location: '',
     conditions: '',
     birthday: '',
     adoptingConditions: '',
@@ -70,11 +69,9 @@ const AddPet = () => {
   const [color, setColor] = useState('');
   const [characteristics, setCharacteristics] = useState('');
   const [chronic, setChronic] = useState('');
-  const [location, setLocation] = useState('');
   const [conditions, setConditions] = useState('');
   const [date, setDate] = useState(new Date());
   const [birthday, setBirthday] = useState(new Date());
-  const [adoptingConditions, setAdoptingConditions] = useState('');
   const [imageP, setImageP] = useState(null);
   const [additionalImages, setAdditionalImages] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -170,6 +167,14 @@ const AddPet = () => {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
+      if (gender === '') {
+        Alert.alert('Error', 'Please select pet gender.');
+        return;
+      }
+      if (type === '') {
+        Alert.alert('Error', 'Please select pet type.');
+        return;
+      }
       const nid = await generateUniqueRandomNumber();
       let dataToStore = {};
 
@@ -183,8 +188,6 @@ const AddPet = () => {
           height: encryptField(height),
           characteristics: encryptField(characteristics),
           chronic: encryptField(chronic),
-          location: encryptField(location),
-          conditions: encryptField(conditions),
           color: encryptField(color),
           gender: encryptField(gender),
           birthday: encryptField(birthday.toISOString().substring(0, 10)),
@@ -197,12 +200,9 @@ const AddPet = () => {
           height,
           characteristics,
           chronic,
-          location,
-          conditions,
           color,
           gender,
           birthday: birthday.toISOString().substring(0, 10),
-          adoptingConditions,
           additionalImages,
         };
       }
@@ -215,6 +215,7 @@ const AddPet = () => {
         uid: user.uid,
         username,
         name,
+        adoptingConditions: conditions,
         ...dataToStore,
         type,
         dateTime,
@@ -239,10 +240,8 @@ const AddPet = () => {
       setColor('');
       setCharacteristics('');
       setChronic('');
-      setLocation('');
       setConditions('');
       setBirthday(new Date());
-      setAdoptingConditions('');
       setImageP(null);
       setAdditionalImages([]);
       setIsChecked(false);
@@ -623,13 +622,6 @@ const AddPet = () => {
                   </View>
                     {isChecked && (
                       <>
-                        <TextInput
-                          style={styles.inputwh}
-                          placeholder="Location"
-                          placeholderTextColor={'gray'}
-                          value={location}
-                          onChangeText={setLocation}
-                        />
                         <TextInput
                           style={styles.inputwh}
                           placeholder="Conditions"

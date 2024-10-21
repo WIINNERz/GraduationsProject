@@ -262,6 +262,10 @@ export default function PetProfile() {
             <Text style={styles.categoryPet}>Characteristics</Text>
             <Text style={styles.valuePet}>{pet?.characteristics}</Text>
           </View>
+          <View style={styles.onecolumn}>
+            <Text style={styles.categoryPet}>Adopting Conditions</Text>
+            <Text style={styles.valuePet}>{pet?.adoptingConditions}</Text>
+          </View>
           <View style={styles.row}>
             <View style={styles.leftcolum}>
               <Text style={styles.categoryPet}>Current Owner</Text>

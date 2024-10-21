@@ -21,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import {auth} from '../configs/firebaseConfig';
 import Geolocation from '@react-native-community/geolocation';
+import RenderIcon from '../components/RenderIcon';
 
 const Home = () => {
   const [dogs, setDogs] = useState([]);
@@ -33,6 +34,7 @@ const Home = () => {
   const pawsize = Dimensions.get('window').width / 13; //40
   const favsize = Dimensions.get('window').width / 5; //80
   const [currentLocation, setCurrentLocation] = useState(null);
+  const icon = RenderIcon();
 
   const fetchDogs = async () => {
     if (user) {
@@ -67,13 +69,13 @@ const Home = () => {
 
   const banner = [
     {
-      uri: 'https://i.pinimg.com/564x/9d/4a/49/9d4a49b2b2b9392d3f844c4dbcff52d6.jpg',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/graduationspj.appspot.com/o/Banner%2Fbanner.jpg?alt=media&token=9eb59c7a-e39e-4a59-8dd3-1991fcb5d91e',
     },
     {
-      uri: 'https://uploads.dailydot.com/2023/12/crying-cat-meme.jpg?auto=compress&fm=pjpg',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/graduationspj.appspot.com/o/Banner%2Fbanner2.png?alt=media&token=c67804a8-93dc-4351-9162-b4d0e487864e',
     },
     {
-      uri: 'https://i.pinimg.com/236x/d5/6a/f7/d56af787f81df07a9d5bcd8ecad7ff3f.jpg',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/graduationspj.appspot.com/o/Banner%2Fbanner3.png?alt=media&token=877e8dc9-1ccd-413a-bfbb-8091aaa9cd57',
     },
   ];
 
@@ -92,6 +94,12 @@ const Home = () => {
 
     return () => clearInterval(interval);
   }, []);
+  const renderIcon = type => {
+    const iconType = icon.geticon(type);
+    return (
+      <MaterialCommunityIcons name={iconType} size={favsize} color="#E16539" />
+    );
+  };
 
   const renderDogItem = ({item}) => (
     <TouchableOpacity
@@ -102,8 +110,9 @@ const Home = () => {
         <Image source={{uri: item.photoURL}} style={styles.petPic} />
       ) : (
         <View style={styles.petIcon} >
-        <MaterialCommunityIcons name="dog" size={favsize} color="#E16539" />
+          {renderIcon(item.type)}
         </View>
+        
       )}
       <Text style={styles.petdetail}>{item.name}</Text>
     </TouchableOpacity>
@@ -241,23 +250,11 @@ const openMaps = () => {
             <MaterialCommunityIcons name="plus" size={pawsize} color="#D27C2C" />
             <Text style={styles.menuText}>Add new pet</Text>
           </TouchableOpacity>
-        </View>
-        <View style={styles.menu}>
           <TouchableOpacity
             style={styles.menuItem}
             onPress={openMaps}>
             <MaterialCommunityIcons name="map-marker" size={pawsize} color="#D27C2C" />
             <Text style={styles.menuText}>Pet's hospital</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.menuItem}
-            >
-            <MaterialCommunityIcons
-              name="file-question"
-              size={pawsize}
-              color="#D27C2C"
-            />
-            <Text style={styles.menuText}>Blank</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -296,7 +293,6 @@ const styles = StyleSheet.create({
   maincontainer: {
     height: '45%',
     padding :"3%",
-    
   },
   title: {
     fontSize: titleSize,
@@ -315,7 +311,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D27C2C',
     padding: 5,
-    width: '50%',
+    width: '32%',
     margin: 5,
   },
   menuText: {
@@ -324,11 +320,11 @@ const styles = StyleSheet.create({
   },
 
   petcontainer: {
-    height: '17%',
+    height: '22%',
     paddingHorizontal: '3%',
   },
   menucontainer: {
-    height: '23%',
+    height: '8%',
     paddingHorizontal: '3%',
   },
   banner: {
