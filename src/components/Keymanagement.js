@@ -10,7 +10,7 @@ const Keymanagement = () => {
   const iterations = 5000,
     keyLength = 256,
     hash = 'sha256';
-  
+
   const API_URL = process.env.WEB_API_URL;
   const API_KEY = process.env.WEB_API_KEY;
 
@@ -31,7 +31,11 @@ const Keymanagement = () => {
   };
   const encrpytviaapi = async plaintext => {
     try {
-      const response = await axios.post(`${API_URL}encrypt`, {plaintext});
+      const response = await axios.post(
+        `${API_URL}encrypt`,
+        {plaintext},
+        {headers: {'x-api-key': API_KEY}},
+      );
       const {encryptedData} = response.data;
       return encryptedData;
     } catch (error) {
