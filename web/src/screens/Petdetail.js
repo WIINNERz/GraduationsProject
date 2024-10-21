@@ -259,7 +259,9 @@ const PetDetail = () => {
     setIsDarkMode(newTheme);
     localStorage.setItem('isDarkMode', JSON.stringify(newTheme));
   };
-
+  useEffect(() => {
+    console.log(process.env);
+  });
   return (
     <div
       className={`${styles.screen} ${isDarkMode ? styles.dark : styles.light}`}>
