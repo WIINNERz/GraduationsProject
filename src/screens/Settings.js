@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
   },
   tabText: {

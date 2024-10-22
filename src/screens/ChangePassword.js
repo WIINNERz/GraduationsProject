@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'reac
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
-import { auth, firestore } from '../configs/firebaseConfig';
+import { auth } from '../configs/firebaseConfig';
 import Keymanagement from '../components/Keymanagement';    
 
 const ChangePassword = ({ navigation }) => {
@@ -10,42 +10,6 @@ const ChangePassword = ({ navigation }) => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const KeymanagementInstance = Keymanagement();
-    // async function Reencrpytmaseky(oldPassword, newPassword) {
-    //     const currentUser = auth.currentUser;
-
-    //     if (!currentUser) {
-    //         Alert.alert('Error', 'No user found. Please sign in again.', [{ text: 'OK' }]);
-    //         return;
-    //     }
-    //     try {
-    //         const userRef = doc(firestore, 'Users', currentUser.uid);
-    //         const userDoc = await getDoc(userRef); // Use getDoc to fetch a single document
-    //         if (userDoc.exists()) {
-    //             const userData = userDoc.data();
-    //             const { masterKey, iv, salt } = userData;
-    //             const iterations = 5000, keyLength = 256, hash = 'sha256';
-    //             const passkey = await Aes.pbkdf2(oldPassword, salt, iterations, keyLength, hash);
-    
-    //             try {
-    //                 const decryptMasterKey = await Aes.decrypt(masterKey, passkey, iv, 'aes-256-cbc');
-    //                 const newpasskey = await Aes.pbkdf2(newPassword, salt, iterations, keyLength, hash);
-    //                 const reencryptMaskey = await Aes.encrypt(decryptMasterKey, newpasskey, iv, 'aes-256-cbc');
-    
-    //                 await updateDoc(userRef, {
-    //                     masterKey: reencryptMaskey
-    //                 });
-    //             } catch (decryptError) {
-    //                 console.error('Error decrypting master key: ', decryptError);
-    //                 Alert.alert('Error', 'Failed to decrypt master key. Please check your old password.', [{ text: 'OK' }]);
-    //             }
-    //         } else {
-    //             console.error('No such document!');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error updating masterkey: ', error);
-    //     }
-    // }
-
     useFocusEffect(
         useCallback(() => {
             navigation.getParent()?.setOptions({

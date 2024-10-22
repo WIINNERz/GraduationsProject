@@ -1,7 +1,7 @@
 import { Image, StyleSheet, View,Text ,Dimensions } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { auth ,storage,firestore } from "../configs/firebaseConfig";
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { auth ,firestore } from "../configs/firebaseConfig";
+import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from "react";
 
 function ChatHeader(){

@@ -126,7 +126,7 @@ export default function ChatRoom1({navigation}) {
         createdAt,
       });
     } else {
-      // console.log('Room already exists with ID:', roomId);
+    
     }
   };
 
@@ -223,7 +223,6 @@ export default function ChatRoom1({navigation}) {
         return;
       }
       console.log(' plain text Location:', location);
-      // const locationString = ;
       const encrypted = e2ee.encryptMessage(sharedSecret, JSON.stringify(location));
       console.log('Encrypted Location:', encrypted);
       await setDoc(doc(messageRef), {

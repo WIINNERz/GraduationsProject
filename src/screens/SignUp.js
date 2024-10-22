@@ -79,7 +79,6 @@ const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, set
       <TouchableOpacity
         onPress={handleSignUp}
         style={[styles.loginButton,{backgroundColor: isButtonEnabled? '#E16539':'gray'}]}
-        // disabled={!isButtonEnabled}
       >
         {loading ? (
           <ActivityIndicator color="#fff" />

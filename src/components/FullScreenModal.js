@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, View, Image, TouchableOpacity, StyleSheet, Text } from 'react-native';
 
-const FullScreenModal = ({ imageUri, thumbnailStyle, modalVisible, setModalVisible }) => {
+const FullScreenModal = ({ imageUri, modalVisible, setModalVisible }) => {
   const closeModal = () => setModalVisible(false);
   return (
     <>

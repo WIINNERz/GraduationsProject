@@ -11,7 +11,7 @@ import { getFirestore, setDoc, doc, updateDoc } from '@react-native-firebase/fir
 import ToggleButton from '../components/ToggleButton';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
-import Forgot from '../screens/Forgot';
+// import Forgot from '../screens/Forgot';
 import Keymanagement from '../components/Keymanagement';
 import E2EE from '../components/E2EE';
 

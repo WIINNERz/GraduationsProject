@@ -69,9 +69,6 @@ const AccountInfo = () => {
             color="#D27C2C"
           />
           <Text style={styles.title}>Account Information</Text>
-          {/* <Text style={styles.description}>
-                
-              </Text> */}
         </View>
         <View style={styles.inputzone}>
           <Text style={styles.title}>Account Information</Text>

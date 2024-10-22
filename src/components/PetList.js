@@ -27,6 +27,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        paddingHorizontal: 3, // Add padding to account for the margin
+        paddingHorizontal: 3, 
     },
 });

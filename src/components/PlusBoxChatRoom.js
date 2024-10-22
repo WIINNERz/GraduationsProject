@@ -27,7 +27,6 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
     telephoneNumber: '',
   });
   const [telModalVisible, setTelModalVisible] = useState(false);
-  const navigation = useNavigation();
   const KeymanagementInstance = Keymanagement();
   const user = auth.currentUser;
 

@@ -1,14 +1,12 @@
-import { Image, StyleSheet, View, Text } from "react-native";
+import {  StyleSheet, View, Text } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { auth, storage, firestore } from "../configs/firebaseConfig";
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { auth, firestore } from "../configs/firebaseConfig";
+import { doc,  onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from "react";
 
 function HomeHeader() {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [image, setImage] = useState(null);
-    const [uploading, setUploading] = useState(false);
     const user = auth.currentUser;
     useEffect(() => {
         if (!user) return;

@@ -1,10 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AuthStack from '../stacks/AuthStack';
 import ProfileStack from '../stacks/ProfileStack';
 import Forgot from '../screens/Forgot';
-import HomeStack from '../stacks/HomeStack';
-import WaitVerify from '../screens/WaitVerify';
 import MyPetStack from '../stacks/MyPetStack';
 import AuthenStack from '../stacks/AuthenStack';
 

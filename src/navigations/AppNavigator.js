@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, View, StyleSheet, Keyboard, Text } from 'react-native';
+import { Image,  StyleSheet, Keyboard, Text } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

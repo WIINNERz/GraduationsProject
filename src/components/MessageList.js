@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import React, { useRef, useEffect } from 'react';
 import MessageItem from './MessageItem';
 

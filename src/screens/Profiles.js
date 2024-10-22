@@ -17,8 +17,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import Keymanagement from '../components/Keymanagement';
 import E2EE from '../components/E2EE';
-import { verify } from 'tweetnacl';
-import Notiverify from '../components/Notiverify';
 import FullScreenModal from '../components/FullScreenModal';
 
 const Profiles = () => {

@@ -1,5 +1,5 @@
 import * as Keychain from 'react-native-keychain';
-import Aes, {encrypt} from 'react-native-aes-crypto';
+import Aes from 'react-native-aes-crypto';
 import {Alert} from 'react-native';
 import {auth, firestore} from '../configs/firebaseConfig';
 import {getDoc, doc, updateDoc} from 'firebase/firestore';

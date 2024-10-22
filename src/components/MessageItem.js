@@ -7,7 +7,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import React, { memo, useEffect, useState, useMemo } from 'react';
+import React, { memo,  useState, useMemo } from 'react';
 import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from '../configs/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +20,6 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
   const [adoptedPets, setAdoptedPets] = useState({});
   const navigate = useNavigation();
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
-  const KeymanagementInstance = Keymanagement();
   const {
     userId,
     profileURL = '',
