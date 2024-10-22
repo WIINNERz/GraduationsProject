@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, TouchableOpacity, Alert, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { getDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import Keymanagement from '../components/Keymanagement';
-import CryptoJS from "rn-crypto-js";
-import { decrypt } from 'react-native-aes-crypto';
+
 const ProfileDetail = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,7 +71,7 @@ const ProfileDetail = ({ navigation }) => {
   const handleSave = async () => {
     if (user) {
       const userDoc = doc(firestore, 'Users', user.uid);
-      if (!validataTelephonenumber(tel)) {
+      if(tel && !validataTelephonenumber(tel)){
         setError('Invalid telephone number');
         return;
       }
@@ -212,7 +211,6 @@ const ProfileDetail = ({ navigation }) => {
                   )}
                   <TouchableOpacity onPress={pickImage}>
                     <Text style={{ color: 'black', fontSize: 12}}>Change</Text>
-                    {/* <MaterialCommunityIcons style={styles.camera} name="camera" size={30} color="#3A3A3A" /> */}
                   </TouchableOpacity>
                 </View>
                 <View style={{ paddingTop: 10 }}>
