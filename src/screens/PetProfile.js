@@ -166,7 +166,6 @@ export default function PetProfile() {
   };
   const handleOwnerPress = () => {
     navigate.navigate('OtherUser', {username: pet?.username, uid: pet?.uid});
-    console.log(pet?.uid);
   };
   return (
     <View style={styles.container}>
@@ -372,7 +371,7 @@ export default function PetProfile() {
                                   {vaccineCounter}. {vaccine.name}
                                 </Text>
                                 <Text style={styles.row2}>
-                                  {vaccine.quantity}
+                                  {vaccine.quantity} ml.
                                 </Text>
                               </View>
                             );

@@ -431,7 +431,7 @@ export default function PetProfile() {
                                   {vaccineCounter}. {vaccine.name}
                                 </Text>
                                 <Text style={styles.row2}>
-                                  {vaccine.quantity}
+                                  {vaccine.quantity} ml.
                                 </Text>
                               </View>
                             );
@@ -459,9 +459,6 @@ export default function PetProfile() {
                           <Text style={styles.date}>
                             Date: {formatDate(date)}
                           </Text>
-                          {/* <Text style={styles.date}>
-                          Date: {date ? date : 'N/A'}
-                        </Text> */}
                         </TouchableOpacity>
                       );
                     })

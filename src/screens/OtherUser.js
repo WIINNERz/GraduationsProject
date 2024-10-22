@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, Touchable, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
-  getFirestore,
   doc,
   getDoc,
   collection,
@@ -91,6 +90,7 @@ export default function OtherUser() {
     );
   }
 
+
   return (
     <View style={styles.container}>
       <MaterialCommunityIcons
@@ -111,6 +111,7 @@ export default function OtherUser() {
         </View>
       </View>
       <Text style={styles.sectionTitle}>Pets</Text>
+      <View style={styles.petzone}>
       <FlatList
         data={pets}
         keyExtractor={item => item.id}
@@ -122,9 +123,9 @@ export default function OtherUser() {
               ) : (
                 <MaterialCommunityIcons name="dog" style={styles.petIcon} size={50} color="gray" />
               )}
-              <View>
+              <View style={styles.petdetail}>
                 <Text style={styles.petName}>{item.name}</Text>
-                <Text>{item.breeds}</Text>
+                <Text style={styles.petBreed} >{item.breeds}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -132,10 +133,11 @@ export default function OtherUser() {
         style={styles.flatList} // Apply style to FlatList
         contentContainerStyle={styles.flatListContent} // Apply style to FlatList content container
       />
+      </View>
     </View>
   );
 }
-
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -162,8 +164,8 @@ const styles = StyleSheet.create({
     fontFamily: 'InterBold',
   },
   profileImage: {
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
     borderRadius: 75,
     marginBottom: 20,
   },
@@ -202,14 +204,19 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start', // Align the Text component to the start of the container
     marginLeft: 20, // Add some left margin if needed
   },
+  petzone : {
+    width: '100%',
+    alignItems: 'center',
+  },
   petItem: {
     flexDirection: 'row',
     marginBottom: 20,
     padding: 10,
     borderRadius: 25,
     backgroundColor: '#F0DFC8',
-    width: 200, // Fixed width as a percentage of the parent container
+    width: width - 40,
   },
+
   petImage: {
     width: 75,
     height: 75,
@@ -224,6 +231,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'InterRegular',
     fontWeight: 'bold',
+  },
+  petBreed: {
+    fontSize: 14,
+    fontFamily: 'InterRegular',
   },
   petIcon: {
     marginRight: 10,
@@ -242,5 +253,6 @@ const styles = StyleSheet.create({
   flatListContent: {
     alignItems: 'center',
     justifyContent: 'center',
+
   },
 });
