@@ -279,7 +279,7 @@ const Profiles = () => {
             <View style={styles.menuname}>
               <Text style={styles.topic}>Privacy Policy</Text>
               <Text style={styles.menudes}>
-                Further secure your account for safety
+                Help you understand our privacy policy better 
               </Text>
             </View>
           </View>

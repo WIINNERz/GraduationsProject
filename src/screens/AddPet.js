@@ -68,7 +68,6 @@ const AddPet = () => {
   const [gender, setGender] = useState('');
   const [color, setColor] = useState('');
   const [characteristics, setCharacteristics] = useState('');
-  const [chronic, setChronic] = useState('');
   const [conditions, setConditions] = useState('');
   const [date, setDate] = useState(new Date());
   const [birthday, setBirthday] = useState(new Date());
@@ -239,7 +238,6 @@ const AddPet = () => {
       setGender('');
       setColor('');
       setCharacteristics('');
-      setChronic('');
       setConditions('');
       setBirthday(new Date());
       setImageP(null);
@@ -570,13 +568,6 @@ const AddPet = () => {
                 placeholderTextColor={'gray'}
                 value={characteristics}
                 onChangeText={setCharacteristics}
-              />
-              <TextInput
-                style={styles.inputwh}
-                placeholder="Chronic Diseases"
-                placeholderTextColor={'gray'}
-                value={chronic}
-                onChangeText={setChronic}
               />
 
               <View style={styles.additionalImagesContainer}>

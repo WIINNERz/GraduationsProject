@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
     fontFamily: 'InterItalic',  
     color: 'black',
     opacity: 0.5,
-    // marginTop: 5,
   },
   back: {
     position: 'absolute',

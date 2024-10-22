@@ -7,16 +7,16 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import React, { memo,  useState, useMemo } from 'react';
-import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { auth, firestore } from '../configs/firebaseConfig';
-import { useNavigation } from '@react-navigation/native';
-import MapView, { Marker } from 'react-native-maps';
+import React, {memo, useState, useMemo} from 'react';
+import {getFirestore, doc, updateDoc, getDoc} from 'firebase/firestore';
+import {auth, firestore} from '../configs/firebaseConfig';
+import {useNavigation} from '@react-navigation/native';
+import MapView, {Marker} from 'react-native-maps';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Keymanagement from './Keymanagement';
 import FullScreenModal from './FullScreenModal';
 
-const MessageItem = ({ message, currentUser, roomId, messageId }) => {
+const MessageItem = ({message, currentUser, roomId, messageId}) => {
   const [adoptedPets, setAdoptedPets] = useState({});
   const navigate = useNavigation();
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
@@ -52,7 +52,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
     try {
       const petDoc = await getDoc(doc(firestore, 'Pets', id));
       if (petDoc.exists()) {
-        const petData = { id: petDoc.id, ...petDoc.data() };
+        const petData = {id: petDoc.id, ...petDoc.data()};
         const KeymanagementInstance = Keymanagement();
         try {
           const encryptedPetData = {
@@ -64,28 +64,22 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
               : null,
             height: petData.height
               ? await KeymanagementInstance.encryptData(
-                petData.height.toString(),
-              )
+                  petData.height.toString(),
+                )
               : null,
             age: petData.age
               ? await KeymanagementInstance.encryptData(petData.age.toString())
               : null,
-            breeds: petData.breeds
-              ? await KeymanagementInstance.encryptData(petData.breeds)
-              : null,
             characteristics: petData.characteristics
               ? await KeymanagementInstance.encryptData(petData.characteristics)
-              : null,
-            chronic: petData.chronic
-              ? await KeymanagementInstance.encryptData(petData.chronic)
               : null,
             color: petData.color
               ? await KeymanagementInstance.encryptData(petData.color)
               : null,
             weight: petData.weight
               ? await KeymanagementInstance.encryptData(
-                petData.weight.toString(),
-              )
+                  petData.weight.toString(),
+                )
               : null,
           };
           return encryptedPetData;
@@ -125,10 +119,10 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
         'Your account has not been verified',
         'Please verify your account to adopt this pet',
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Go Verify', onPress: () => navigate.navigate('Verify') },
+          {text: 'Cancel', style: 'cancel'},
+          {text: 'Go Verify', onPress: () => navigate.navigate('Verify')},
         ],
-        { cancelable: false },
+        {cancelable: false},
       );
       console.log('User not verified');
       return;
@@ -162,9 +156,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
         birthday: encpet.birthday,
         height: encpet.height,
         age: encpet.age,
-        breeds: encpet.breeds,
         characteristics: encpet.characteristics,
-        chronic: encpet.chronic,
         color: encpet.color,
         weight: encpet.weight,
       });
@@ -173,7 +165,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
         adopted: true,
       });
 
-      setAdoptedPets(prev => ({ ...prev, [petId]: true }));
+      setAdoptedPets(prev => ({...prev, [petId]: true}));
       console.log('Pet adopted successfully');
     } catch (error) {
       console.error('Error adopting pet: ', error);
@@ -185,13 +177,13 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
     console.log('Calling', telephoneNumber);
   };
 
-  const PetItem = ({ pet }) => (
+  const PetItem = ({pet}) => (
     <View style={styles.petItem}>
       {pet.photoURL ? (
-        <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
+        <Image source={{uri: pet.photoURL}} style={styles.petImage} />
       ) : (
-      <MaterialCommunityIcons name="dog" size={50} color="#E16539" />
-       )}
+        <MaterialCommunityIcons name="dog" size={50} color="#E16539" />
+      )}
       <Text style={styles.petName}>
         {senderName} wants to sent {pet.name} to you for further care.
       </Text>
@@ -202,23 +194,24 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
             (adoptedPets[pet.id] || adopted) && styles.adoptedButton,
           ]}
           onPress={() => handleAdopt(pet.id, pet.uid, messageId, roomId)}
-          disabled={adoptedPets[pet.id] || adopted || pet.status == 'have_owner'}>
+          disabled={
+            adoptedPets[pet.id] || adopted || pet.status == 'have_owner'
+          }>
           <Text style={styles.buttonText}>
             {adoptedPets[pet.id] || adopted ? 'Adopted' : 'Adopt'}
           </Text>
         </TouchableOpacity>
       )}
     </View>
-
   );
 
-  const TelephoneInfo = ({ telephoneNumber, isCurrentUser }) => (
+  const TelephoneInfo = ({telephoneNumber, isCurrentUser}) => (
     <View style={styles.telsContainer}>
       <Text style={styles.telstyle}>
         {isCurrentUser
           ? `You sent ${telephoneNumber} `
           : // : telephoneNumber}
-          `${senderName}'s number ${telephoneNumber}`}
+            `${senderName}'s number ${telephoneNumber}`}
       </Text>
       {!isCurrentUser && (
         <TouchableOpacity
@@ -229,7 +222,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
       )}
     </View>
   );
-  const LocationInfo = ({ location }) => {
+  const LocationInfo = ({location}) => {
     const openInGoogleMaps = () => {
       const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
       Linking.openURL(url).catch(err =>
@@ -267,12 +260,12 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
             isCurrentUser ? styles.currentUser : styles.otherUser,
           ]}>
           {!isCurrentUser && profileURL && (
-            <Image source={{ uri: profileURL }} style={styles.profileImage} />
+            <Image source={{uri: profileURL}} style={styles.profileImage} />
           )}
           <View style={styles.messageContent}>
             {imageUrl ? (
               <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Image source={{ uri: imageUrl }} style={styles.messageImage} />
+                <Image source={{uri: imageUrl}} style={styles.messageImage} />
               </TouchableOpacity>
             ) : (
               <Text style={styles.messageText}>{text}</Text>
@@ -293,9 +286,7 @@ const MessageItem = ({ message, currentUser, roomId, messageId }) => {
             {location && <LocationInfo location={location} />}
             <Text style={styles.timestamp}>{formattedCreatedAt}</Text>
           </View>
-
         </View>
-
       </View>
       <FullScreenModal
         imageUri={imageUrl}

@@ -25,8 +25,7 @@ import {
   onSnapshot,
   Timestamp,
   deleteDoc,
-  arrayUnion,
-  arrayRemove,
+
 } from 'firebase/firestore';
 
 import { auth, storage, firestore } from '../configs/firebaseConfig';
@@ -40,7 +39,6 @@ import Keymanagement from '../components/Keymanagement';
 const PetDetail = () => {
   const db = getFirestore();
   const user = auth.currentUser;
-  const [petId, setPetId] = useState('');
   const [userData, setUserData] = useState(null);
   const [pet, setPet] = useState({
     name: '',
@@ -51,8 +49,6 @@ const PetDetail = () => {
     gender: '',
     color: '',
     characteristics: '',
-    chronic: '',
-
     birthday: '',
     adoptingConditions: '',
     additionalImages: [],
@@ -165,11 +161,6 @@ const PetDetail = () => {
                   CryptoJS.enc.Utf8,
                 )
                 : '',
-              chronic: petData.chronic
-                ? CryptoJS.AES.decrypt(petData.chronic, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
               color: petData.color
                 ? CryptoJS.AES.decrypt(petData.color, key).toString(
                   CryptoJS.enc.Utf8,
@@ -224,7 +215,6 @@ const PetDetail = () => {
         weight = '',
         height = '',
         characteristics = '',
-        chronic = '',
         color = '',
         gender = '',
         birthday,
@@ -265,9 +255,6 @@ const PetDetail = () => {
             : null,
           characteristics: characteristics
             ? CryptoJS.AES.encrypt(String(characteristics), key).toString()
-            : null,
-          chronic: chronic
-            ? CryptoJS.AES.encrypt(String(chronic), key).toString()
             : null,
           color: color
             ? CryptoJS.AES.encrypt(String(color), key).toString()
