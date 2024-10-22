@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginTop: 5,
+    flexWrap: 'wrap',
   },
   genderIcon: {
     position: 'absolute',
