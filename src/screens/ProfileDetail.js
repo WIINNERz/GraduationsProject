@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, TouchableOpacity, Alert, Keyboard, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, TextInput, Button, TouchableOpacity, Alert, Keyboard, KeyboardAvoidingView, ScrollView, PermissionsAndroid,Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { auth, firestore, storage } from '../configs/firebaseConfig';
 import { getDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { check,request,PERMISSIONS,RESULTS } from 'react-native-permissions';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import Keymanagement from '../components/Keymanagement';
@@ -62,7 +63,24 @@ const ProfileDetail = ({ navigation }) => {
 
     fetchUserData();
   }, [user]);
-
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'This app needs access to your camera to take photos.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } else {
+      const result = await request(PERMISSIONS.IOS.CAMERA);
+      return result === RESULTS.GRANTED;
+    }
+  };
   const validataTelephonenumber = (value) => {
     const reg = /^[0-9]{10}$/;
      return reg.test(value);
@@ -120,11 +138,22 @@ const ProfileDetail = ({ navigation }) => {
   };
 
   const openCamera = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 1 });
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      uploadImage(result.assets[0].uri);
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) {
+      console.warn('Camera permission denied');
+      return;
+    }
+  
+    try {
+      const result = await launchCamera({ mediaType: 'photo', quality: 1 });  
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImage(result.assets[0].uri);
+        uploadImage(result.assets[0].uri);
+      } else {
+        console.warn('Camera operation was canceled or no assets found.');
+      }
+    } catch (error) {
+      console.error('Error launching camera: ', error);
     }
   };
 

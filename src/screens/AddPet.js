@@ -464,13 +464,8 @@ const AddPet = () => {
                 <MaterialCommunityIcons name="dog" size={120} color="#E16539" />
               )}
             </View>
-            <TouchableOpacity onPress={pickImage}>
-              <MaterialCommunityIcons
-                style={styles.camera}
-                name="camera-plus"
-                size={30}
-                color="#000"
-              />
+            <TouchableOpacity style={styles.AddImage} onPress={pickImage}>
+              <Text>Add Profile</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.container}>
@@ -658,10 +653,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   photoSec: {
-    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  AddImage: {
+    backgroundColor: '#F0DFC8',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
   },
   whContainer: {
     width: '100%',

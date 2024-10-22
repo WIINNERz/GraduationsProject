@@ -98,7 +98,6 @@ const ChatItem = React.memo(({ item, roomId }) => {
                     );
 
                     unsubscribeUnreadCount = onSnapshot(q, (querySnapshot) => {
-                        console.log(`Unread messages count (excluding current user): ${querySnapshot.size}`);
                         setUnreadCount(querySnapshot.size);
                     });
                 } catch (error) {
