@@ -233,7 +233,6 @@ const PetDetail = () => {
           weight,
           height,
           characteristics,
-          chronic,
           color,
           gender,
           birthday,
@@ -647,17 +646,6 @@ const PetDetail = () => {
                   pet?.characteristics ? `${pet.characteristics}` || '' : ''
                 }
                 onChangeText={text => setPet({ ...pet, characteristics: text })}
-              />
-            </View>
-          </View>
-          <View style={styles.whContainer}>
-            <View style={styles.container}>
-              <Text style={styles.field}>Chronic</Text>
-              <TextInput
-                style={styles.inputwh}
-                placeholder="Chronic"
-                value={pet?.chronic ? `${pet.chronic}` || '' : ''}
-                onChangeText={text => setPet({ ...pet, chronic: text })}
               />
             </View>
           </View>

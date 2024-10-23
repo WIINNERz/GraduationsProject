@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import 'react-native-get-random-values'
 import CryptoJS from 'rn-crypto-js';
 import {
   View,
@@ -53,7 +54,6 @@ const AddPet = () => {
     gender: '',
     color: '',
     characteristics: '',
-    chronic: '',
     conditions: '',
     birthday: '',
     adoptingConditions: '',
@@ -76,7 +76,6 @@ const AddPet = () => {
   const [uploading, setUploading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [status, setStatus] = useState('have_owner');
-  const [isFocus, setIsFocus] = useState(false);
   const [genderFocused, setGenderFocused] = useState(false);
   const [typeFocused, setTypeFocused] = useState(false);
   const KeymanagementInstance = Keymanagement();
@@ -142,8 +141,10 @@ const AddPet = () => {
     };
 
     let random;
+    const array = new Uint32Array(1);
     do {
-      random = Math.floor(100000 + Math.random() * 900000); // Ensure 6-digit number
+      crypto.getRandomValues(array);
+      random = array[0] % 900000 + 100000;
     } while (await checkRandomExists(random));
     return random;
   };
@@ -154,7 +155,6 @@ const AddPet = () => {
       if (!user) {
         return;
       }
-
       const id = name;
       const dateTime = new Timestamp(Date.now() / 1000, 0);
       const username = await fetchUsername(user.uid);
@@ -186,7 +186,6 @@ const AddPet = () => {
           weight: encryptField(weight),
           height: encryptField(height),
           characteristics: encryptField(characteristics),
-          chronic: encryptField(chronic),
           color: encryptField(color),
           gender: encryptField(gender),
           birthday: encryptField(birthday.toISOString().substring(0, 10)),
@@ -198,7 +197,6 @@ const AddPet = () => {
           weight,
           height,
           characteristics,
-          chronic,
           color,
           gender,
           birthday: birthday.toISOString().substring(0, 10),
