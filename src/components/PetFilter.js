@@ -34,8 +34,7 @@ const PetFilter = ({
     {label: 'Gender', value: 'gender'},
     {label: 'Age', value: 'age'},
     {label: 'Characteristics', value: 'characteristics'},
-    {label: 'Conditions', value: 'adoptingConditions'},
-    {label: 'Chronic', value: 'chronic'},
+    {label: 'Adopting Conditions', value: 'adoptingConditions'},
   ];
 
   return (
