@@ -33,7 +33,7 @@ const Forgot = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <View style={styles.formContainer}>
-            <Text style={{opacity:0.6}}>    Please Enter your email and we will send you instructions on how to reset your password.</Text>
+            <Text style={{opacity:0.6}}>Please Enter your email and we will send you instructions on how to reset your password.</Text>
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.inputStyle}
@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
     formContainer: {
         width: '80%',
         margin: 'auto',
-        paddingTop:'70%'
+        paddingTop:'70%',
+        justifyContent: 'center',
     },
     inputContainer: {
         flexDirection: 'row',

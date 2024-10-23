@@ -99,7 +99,6 @@ const AddPet = () => {
 
     return () => {
       showSubscription.remove();
-      hideSubscription.remove();
     };
   }, [navigation]);
   useEffect(() => {
