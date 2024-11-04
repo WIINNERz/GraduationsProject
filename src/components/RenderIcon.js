@@ -16,8 +16,6 @@ const RenderIcon = () => {
         return "rabbit";
       case 'Turtle':
         return "turtle";
-      case 'Fish':
-        return "fish";
       default:
         return "paw" ;
     }
