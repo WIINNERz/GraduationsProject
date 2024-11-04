@@ -8,16 +8,28 @@ import {
   Modal,
   PermissionsAndroid,
 } from 'react-native';
-import React, { useState, useCallback } from 'react';
+import React, {useState, useCallback} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getFirestore, collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import { auth } from '../configs/firebaseConfig';
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+} from 'firebase/firestore';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import {auth} from '../configs/firebaseConfig';
 import Keymanagement from './Keymanagement';
-import { useNavigation } from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 
-export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelephone, onSendLocation }) {
+export default function PlusBoxChatRoom({
+  onImagePicked,
+  onSendPets,
+  onSendTelephone,
+  onSendLocation,
+}) {
   const [state, setState] = useState({
     isPetPanelVisible: false,
     loading: true,
@@ -36,7 +48,8 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
           title: 'Location Permission',
-          message: 'This app needs access to your location to send it in the chat.',
+          message:
+            'This app needs access to your location to send it in the chat.',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
@@ -59,24 +72,29 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
         },
         {
           text: 'OK',
-          onPress: sendLocation,
+          onPress: () => {
+            sendLocation();
+          },
         },
       ],
-      { cancelable: false }
+      {cancelable: false},
     );
   };
   const sendLocation = async () => {
     try {
       const hasPermission = await requestLocationPermission();
       if (!hasPermission) {
-        Alert.alert('Permission Denied', 'Location permission is required to send your location.');
+        Alert.alert(
+          'Permission Denied',
+          'Location permission is required to send your location.',
+        );
         return;
       }
 
       Geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const location = { latitude, longitude };
+        position => {
+          const {latitude, longitude} = position.coords;
+          const location = {latitude, longitude};
           console.log('Location obtained:', location); // Log the obtained location
           if (onSendLocation) {
             onSendLocation(location);
@@ -84,11 +102,14 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
             console.error('onSendLocation function is not defined');
           }
         },
-        (error) => {
+        error => {
           console.error('Error getting location:', error);
-          Alert.alert('Error', `Failed to get your location. Error code: ${error.code}, Message: ${error.message}`);
+          Alert.alert(
+            'Error',
+            `Failed to get your location. Error code: ${error.code}, Message: ${error.message}`,
+          );
         },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
       );
     } catch (error) {
       console.error('Error in sendLocation function:', error);
@@ -106,47 +127,54 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
         },
         {
           text: 'Library',
-          onPress: async () => {
-            const result = await launchImageLibrary({
-              mediaType: 'photo',
-              quality: 1,
-            });
-
-            if (result.didCancel) {
-              console.log('User cancelled image picker');
-            } else if (result.error) {
-              console.log('ImagePicker Error: ', result.error);
-            } else {
-              const { uri } = result.assets[0];
-              onImagePicked(uri);
-            }
+          onPress: () => {
+            pickImageFromLibrary();
           },
         },
         {
           text: 'Camera',
-          onPress: async () => {
-            const result = await launchCamera({
-              mediaType: 'photo',
-              quality: 1,
-            });
-
-            if (result.didCancel) {
-              console.log('User cancelled image picker');
-            } else if (result.error) {
-              console.log('ImagePicker Error: ', result.error);
-            } else {
-              const { uri } = result.assets[0];
-              onImagePicked(uri);
-            }
+          onPress: () => {
+            pickImageFromCamera();
           },
         },
       ],
-      { cancelable: true }
+      {cancelable: true},
     );
+  };
+  const pickImageFromLibrary = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 1,
+    });
+
+    if (result.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (result.error) {
+      console.log('ImagePicker Error: ', result.error);
+    } else {
+      const {uri} = result.assets[0];
+      onImagePicked(uri);
+    }
+  };
+
+  const pickImageFromCamera = async () => {
+    const result = await launchCamera({
+      mediaType: 'photo',
+      quality: 1,
+    });
+
+    if (result.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (result.error) {
+      console.log('ImagePicker Error: ', result.error);
+    } else {
+      const {uri} = result.assets[0];
+      onImagePicked(uri);
+    }
   };
 
   const fetchPetData = useCallback(async () => {
-    setState(prevState => ({ ...prevState, loading: true }));
+    setState(prevState => ({...prevState, loading: true}));
     if (user) {
       try {
         const db = getFirestore();
@@ -154,50 +182,67 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
         const q = query(
           petsCollection,
           where('uid', '==', user.uid),
-          where('status', '==', 'dont_have_owner')
+          where('status', '==', 'dont_have_owner'),
         );
         const querySnapshot = await getDocs(q);
 
         const petList = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }));
         if (petList.length === 0) {
           Alert.alert('No Pets', "You don't have any pets.");
-          setState(prevState => ({ ...prevState, isPetPanelVisible: false }));
+          setState(prevState => ({...prevState, isPetPanelVisible: false}));
         }
-        setState(prevState => ({ ...prevState, petData: petList, loading: false }));
+        setState(prevState => ({
+          ...prevState,
+          petData: petList,
+          loading: false,
+        }));
       } catch (err) {
-        setState(prevState => ({ ...prevState, error: err.message, loading: false }));
+        setState(prevState => ({
+          ...prevState,
+          error: err.message,
+          loading: false,
+        }));
         console.log('Error fetching pet data:', err.message);
       }
     } else {
-      setState(prevState => ({ ...prevState, loading: false, error: 'User is not authenticated' }));
+      setState(prevState => ({
+        ...prevState,
+        loading: false,
+        error: 'User is not authenticated',
+      }));
       console.log('User is not authenticated');
     }
   }, [user]);
 
   const pickPet = () => {
-    setState(prevState => ({ ...prevState, isPetPanelVisible: !prevState.isPetPanelVisible }));
+    setState(prevState => ({
+      ...prevState,
+      isPetPanelVisible: !prevState.isPetPanelVisible,
+    }));
     if (!state.isPetPanelVisible) {
       fetchPetData();
     }
   };
 
-  const togglePetSelection = (petId) => {
+  const togglePetSelection = petId => {
     setState(prevState => ({
       ...prevState,
       selectedPets: {
         ...prevState.selectedPets,
-        [petId]: !prevState.selectedPets[petId]
-      }
+        [petId]: !prevState.selectedPets[petId],
+      },
     }));
   };
 
   const handleSendPets = () => {
-    const selectedPetData = state.petData.filter(pet => state.selectedPets[pet.id]);
+    const selectedPetData = state.petData.filter(
+      pet => state.selectedPets[pet.id],
+    );
     onSendPets(selectedPetData);
-    setState(prevState => ({ ...prevState, isPetPanelVisible: false }));
+    setState(prevState => ({...prevState, isPetPanelVisible: false}));
   };
 
   const fetchTelephoneNumber = useCallback(async () => {
@@ -210,11 +255,13 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
         if (userDoc.exists()) {
           const userData = userDoc.data();
 
-          const decryptedTel = userData.tel ? await KeymanagementInstance.decryptData(userData.tel) : null;
+          const decryptedTel = userData.tel
+            ? await KeymanagementInstance.decryptData(userData.tel)
+            : null;
 
           setState(prevState => ({
             ...prevState,
-            telephoneNumber: decryptedTel || 'Doesn\'t have a telephone number',
+            telephoneNumber: decryptedTel || "Doesn't have a telephone number",
           }));
           if (decryptedTel) {
             if (onSendTelephone) {
@@ -224,7 +271,10 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
             setTelModalVisible(true);
           }
         } else {
-          setState(prevState => ({ ...prevState, telephoneNumber: 'Doesn\'t have a telephone number' }));
+          setState(prevState => ({
+            ...prevState,
+            telephoneNumber: "Doesn't have a telephone number",
+          }));
           setTelModalVisible(true);
         }
       } catch (err) {
@@ -238,10 +288,12 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
   return (
     <View style={styles.container}>
       <View style={styles.button}>
-        <TouchableOpacity style={styles.buttonStyle} onPress={confirmAndSendLocation}>
+        <TouchableOpacity
+          style={styles.buttonStyle}
+          onPress={confirmAndSendLocation}>
           <MaterialCommunityIcons name="map-marker" size={30} color="#E16539" />
         </TouchableOpacity>
-        <Text style={styles.menuname} >Location</Text>
+        <Text style={styles.menuname}>Location</Text>
       </View>
       <View style={styles.button}>
         <TouchableOpacity style={styles.buttonStyle} onPress={pickImage}>
@@ -250,7 +302,9 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
         <Text style={styles.menuname}>Photo</Text>
       </View>
       <View style={styles.button}>
-        <TouchableOpacity style={styles.buttonStyle} onPress={fetchTelephoneNumber}>
+        <TouchableOpacity
+          style={styles.buttonStyle}
+          onPress={fetchTelephoneNumber}>
           <MaterialCommunityIcons name="phone" size={30} color="#E16539" />
         </TouchableOpacity>
         <Text style={styles.menuname}>Telephone Number</Text>
@@ -263,31 +317,28 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
       </View>
       {state.isPetPanelVisible && (
         <View style={styles.petPanel}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setState(prevState => ({ ...prevState, isPetPanelVisible: false }))}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() =>
+              setState(prevState => ({...prevState, isPetPanelVisible: false}))
+            }>
             <Text>Close</Text>
           </TouchableOpacity>
           {state.loading ? (
             <Text>Loading...</Text>
-          ) : (
-            state.petData ? (
-              state.petData.map((pet, index) => (
-                <TouchableOpacity key={index} style={styles.petItem} onPress={() => togglePetSelection(pet.id)}>
-                  <View style={styles.petImageContainer}>
-                    {pet.photoURL ? (
-                      <View style={styles.petImageContainer}>
-                        <Image source={{ uri: pet.photoURL }} style={styles.petImage} />
-                        {state.selectedPets[pet.id] && (
-                          <MaterialCommunityIcons
-                            name="check-circle"
-                            size={24}
-                            color="#fff"
-                            style={styles.checkIcon}
-                          />
-                        )}
-                      </View>
-                    ) : (
-                      <View style={styles.petImageContainer}>
-                      <MaterialCommunityIcons name="dog" size={50} color="#E16539" />
+          ) : state.petData ? (
+            state.petData.map((pet, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.petItem}
+                onPress={() => togglePetSelection(pet.id)}>
+                <View style={styles.petImageContainer}>
+                  {pet.photoURL ? (
+                    <View style={styles.petImageContainer}>
+                      <Image
+                        source={{uri: pet.photoURL}}
+                        style={styles.petImage}
+                      />
                       {state.selectedPets[pet.id] && (
                         <MaterialCommunityIcons
                           name="check-circle"
@@ -297,14 +348,29 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
                         />
                       )}
                     </View>
-                    )}
-                  </View>
-                  <Text style={styles.petName}>{pet.name}</Text>
-                </TouchableOpacity>
-              ))
-            ) : (
-              <Text style={{ fontSize: 64 }}>No pets found</Text>
-            )
+                  ) : (
+                    <View style={styles.petImageContainer}>
+                      <MaterialCommunityIcons
+                        name="dog"
+                        size={50}
+                        color="#E16539"
+                      />
+                      {state.selectedPets[pet.id] && (
+                        <MaterialCommunityIcons
+                          name="check-circle"
+                          size={24}
+                          color="#fff"
+                          style={styles.checkIcon}
+                        />
+                      )}
+                    </View>
+                  )}
+                </View>
+                <Text style={styles.petName}>{pet.name}</Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text style={{fontSize: 64}}>No pets found</Text>
           )}
           <TouchableOpacity style={styles.sendButton} onPress={handleSendPets}>
             <Text>Send</Text>
@@ -321,7 +387,9 @@ export default function PlusBoxChatRoom({ onImagePicked, onSendPets, onSendTelep
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
             <Text style={styles.title}>Telephone Number</Text>
-            <Text style={styles.modalText}>You can't send your telephone number because it is not available.</Text>
+            <Text style={styles.modalText}>
+              You can't send your telephone number because it is not available.
+            </Text>
             <TouchableOpacity
               style={[styles.button1, styles.buttonClose]}
               onPress={() => setTelModalVisible(!telModalVisible)}>

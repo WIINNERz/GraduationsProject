@@ -20,6 +20,7 @@ const Chat = () => {
     }, [user?.uid]);
 
     const fetchChatRooms = useCallback(() => {
+        if (!user) return;
         const roomsRef = collection(db, 'Rooms');
         const unsubscribe = onSnapshot(roomsRef, async (querySnapshot) => {
             let rooms = [];
@@ -71,7 +72,7 @@ const Chat = () => {
                         <ChatList
                             rooms={chatRooms}
                             users={users}
-                            currentUserId={user.uid} 
+                            currentUserId={user?.uid} 
                         />
                     ) : (
                         <View style={styles.nochat}>
