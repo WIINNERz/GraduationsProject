@@ -17,9 +17,43 @@ export default function PetCard({ item }) {
       <MaterialCommunityIcons name={iconType} size={80} color="#D27C2C" style={styles.dogicon} />
     );
   };
-
+  const calculateAge = birthday => {
+    const birthDate = new Date(birthday);
+    const now = new Date();
+    const years = now.getFullYear() - birthDate.getFullYear();
+    const months = now.getMonth() - birthDate.getMonth();
+    const days = now.getDate() - birthDate.getDate();
+  
+    let ageYears = years;
+    let ageMonths = months;
+    let ageDays = days;
+  
+    if (days < 0) {
+      ageMonths -= 1;
+      ageDays += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    }
+  
+    if (months < 0) {
+      ageYears -= 1;
+      ageMonths += 12;
+    }
+  
+    let ageString = '';
+    if (ageYears > 0) {
+      ageString += `${ageYears} Years `;
+    }
+    if (ageMonths > 0) {
+      ageString += `${ageMonths} Months `;
+    }
+    if (ageDays > 0) {
+      ageString += `${ageDays} Day`;
+    }
+  
+    return ageString.trim();
+  };
+  
   const formattedDate = item?.updatedAt ? new Date(item.updatedAt.seconds * 1000).toLocaleDateString() : '';
-
+  const age = item?.birthday ? calculateAge(item.birthday) : '';;
   return (
     <TouchableOpacity style={styles.card} onPress={openPetProfile}>
        <View>
@@ -46,8 +80,8 @@ export default function PetCard({ item }) {
         </View>
         <View style={styles.row}>
           <Text style={textStyles.label}>Age: </Text>
-          <Text style={textStyles.value}>{item?.age}</Text>
-        </View>
+          <Text>{age}</Text>
+          </View>
       </View>
     </TouchableOpacity>
   );
