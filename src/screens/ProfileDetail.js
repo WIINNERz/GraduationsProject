@@ -42,23 +42,26 @@ const ProfileDetail = ({ navigation }) => {
         const docSnap = await getDoc(userDoc);
         if (docSnap.exists() && docSnap.data().email === user.email) {
           const data = docSnap.data();
-          try {
-            const decryptedFirstname = data.firstname ? await KeymanagementInstance.decryptviaapi(data.firstname) : null;
-            const decryptedLastname = data.lastname ? await KeymanagementInstance.decryptviaapi(data.lastname) : null;
-            const decryptedTel = data.tel ? await KeymanagementInstance.decryptData(data.tel) : null;
-            setUserData(data);
-            setFirstname(decryptedFirstname);
-            setLastname(decryptedLastname);
-            setUsername(data.username);
-            setEmail(data.email);
-            setTel(decryptedTel);
-          } catch (error) {
-            console.error('Error decrypting data: ', error);
-          }
-
+          await decryptUserData(data);
         }
       }
       setLoading(false);
+    };
+
+    const decryptUserData = async (data) => {
+      try {
+        const decryptedFirstname = data.firstname ? await KeymanagementInstance.decryptviaapi(data.firstname) : null;
+        const decryptedLastname = data.lastname ? await KeymanagementInstance.decryptviaapi(data.lastname) : null;
+        const decryptedTel = data.tel ? await KeymanagementInstance.decryptData(data.tel) : null;
+        setUserData(data);
+        setFirstname(decryptedFirstname);
+        setLastname(decryptedLastname);
+        setUsername(data.username);
+        setEmail(data.email);
+        setTel(decryptedTel);
+      } catch (error) {
+        console.error('Error decrypting data: ', error);
+      }
     };
 
     fetchUserData();

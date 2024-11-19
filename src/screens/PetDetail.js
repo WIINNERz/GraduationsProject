@@ -129,67 +129,61 @@ const PetDetail = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchPet = async () => {
-      const key = await KeymanagementInstance.retrievemasterkey();
-      try {
-        const petDocRef = doc(db, 'Pets', id);
-        const petDoc = await getDoc(petDocRef);
-        if (petDoc.exists()) {
-          let petData = petDoc.data() || {};
-          if (petData.status === 'have_owner') {
-            petData = {
-              ...petData,
-              age: petData.age
-                ? CryptoJS.AES.decrypt(petData.age, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              breeds: petData.breeds ? petData.breeds : '',
-              weight: petData.weight
-                ? CryptoJS.AES.decrypt(petData.weight, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              height: petData.height
-                ? CryptoJS.AES.decrypt(petData.height, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              characteristics: petData.characteristics
-                ? CryptoJS.AES.decrypt(petData.characteristics, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              color: petData.color
-                ? CryptoJS.AES.decrypt(petData.color, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              gender: petData.gender
-                ? CryptoJS.AES.decrypt(petData.gender, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              birthday: petData.birthday
-                ? CryptoJS.AES.decrypt(petData.birthday, key).toString(
-                  CryptoJS.enc.Utf8,
-                )
-                : '',
-              additionalImages: petData.additionalImages || [],
-            };
-          }
-          setPet(petData);
-        } else {
-          setError('Pet not found');
+  const fetchPet = async () => {
+    const key = await KeymanagementInstance.retrievemasterkey();
+    try {
+      const petDocRef = doc(db, 'Pets', id);
+      const petDoc = await getDoc(petDocRef);
+      if (petDoc.exists()) {
+        let petData = petDoc.data() || {};
+        if (petData.status === 'have_owner') {
+          petData = decryptPetData(petData, key);
         }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        setPet(petData);
+      } else {
+        setError('Pet not found');
       }
-    };
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const decryptPetData = (petData, key) => {
+    return {
+      ...petData,
+      age: petData.age
+        ? CryptoJS.AES.decrypt(petData.age, key).toString(CryptoJS.enc.Utf8)
+        : '',
+      breeds: petData.breeds ? petData.breeds : '',
+      weight: petData.weight
+        ? CryptoJS.AES.decrypt(petData.weight, key).toString(CryptoJS.enc.Utf8)
+        : '',
+      height: petData.height
+        ? CryptoJS.AES.decrypt(petData.height, key).toString(CryptoJS.enc.Utf8)
+        : '',
+      characteristics: petData.characteristics
+        ? CryptoJS.AES.decrypt(petData.characteristics, key).toString(
+            CryptoJS.enc.Utf8,
+          )
+        : '',
+      color: petData.color
+        ? CryptoJS.AES.decrypt(petData.color, key).toString(CryptoJS.enc.Utf8)
+        : '',
+      gender: petData.gender
+        ? CryptoJS.AES.decrypt(petData.gender, key).toString(CryptoJS.enc.Utf8)
+        : '',
+      birthday: petData.birthday
+        ? CryptoJS.AES.decrypt(petData.birthday, key).toString(
+            CryptoJS.enc.Utf8,
+          )
+        : '',
+      additionalImages: petData.additionalImages || [],
+    };
+  };
+
+  useEffect(() => {
     fetchPet();
   }, [id]);
 
@@ -199,6 +193,7 @@ const PetDetail = () => {
         console.error('No user is currently logged in.');
         return;
       }
+
       const dateTime = Timestamp.now();
       const username = await fetchUsername(user.uid);
       const key = await KeymanagementInstance.retrievemasterkey();
@@ -208,85 +203,94 @@ const PetDetail = () => {
         Alert.alert('Error', 'Pet name cannot be empty.');
         return;
       }
-      const {
-        name = '',
-        age = '',
-        breeds = '',
-        weight = '',
-        height = '',
-        characteristics = '',
-        color = '',
-        gender = '',
-        birthday,
-        adoptingConditions = '',
-        // additionalImages = [],
-      } = pet;
 
-      let dataToStore;
+      const dataToStore = prepareDataToStore(key);
 
-      if (isFindHomeChecked) {
-        dataToStore = {
-          ...pet,
-          name: name.trim(),
-          age,
-          breeds,
-          weight,
-          height,
-          characteristics,
-          color,
-          gender,
-          birthday,
-          adoptingConditions,
-          // additionalImages,
-          updatedAt: Timestamp.now(),
-        };
-      } else {
-        dataToStore = {
-          ...pet,
-          name: name.trim(),
-          age: age ? CryptoJS.AES.encrypt(String(age), key).toString() : null,
-          breeds: breeds ? breeds : null,
-          weight: weight
-            ? CryptoJS.AES.encrypt(String(weight), key).toString()
-            : null,
-          height: height
-            ? CryptoJS.AES.encrypt(String(height), key).toString()
-            : null,
-          characteristics: characteristics
-            ? CryptoJS.AES.encrypt(String(characteristics), key).toString()
-            : null,
-          color: color
-            ? CryptoJS.AES.encrypt(String(color), key).toString()
-            : null,
-          gender: gender
-            ? CryptoJS.AES.encrypt(String(gender), key).toString()
-            : null,
-          birthday: birthday
-            ? CryptoJS.AES.encrypt(birthday, key).toString()
-            : null,
-          // additionalImages: additionalImages,
-          updatedAt: Timestamp.now(),
-        };
-      }
-
-      Object.keys(dataToStore).forEach(key => {
-        if (dataToStore[key] === undefined) {
-          delete dataToStore[key];
-        }
-      });
-      const petDocRef = doc(db, 'Pets', pet.id.trim());
-      const petDoc = await getDoc(petDocRef);
-      if (!petDoc.exists()) {
-        Alert.alert('Error', 'Pet document does not exist.');
-        return;
-      }
-
-      await updateDoc(petDocRef, dataToStore);
+      await savePetData(dataToStore);
       navigation.goBack();
     } catch (err) {
       setError(err.message);
       console.error('Error saving pet data:', err);
     }
+  };
+
+  const prepareDataToStore = key => {
+    const {
+      name = '',
+      age = '',
+      breeds = '',
+      weight = '',
+      height = '',
+      characteristics = '',
+      color = '',
+      gender = '',
+      birthday,
+      adoptingConditions = '',
+    } = pet;
+
+    let dataToStore;
+
+    if (isFindHomeChecked) {
+      dataToStore = {
+        ...pet,
+        name: name.trim(),
+        age,
+        breeds,
+        weight,
+        height,
+        characteristics,
+        color,
+        gender,
+        birthday,
+        adoptingConditions,
+        updatedAt: Timestamp.now(),
+      };
+    } else {
+      dataToStore = {
+        ...pet,
+        name: name.trim(),
+        age: age ? CryptoJS.AES.encrypt(String(age), key).toString() : null,
+        breeds: breeds ? breeds : null,
+        weight: weight
+          ? CryptoJS.AES.encrypt(String(weight), key).toString()
+          : null,
+        height: height
+          ? CryptoJS.AES.encrypt(String(height), key).toString()
+          : null,
+        characteristics: characteristics
+          ? CryptoJS.AES.encrypt(String(characteristics), key).toString()
+          : null,
+        color: color
+          ? CryptoJS.AES.encrypt(String(color), key).toString()
+          : null,
+        gender: gender
+          ? CryptoJS.AES.encrypt(String(gender), key).toString()
+          : null,
+        birthday: birthday
+          ? CryptoJS.AES.encrypt(birthday, key).toString()
+          : null,
+        updatedAt: Timestamp.now(),
+      };
+    }
+
+    Object.keys(dataToStore).forEach(key => {
+      if (dataToStore[key] === undefined) {
+        delete dataToStore[key];
+      }
+    });
+
+    return dataToStore;
+  };
+
+  const savePetData = async dataToStore => {
+    const petDocRef = doc(db, 'Pets', pet.id.trim());
+    const petDoc = await getDoc(petDocRef);
+    if (!petDoc.exists()) {
+      Alert.alert('Error', 'Pet document does not exist.');
+      return;
+    }
+
+    await updateDoc(petDocRef, dataToStore);
   };
 
   useEffect(() => {

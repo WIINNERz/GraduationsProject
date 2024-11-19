@@ -51,49 +51,48 @@ const MessageItem = ({message, currentUser, roomId, messageId}) => {
   const fetchPet = async id => {
     try {
       const petDoc = await getDoc(doc(firestore, 'Pets', id));
-      if (petDoc.exists()) {
-        const petData = {id: petDoc.id, ...petDoc.data()};
-        const KeymanagementInstance = Keymanagement();
-        try {
-          const encryptedPetData = {
-            gender: petData.gender
-              ? await KeymanagementInstance.encryptData(petData.gender)
-              : null,
-            birthday: petData.birthday
-              ? await KeymanagementInstance.encryptData(petData.birthday)
-              : null,
-            height: petData.height
-              ? await KeymanagementInstance.encryptData(
-                  petData.height.toString(),
-                )
-              : null,
-            age: petData.age
-              ? await KeymanagementInstance.encryptData(petData.age.toString())
-              : null,
-            characteristics: petData.characteristics
-              ? await KeymanagementInstance.encryptData(petData.characteristics)
-              : null,
-            color: petData.color
-              ? await KeymanagementInstance.encryptData(petData.color)
-              : null,
-            weight: petData.weight
-              ? await KeymanagementInstance.encryptData(
-                  petData.weight.toString(),
-                )
-              : null,
-          };
-          return encryptedPetData;
-        } catch (err) {
-          console.error('Error encrypting pet data:', err);
-          // return {};
-        }
-      } else {
+      if (!petDoc.exists()) {
         console.error('Pet not found');
-        // return {};
+        return null;
       }
+  
+      const petData = { id: petDoc.id, ...petDoc.data() };
+      const KeymanagementInstance = Keymanagement();
+  
+      const encryptionPromises = [
+        petData.gender ? KeymanagementInstance.encryptData(petData.gender) : null,
+        petData.birthday ? KeymanagementInstance.encryptData(petData.birthday) : null,
+        petData.height ? KeymanagementInstance.encryptData(petData.height.toString()) : null,
+        petData.age ? KeymanagementInstance.encryptData(petData.age.toString()) : null,
+        petData.characteristics ? KeymanagementInstance.encryptData(petData.characteristics) : null,
+        petData.color ? KeymanagementInstance.encryptData(petData.color) : null,
+        petData.weight ? KeymanagementInstance.encryptData(petData.weight.toString()) : null,
+      ];
+  
+      const [
+        encryptedGender,
+        encryptedBirthday,
+        encryptedHeight,
+        encryptedAge,
+        encryptedCharacteristics,
+        encryptedColor,
+        encryptedWeight,
+      ] = await Promise.all(encryptionPromises);
+  
+      const encryptedPetData = {
+        gender: encryptedGender,
+        birthday: encryptedBirthday,
+        height: encryptedHeight,
+        age: encryptedAge,
+        characteristics: encryptedCharacteristics,
+        color: encryptedColor,
+        weight: encryptedWeight,
+      };
+  
+      return encryptedPetData;
     } catch (err) {
-      console.error('Error fetching pet data:', err);
-      // return {};
+      console.error('Error fetching or encrypting pet data:', err);
+      return null;
     }
   };
 

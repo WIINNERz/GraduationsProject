@@ -246,42 +246,44 @@ export default function PlusBoxChatRoom({
   };
 
   const fetchTelephoneNumber = useCallback(async () => {
-    if (user) {
-      try {
-        const db = getFirestore();
-        const userDocRef = doc(db, 'Users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-
-          const decryptedTel = userData.tel
-            ? await KeymanagementInstance.decryptData(userData.tel)
-            : null;
-
-          setState(prevState => ({
-            ...prevState,
-            telephoneNumber: decryptedTel || "Doesn't have a telephone number",
-          }));
-          if (decryptedTel) {
-            if (onSendTelephone) {
-              onSendTelephone(decryptedTel);
-            }
-          } else {
-            setTelModalVisible(true);
-          }
-        } else {
-          setState(prevState => ({
-            ...prevState,
-            telephoneNumber: "Doesn't have a telephone number",
-          }));
-          setTelModalVisible(true);
-        }
-      } catch (err) {
-        console.log('Error fetching telephone number:', err.message);
-      }
-    } else {
+    if (!user) {
       console.log('User is not authenticated');
+      return;
+    }
+  
+    try {
+      const db = getFirestore();
+      const userDocRef = doc(db, 'Users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+  
+      if (!userDoc.exists()) {
+        setState(prevState => ({
+          ...prevState,
+          telephoneNumber: "Doesn't have a telephone number",
+        }));
+        setTelModalVisible(true);
+        return;
+      }
+  
+      const userData = userDoc.data();
+      const decryptedTel = userData.tel
+        ? await KeymanagementInstance.decryptData(userData.tel)
+        : null;
+  
+      setState(prevState => ({
+        ...prevState,
+        telephoneNumber: decryptedTel || "Doesn't have a telephone number",
+      }));
+  
+      if (decryptedTel) {
+        if (onSendTelephone) {
+          onSendTelephone(decryptedTel);
+        }
+      } else {
+        setTelModalVisible(true);
+      }
+    } catch (err) {
+      console.log('Error fetching telephone number:', err.message);
     }
   }, [user, KeymanagementInstance, onSendTelephone]);
 

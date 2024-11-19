@@ -23,7 +23,7 @@ import RenderIcon from '../components/RenderIcon';
 
 const {width, height} = Dimensions.get('window');
 
-export default function PetProfile() {
+const PetProfile = () => {
   const navigate = useNavigation();
   const route = useRoute();
   const {id} = route.params;
@@ -64,49 +64,9 @@ export default function PetProfile() {
     const petDocRef = doc(firestore, 'Pets', id);
     const unsubscribe = onSnapshot(petDocRef, async petDoc => {
       if (petDoc.exists()) {
-        const petData = {id: petDoc.id, ...petDoc.data()};
+        const petData = { id: petDoc.id, ...petDoc.data() };
         if (petData.status === 'have_owner') {
-          try {
-            const decryptedPetData = {
-              id: petDoc.id,
-              name: petData.name,
-              photoURL: petData.photoURL,
-              additionalImages: petData.additionalImages || null,
-              type: petData.type,
-              nid: petData.nid,
-              status: petData.status,
-              gender: petData.gender
-                ? KeymanagementInstance.decryptData(petData.gender)
-                : null,
-              birthday: petData.birthday
-                ? KeymanagementInstance.decryptData(petData.birthday)
-                : null,
-              height: petData.height
-                ? KeymanagementInstance.decryptData(petData.height)
-                : null,
-              age: petData.age
-                ? KeymanagementInstance.decryptData(petData.age)
-                : null,
-              breeds: petData.breeds ? petData.breeds : null,
-              characteristics: petData.characteristics
-                ? KeymanagementInstance.decryptData(petData.characteristics)
-                : null,
-              chronic: petData.chronic
-                ? KeymanagementInstance.decryptData(petData.chronic)
-                : null,
-              color: petData.color
-                ? KeymanagementInstance.decryptData(petData.color)
-                : null,
-              weight: petData.weight
-                ? KeymanagementInstance.decryptData(petData.weight)
-                : null,
-            };
-            setPet(decryptedPetData);
-            setStatus('My pet');
-            setIsFavorite(!!petData.favorite);
-          } catch (err) {
-            console.error('Error decrypting pet data:', err);
-          }
+          await handleDecryption(petData);
         } else {
           setPet(petData);
           setStatus('Adoptable');
@@ -118,70 +78,95 @@ export default function PetProfile() {
       }
     });
 
-    const medicalHistoryRef = collection(
-      firestore,
-      'Pets',
-      id,
-      'MedicalHistory',
-    );
-    const unsubscribeMedicalHistory = onSnapshot(
-      medicalHistoryRef,
-      async snapshot => {
-        setLoading(true);
-        const medicalHistoryList = await Promise.all(
-          snapshot.docs.map(async doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              conditions: data.conditions
-                ? await keyman.decryptviaapi(data.conditions)
-                : null,
-              vaccine: data.vaccine
-                ? await Promise.all(
-                    data.vaccine.map(async v => ({
-                      name: v.name
-                        ? await keyman.decryptviaapi(v.name)
-                        : null,
-                      quantity: v.quantity
-                        ? await keyman.decryptviaapi(v.quantity)
-                        : null,
-                    })),
-                  )
-                : null,
-              treatment: data.treatment
-                ? await keyman.decryptviaapi(data.treatment)
-                : null,
-              doctor: data.doctor
-                ? await keyman.decryptviaapi(data.doctor)
-                : null,
-              note: data.note
-                ? await keyman.decryptviaapi(data.note)
-                : null,
-              date: data.date
-                ? await keyman.decryptviaapi(data.date)
-                : null,
-              time: data.time
-                ? await keyman.decryptviaapi(data.time)
-                : null,
-              drugallergy: data.drugallergy
-                ? await keyman.decryptviaapi(data.drugallergy)
-                : null,
-              chronic: data.chronic
-                ? await keyman.decryptviaapi(data.chronic)
-                : null,
-            };
-          }),
-        );
-        setMedicalHistory(medicalHistoryList);
-        setLoading(false);
-      },
-    );
+    const medicalHistoryRef = collection(firestore, 'Pets', id, 'MedicalHistory');
+    const unsubscribeMedicalHistory = onSnapshot(medicalHistoryRef, async snapshot => {
+      setLoading(true);
+      const medicalHistoryList = await fetchMedicalHistory(snapshot);
+      setMedicalHistory(medicalHistoryList);
+      setLoading(false);
+    });
 
     return () => {
       unsubscribe();
       unsubscribeMedicalHistory();
     };
   }, [id, KeymanagementInstance]);
+
+  const handleDecryption = async (petData) => {
+    try {
+      const decryptionPromises = [
+        petData.gender ? KeymanagementInstance.decryptData(petData.gender) : null,
+        petData.birthday ? KeymanagementInstance.decryptData(petData.birthday) : null,
+        petData.height ? KeymanagementInstance.decryptData(petData.height) : null,
+        petData.age ? KeymanagementInstance.decryptData(petData.age) : null,
+        petData.characteristics ? KeymanagementInstance.decryptData(petData.characteristics) : null,
+        petData.chronic ? KeymanagementInstance.decryptData(petData.chronic) : null,
+        petData.color ? KeymanagementInstance.decryptData(petData.color) : null,
+        petData.weight ? KeymanagementInstance.decryptData(petData.weight) : null,
+      ];
+
+      const [
+        decryptedGender,
+        decryptedBirthday,
+        decryptedHeight,
+        decryptedAge,
+        decryptedCharacteristics,
+        decryptedChronic,
+        decryptedColor,
+        decryptedWeight,
+      ] = await Promise.all(decryptionPromises);
+
+      const decryptedPetData = {
+        id: petData.id,
+        name: petData.name,
+        photoURL: petData.photoURL,
+        additionalImages: petData.additionalImages || null,
+        type: petData.type,
+        nid: petData.nid,
+        status: petData.status,
+        gender: decryptedGender,
+        birthday: decryptedBirthday,
+        height: decryptedHeight,
+        age: decryptedAge,
+        breeds: petData.breeds || null,
+        characteristics: decryptedCharacteristics,
+        chronic: decryptedChronic,
+        color: decryptedColor,
+        weight: decryptedWeight,
+      };
+
+      setPet(decryptedPetData);
+      setStatus('My pet');
+      setIsFavorite(!!petData.favorite);
+    } catch (err) {
+      console.error('Error decrypting pet data:', err);
+    }
+  };
+
+  const fetchMedicalHistory = async (snapshot) => {
+    return await Promise.all(
+      snapshot.docs.map(async doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          conditions: data.conditions ? await keyman.decryptviaapi(data.conditions) : null,
+          vaccine: data.vaccine ? await Promise.all(
+            data.vaccine.map(async v => ({
+              name: v.name ? await keyman.decryptviaapi(v.name) : null,
+              quantity: v.quantity ? await keyman.decryptviaapi(v.quantity) : null,
+            }))
+          ) : null,
+          treatment: data.treatment ? await keyman.decryptviaapi(data.treatment) : null,
+          doctor: data.doctor ? await keyman.decryptviaapi(data.doctor) : null,
+          note: data.note ? await keyman.decryptviaapi(data.note) : null,
+          date: data.date ? await keyman.decryptviaapi(data.date) : null,
+          time: data.time ? await keyman.decryptviaapi(data.time) : null,
+          drugallergy: data.drugallergy ? await keyman.decryptviaapi(data.drugallergy) : null,
+          chronic: data.chronic ? await keyman.decryptviaapi(data.chronic) : null,
+        };
+      })
+    );
+  };
 
   const formatDate = dateString => {
     const [day, month, year] = dateString.split('-');
@@ -651,3 +636,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+export default PetProfile;

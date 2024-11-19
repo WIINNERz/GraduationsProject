@@ -24,7 +24,7 @@ import RenderIcon from '../components/RenderIcon';
 
 const {width} = Dimensions.get('window');
 
-export default function PetProfile() {
+ const PetProfile = () => {
   const navigate = useNavigation();
   const [pet, setPet] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState([]);
@@ -76,58 +76,42 @@ export default function PetProfile() {
     }
   }, [id]);
 
-  const subscribeToMedicalHistory = useCallback(() => {
-    const medicalHistoryRef = collection(
-      firestore,
-      'Pets',
-      id,
-      'MedicalHistory',
-    );
-    const unsubscribeMedicalHistory = onSnapshot(
-      medicalHistoryRef,
-      async snapshot => {
-        sethLoading(true);
-        const medicalHistoryList = await Promise.all(
-          snapshot.docs.map(async doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              conditions: data.conditions
-                ? await keyman.decryptviaapi(data.conditions)
-                : null,
-              vaccine: data.vaccine
-                ? await Promise.all(
-                    data.vaccine.map(async v => ({
-                      name: v.name ? await keyman.decryptviaapi(v.name) : null,
-                      quantity: v.quantity
-                        ? await keyman.decryptviaapi(v.quantity)
-                        : null,
-                    })),
-                  )
-                : null,
-              treatment: data.treatment
-                ? await keyman.decryptviaapi(data.treatment)
-                : null,
-              doctor: data.doctor
-                ? await keyman.decryptviaapi(data.doctor)
-                : null,
-              note: data.note ? await keyman.decryptviaapi(data.note) : null,
-              date: data.date ? await keyman.decryptviaapi(data.date) : null,
-              time: data.time ? await keyman.decryptviaapi(data.time) : null,
-              drugallergy: data.drugallergy
-                ? await keyman.decryptviaapi(data.drugallergy)
-                : null,
-              chronic: data.chronic
-                ? await keyman.decryptviaapi(data.chronic)
-                : null,
-            };
-          }),
-        );
+  const decryptMedicalHistory = async (data) => {
+    return {
+      id: data.id,
+      conditions: data.conditions ? await keyman.decryptviaapi(data.conditions) : null,
+      vaccine: data.vaccine
+        ? await Promise.all(
+            data.vaccine.map(async (v) => ({
+              name: v.name ? await keyman.decryptviaapi(v.name) : null,
+              quantity: v.quantity ? await keyman.decryptviaapi(v.quantity) : null,
+            }))
+          )
+        : null,
+      treatment: data.treatment ? await keyman.decryptviaapi(data.treatment) : null,
+      doctor: data.doctor ? await keyman.decryptviaapi(data.doctor) : null,
+      note: data.note ? await keyman.decryptviaapi(data.note) : null,
+      date: data.date ? await keyman.decryptviaapi(data.date) : null,
+      time: data.time ? await keyman.decryptviaapi(data.time) : null,
+      drugallergy: data.drugallergy ? await keyman.decryptviaapi(data.drugallergy) : null,
+      chronic: data.chronic ? await keyman.decryptviaapi(data.chronic) : null,
+    };
+  };
 
-        setMedicalHistory(medicalHistoryList);
-        sethLoading(false);
-      },
-    );
+  const subscribeToMedicalHistory = useCallback(() => {
+    const medicalHistoryRef = collection(firestore, 'Pets', id, 'MedicalHistory');
+    const unsubscribeMedicalHistory = onSnapshot(medicalHistoryRef, async (snapshot) => {
+      sethLoading(true);
+      const medicalHistoryList = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const data = doc.data();
+          return decryptMedicalHistory({ id: doc.id, ...data });
+        })
+      );
+
+      setMedicalHistory(medicalHistoryList);
+      sethLoading(false);
+    });
     return unsubscribeMedicalHistory;
   }, [id]);
 
@@ -582,3 +566,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+export default PetProfile;
