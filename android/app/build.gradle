@@ -83,6 +83,7 @@ android {
     namespace "com.graduationspj"
     defaultConfig {
         applicationId "com.graduationspj"
+        manifestPlaceholders = [GOOGLE_API_KEY: "${GOOGLE_API_KEY}"]
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

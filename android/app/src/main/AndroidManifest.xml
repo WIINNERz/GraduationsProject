@@ -9,7 +9,7 @@
 
     <application
         android:name=".MainApplication"
-        android:usesCleartextTraffic="true"
+        android:usesCleartextTraffic="false"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -20,8 +20,8 @@
         
         <!-- Google Maps API Key -->
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCnkHACQgl9XfquJLpIvNFL4uWCWBYVwWI"/>
+        android:name="com.google.android.geo.API_KEY"
+        android:value="${GOOGLE_API_KEY}"/>
         
         <activity
             android:name=".MainActivity"

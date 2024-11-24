@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "generate-google-services": "node generate-google-services.js",
-    "generate-android-manifest": "node generate-android-manifest.js",
     "start": "npm run generate-google-services && react-native start",
-    "android": "npm run generate-android-manifest && npm run generate-google-services && react-native run-android",
+    "android": "npm run generate-google-services && react-native run-android",
     "ios": "npm run generate-google-services && react-native run-ios",
     "lint": "eslint .",
     "test": "jest"
