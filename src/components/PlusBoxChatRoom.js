@@ -41,24 +41,26 @@ export default function PlusBoxChatRoom({
   const [telModalVisible, setTelModalVisible] = useState(false);
   const KeymanagementInstance = Keymanagement();
   const user = auth.currentUser;
-
-  const requestLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message:
-            'This app needs access to your location to send it in the chat.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      console.warn(err);
-      return false;
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Camera Permission',
+            message: 'This app needs camera access to take pictures',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    } else {
+      return true;
     }
   };
   const confirmAndSendLocation = () => {
@@ -141,35 +143,45 @@ export default function PlusBoxChatRoom({
       {cancelable: true},
     );
   };
+  const pickImageFromCamera = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) {
+      console.log('Camera permission denied');
+      return;
+    }
+  
+    const result = await launchCamera({
+      mediaType: 'photo',
+      quality: 1,
+    });
+  
+    if (result.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (result.error) {
+      console.log('ImagePicker Error: ', result.error);
+    } else if (result.assets && result.assets[0]) {
+      const {uri} = result.assets[0];
+      onImagePicked(uri);
+    } else {
+      console.log('Unexpected result structure: ', result);
+    }
+  };
+  
   const pickImageFromLibrary = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
       quality: 1,
     });
-
+  
     if (result.didCancel) {
       console.log('User cancelled image picker');
     } else if (result.error) {
       console.log('ImagePicker Error: ', result.error);
-    } else {
+    } else if (result.assets && result.assets[0]) {
       const {uri} = result.assets[0];
       onImagePicked(uri);
-    }
-  };
-
-  const pickImageFromCamera = async () => {
-    const result = await launchCamera({
-      mediaType: 'photo',
-      quality: 1,
-    });
-
-    if (result.didCancel) {
-      console.log('User cancelled image picker');
-    } else if (result.error) {
-      console.log('ImagePicker Error: ', result.error);
     } else {
-      const {uri} = result.assets[0];
-      onImagePicked(uri);
+      console.log('Unexpected result structure: ', result);
     }
   };
 
