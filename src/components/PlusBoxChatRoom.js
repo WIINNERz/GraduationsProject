@@ -41,6 +41,25 @@ export default function PlusBoxChatRoom({
   const [telModalVisible, setTelModalVisible] = useState(false);
   const KeymanagementInstance = Keymanagement();
   const user = auth.currentUser;
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'This app needs access to your location to send it in the chat.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn(err);
+      return false;
+    }
+  };
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -97,7 +116,6 @@ export default function PlusBoxChatRoom({
         position => {
           const {latitude, longitude} = position.coords;
           const location = {latitude, longitude};
-          console.log('Location obtained:', location); // Log the obtained location
           if (onSendLocation) {
             onSendLocation(location);
           } else {
