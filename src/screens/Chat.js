@@ -64,23 +64,25 @@ const Chat = () => {
     return (
         <View style={styles.screen}>
             <ChatHeader />
-            {
-                loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : (
-                    chatRooms.length > 0 ? (
-                        <ChatList
-                            rooms={chatRooms}
-                            users={users}
-                            currentUserId={user?.uid} 
-                        />
+            {/* <ScrollView contentContainerStyle={styles.scrollViewContent}> */}
+                {
+                    loading ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
                     ) : (
-                        <View style={styles.nochat}>
-                            <Text>No chats found.</Text>
-                        </View>
+                        chatRooms.length > 0 ? (
+                            <ChatList
+                                rooms={chatRooms}
+                                users={users}
+                                currentUserId={user?.uid} 
+                            />
+                        ) : (
+                            <View style={styles.nochat}>
+                                <Text>No chats found.</Text>
+                            </View>
+                        )
                     )
-                )
-            }
+                }
+            {/* </ScrollView> */}
         </View>
     );
 }
@@ -89,6 +91,9 @@ const styles = {
     screen: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    scrollViewContent: {
+        flexGrow: 1,
     },
     nochat: {
         flex: 1,
