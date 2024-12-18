@@ -26,8 +26,7 @@ const AuthStack = () => {
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [isSecureEntry, setIsSecureEntry] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
-  const isButtonEnabled =
-    username && emailReg && passwordReg && confirmPassword;
+  const [isButtonEnabled, setIsButtonEnabled] = React.useState(false);
   const [error, setError] = React.useState('');
   const db = getFirestore();
   const backgroundAnimation = React.useRef(new Animated.Value(0)).current;
@@ -190,6 +189,8 @@ const AuthStack = () => {
               handleSignUp={handleSignUp}
               loading={loading}
               error={error}
+              isButtonEnabled={isButtonEnabled}
+      setIsButtonEnabled={setIsButtonEnabled}
             />
           )}
         </View>

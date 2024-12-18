@@ -8,7 +8,7 @@ export default function ChatRoomHeader({ user }) {
     const defaultImage ='https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account.png';; 
 
     const handleBackPress = () => {
-        navigation.goBack(); 
+        navigation.navigate('ChatScreen'); // Replace 'Chat' with the name of the specific screen you want to navigate to
     };
 
     return (

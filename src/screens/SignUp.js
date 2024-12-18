@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, setPasswordReg, confirmPassword, setConfirmPassword, isSecureEntry, handleSignUp, loading, error,isButtonEnabled }) => {
+const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, setPasswordReg, confirmPassword, setConfirmPassword, isSecureEntry, handleSignUp, loading, error, isButtonEnabled, setIsButtonEnabled }) => {
+  useEffect(() => {
+    const isFormValid = username && emailReg && passwordReg && confirmPassword && passwordReg === confirmPassword;
+    setIsButtonEnabled(isFormValid);
+  }, [username, emailReg, passwordReg, confirmPassword]);
+
   return (
     <View style={styles.formContainer}>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -78,7 +83,8 @@ const SignUp = ({ username, setUsername, emailReg, setEmailReg, passwordReg, set
       </View>
       <TouchableOpacity
         onPress={handleSignUp}
-        style={[styles.loginButton,{backgroundColor: isButtonEnabled? '#E16539':'gray'}]}
+        style={[styles.loginButton, { backgroundColor: isButtonEnabled ? '#E16539' : 'gray' }]}
+        disabled={!isButtonEnabled}
       >
         {loading ? (
           <ActivityIndicator color="#fff" />
@@ -94,7 +100,6 @@ const styles = StyleSheet.create({
   formContainer: {
     width: '90%',
     marginHorizontal: '5%',
-
   },
   inputContainer: {
     flexDirection: 'row',
@@ -120,7 +125,6 @@ const styles = StyleSheet.create({
     right: 20,
   },
   loginButton: {
-    backgroundColor: '#E16539',
     width: '100%',
     height: 40,
     justifyContent: 'center',

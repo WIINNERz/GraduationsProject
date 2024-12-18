@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator  } from "react-native";
+import { View, Text, ActivityIndicator, ScrollView  } from "react-native";
 import ChatHeader from "../components/ChatHeader";
 import ChatList from "../components/ChatList";
 import { useEffect, useState, useCallback } from "react";
@@ -64,7 +64,6 @@ const Chat = () => {
     return (
         <View style={styles.screen}>
             <ChatHeader />
-            {/* <ScrollView contentContainerStyle={styles.scrollViewContent}> */}
                 {
                     loading ? (
                         <ActivityIndicator size="large" color="#0000ff" />
@@ -82,7 +81,6 @@ const Chat = () => {
                         )
                     )
                 }
-            {/* </ScrollView> */}
         </View>
     );
 }
